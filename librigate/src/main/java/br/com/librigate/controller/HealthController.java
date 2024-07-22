@@ -1,8 +1,8 @@
 package br.com.librigate.controller;
 
+import br.com.librigate.model.service.DatabaseHealthService;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,9 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Health Controller", description = "Controlador que testa a aplicação")
 public class HealthController {
 
-    @GetMapping
-    public ResponseEntity<String> health(){
+    @Autowired
+    private DatabaseHealthService databaseHealthService;
 
-        return new ResponseEntity<>("Aplicacao rodando!", HttpStatus.OK);
+    @GetMapping("/database")
+    public String checkDatabaseConnection() {
+        if (databaseHealthService.isDatabaseConnected()) {
+            return "Database connection is OK";
+        } else {
+            return "Database connection is NOT OK";
+        }
     }
 }
