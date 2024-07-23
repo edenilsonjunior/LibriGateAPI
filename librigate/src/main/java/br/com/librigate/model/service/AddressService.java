@@ -6,35 +6,81 @@ import br.com.librigate.model.entity.people.Address;
 import br.com.librigate.model.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class AddressService {
+public class AddressService implements IService<Address, AddressDTO, Long> {
 
     @Autowired
     private AddressRepository addressRepository;
-
-
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public Address saveAddress(Address address) {
 
-        return addressRepository.save(address);
+    @Override
+    public Address create(AddressDTO dto) {
+
+        try {
+            Address address = populateAddress(dto);
+            return addressRepository.save(address);
+
+        }catch (RestClientException ex){
+            throw new InvalidParameterException("O cep digitado é invalido!");
+        }
+        catch (Exception ex){
+            throw new InternalError(ex.getMessage());
+        }
     }
 
+
+    @Override
+    public Optional<Address> findByPK(Long id) {
+        return addressRepository.findById(id);
+    }
+
+
+    @Override
     public List<Address> findAll() {
         return addressRepository.findAll();
     }
 
 
-    public Address populateAddress(AddressDTO addressDTO) {
+    @Override
+    public Address update(Long id, AddressDTO dto){
+
+        if(addressRepository.existsById(id)) {
+
+            try {
+                Address address = populateAddress(dto);
+                return addressRepository.save(address);
+            }catch (RestClientException ex){
+                throw new InvalidParameterException("O cep digitado é invalido!");
+            }
+            catch (Exception ex){
+                throw new InternalError(ex.getMessage());
+            }
+        }
+
+        throw new InvalidParameterException("O id não condiz com nenhum endereço!");
+    }
+
+
+    @Override
+    public void delete(Long id) {
+        addressRepository.deleteById(id);
+    }
+
+
+    private Address populateAddress(AddressDTO addressDTO) throws RestClientException {
 
         String url = "https://viacep.com.br/ws/" + addressDTO.zipCode() + "/json/";
-        var response =  restTemplate.getForObject(url, ViaCepResponse.class);
 
+        var response =  restTemplate.getForObject(url, ViaCepResponse.class);
         Address address = new Address();
 
         address.setId(UUID.randomUUID().toString());
@@ -48,4 +94,5 @@ public class AddressService {
 
         return address;
     }
+
 }
