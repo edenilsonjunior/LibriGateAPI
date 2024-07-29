@@ -83,7 +83,6 @@ public class AddressService implements IService<Address, AddressDTO, Long> {
         var response =  restTemplate.getForObject(url, ViaCepResponse.class);
         Address address = new Address();
 
-        address.setId(UUID.randomUUID().toString());
         address.setZipCode(addressDTO.zipCode());
         address.setStreet(response.getLogradouro());
         address.setDistric(response.getBairro());

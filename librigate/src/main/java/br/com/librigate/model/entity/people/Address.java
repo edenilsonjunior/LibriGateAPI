@@ -12,9 +12,9 @@ import java.util.UUID;
 public class Address {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @NotNull
-    private String id;
+    private Long id;
 
     @NotNull
     private String zipCode;
@@ -39,18 +39,7 @@ public class Address {
 
     public Address(){}
 
-    public Address(String zipCode, String street, String distric, String city, String state, int number, String complement) {
-        this.id = UUID.randomUUID().toString();
-        this.zipCode = zipCode;
-        this.street = street;
-        this.distric = distric;
-        this.city = city;
-        this.state = state;
-        this.number = number;
-        this.complement = complement;
-    }
-
-    public Address(String id, String zipCode, String street, String distric, String city, String state, int number, String complement) {
+    public Address(Long id, String zipCode, String street, String distric, String city, String state, int number, String complement) {
         this.id = id;
         this.zipCode = zipCode;
         this.street = street;
@@ -61,11 +50,11 @@ public class Address {
         this.complement = complement;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
