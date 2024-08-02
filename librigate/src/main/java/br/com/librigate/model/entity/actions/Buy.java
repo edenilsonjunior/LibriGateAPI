@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public class Buy {
 
-    private String id;
+    private Long id;
     private List<FisicalBook> books;
     private LocalDateTime buyDate;
     private boolean status;
@@ -17,7 +17,7 @@ public class Buy {
     private LocalDate dueDate;
     private Optional<LocalDateTime> paidAt;
 
-    public Buy(String id, List<FisicalBook> books, LocalDateTime buyDate, boolean status, double totalPrice, LocalDate dueDate, Optional<LocalDateTime> paidAt) {
+    public Buy(Long id, List<FisicalBook> books, LocalDateTime buyDate, boolean status, double totalPrice, LocalDate dueDate, Optional<LocalDateTime> paidAt) {
         this.id = id;
         this.books = books;
         this.buyDate = buyDate;
@@ -27,11 +27,11 @@ public class Buy {
         this.paidAt = paidAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

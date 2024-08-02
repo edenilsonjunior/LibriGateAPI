@@ -10,14 +10,14 @@ import java.util.Optional;
 
 public class Rent {
 
-    private String id;
+    private Long id;
     private List<FisicalBook> bookList;
     private LocalDate rentDate;
     private boolean status;
     private LocalDate devolutionDate;
     private Optional<LocalDateTime> givenBackAt;
 
-    public Rent(String id, List<FisicalBook> bookList, LocalDate rentDate, boolean status, LocalDate devolutionDate, Optional<LocalDateTime> givenBackAt) {
+    public Rent(Long id, List<FisicalBook> bookList, LocalDate rentDate, boolean status, LocalDate devolutionDate, Optional<LocalDateTime> givenBackAt) {
         this.id = id;
         this.bookList = bookList;
         this.rentDate = rentDate;
@@ -26,11 +26,11 @@ public class Rent {
         this.givenBackAt = givenBackAt;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
