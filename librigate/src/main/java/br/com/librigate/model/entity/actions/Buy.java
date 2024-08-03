@@ -1,23 +1,47 @@
 package br.com.librigate.model.entity.actions;
 
 import br.com.librigate.model.entity.book.FisicalBook;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+@Entity
+@Table(name = "buy")
 public class Buy {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private List<FisicalBook> books;
-    private LocalDateTime buyDate;
-    private boolean status;
-    private double totalPrice;
-    private LocalDate dueDate;
-    private Optional<LocalDateTime> paidAt;
 
-    public Buy(Long id, List<FisicalBook> books, LocalDateTime buyDate, boolean status, double totalPrice, LocalDate dueDate, Optional<LocalDateTime> paidAt) {
+    @OneToMany
+    @JoinTable(
+            name = "buy_books",
+            joinColumns = @JoinColumn(name = "buy_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
+    )
+    private List<FisicalBook> books;
+
+    @Column(name = "buy_date", nullable = false)
+    private LocalDateTime buyDate;
+
+    @Column(nullable = false)
+    private boolean status;
+
+    @Column(name = "total_price", nullable = false)
+    private double totalPrice;
+
+    @Column(name = "due_date", nullable = false)
+    private LocalDate dueDate;
+
+    @Column(name = "paid_at", nullable = true)
+    private LocalDateTime paidAt;
+
+    public Buy() {
+    }
+
+    public Buy(Long id, List<FisicalBook> books, LocalDateTime buyDate, boolean status, double totalPrice, LocalDate dueDate, LocalDateTime paidAt) {
         this.id = id;
         this.books = books;
         this.buyDate = buyDate;
@@ -25,6 +49,15 @@ public class Buy {
         this.totalPrice = totalPrice;
         this.dueDate = dueDate;
         this.paidAt = paidAt;
+    }
+
+    public Buy(Long id, List<FisicalBook> books, LocalDateTime buyDate, boolean status, double totalPrice, LocalDate dueDate) {
+        this.id = id;
+        this.books = books;
+        this.buyDate = buyDate;
+        this.status = status;
+        this.totalPrice = totalPrice;
+        this.dueDate = dueDate;
     }
 
     public Long getId() {
@@ -75,11 +108,11 @@ public class Buy {
         this.dueDate = dueDate;
     }
 
-    public Optional<LocalDateTime> getPaidAt() {
+    public LocalDateTime getPaidAt() {
         return paidAt;
     }
 
-    public void setPaidAt(Optional<LocalDateTime> paidAt) {
+    public void setPaidAt(LocalDateTime paidAt) {
         this.paidAt = paidAt;
     }
 }
