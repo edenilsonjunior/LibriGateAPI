@@ -1,11 +1,8 @@
 package br.com.librigate.model.entity.people;
 
-import br.com.librigate.model.service.AddressService;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
-
-import java.util.UUID;
 
 @Entity
 @Table(name = "address")

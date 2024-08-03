@@ -1,0 +1,14 @@
+package br.com.librigate.model.dto;
+
+import java.time.LocalDate;
+
+public record BookDTO(
+        String isbn,
+        String title,
+        String description,
+        String publisher,
+        String category,
+        String[] authorsName,
+        int edition,
+        LocalDate launchDate
+) { }

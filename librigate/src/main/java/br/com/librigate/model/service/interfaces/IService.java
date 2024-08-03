@@ -1,4 +1,4 @@
-package br.com.librigate.model.service;
+package br.com.librigate.model.service.interfaces;
 
 import java.util.List;
 import java.util.Optional;

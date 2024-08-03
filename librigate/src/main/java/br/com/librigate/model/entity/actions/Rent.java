@@ -13,11 +13,11 @@ public class Rent {
     private Long id;
     private List<FisicalBook> bookList;
     private LocalDate rentDate;
-    private boolean status;
+    private String status;
     private LocalDate devolutionDate;
     private Optional<LocalDateTime> givenBackAt;
 
-    public Rent(Long id, List<FisicalBook> bookList, LocalDate rentDate, boolean status, LocalDate devolutionDate, Optional<LocalDateTime> givenBackAt) {
+    public Rent(Long id, List<FisicalBook> bookList, LocalDate rentDate, String status, LocalDate devolutionDate, Optional<LocalDateTime> givenBackAt) {
         this.id = id;
         this.bookList = bookList;
         this.rentDate = rentDate;
@@ -50,11 +50,11 @@ public class Rent {
         this.rentDate = rentDate;
     }
 
-    public boolean isStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
