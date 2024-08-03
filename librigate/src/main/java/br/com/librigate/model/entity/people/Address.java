@@ -47,15 +47,16 @@ public class Address {
         this.complement = complement;
     }
 
-    public Long getId() {
+
+    public @NotNull Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(@NotNull Long id) {
         this.id = id;
     }
 
-    public String getZipCode() {
+    public @NotNull String getZipCode() {
         return zipCode;
     }
 
@@ -79,21 +80,22 @@ public class Address {
         this.distric = distric;
     }
 
-    public String getCity() {
+    public  String getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity( String city) {
         this.city = city;
     }
 
-    public String getState() {
+    public  String getState() {
         return state;
     }
 
     public void setState(String state) {
         this.state = state;
     }
+
 
     public int getNumber() {
         return number;
