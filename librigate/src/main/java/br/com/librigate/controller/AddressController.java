@@ -2,7 +2,7 @@ package br.com.librigate.controller;
 
 import br.com.librigate.model.dto.AddressDTO;
 import br.com.librigate.model.entity.people.Address;
-import br.com.librigate.model.service.AddressService;
+import br.com.librigate.model.service.people.AddressService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

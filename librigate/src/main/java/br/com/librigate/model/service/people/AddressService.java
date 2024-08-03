@@ -1,9 +1,10 @@
-package br.com.librigate.model.service;
+package br.com.librigate.model.service.people;
 
 import br.com.librigate.model.dto.AddressDTO;
 import br.com.librigate.model.dto.ViaCepResponse;
 import br.com.librigate.model.entity.people.Address;
 import br.com.librigate.model.repository.AddressRepository;
+import br.com.librigate.model.service.interfaces.IService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -12,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AddressService implements IService<Address, AddressDTO, Long> {
