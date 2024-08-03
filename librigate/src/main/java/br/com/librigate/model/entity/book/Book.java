@@ -1,22 +1,57 @@
 package br.com.librigate.model.entity.book;
 
 import br.com.librigate.model.entity.actions.Review;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Entity
+@Table(name = "book")
 public class Book {
 
+    @Id
+    @NotNull
+    @Column(name = "ISBN")
     private String isbn;
+
+    @NotNull
+    @Column(name = "Title")
     private String title;
+
+    @NotNull
+    @Column(name = "Description")
     private String description;
+
+    @NotNull
+    @Column(name = "Publisher")
     private String publisher;
+
+    @NotNull
+    @Column(name = "Category")
     private String category;
+
+    @NotNull
+    @ElementCollection
+    @Column(name = "Authors")
     private List<String> authorsName;
+
+    @NotNull
+    @Column(name = "Edition")
     private int edition;
+
+    @NotNull
+    @Column(name = "Launch")
     private LocalDate launchDate;
 
+    @OneToMany
+    @Column(name = "Reviews")
     private List<Review> reviews;
+
+    public Book() {
+
+    }
 
     public Book(String isbn, String title, String description, String publisher, String category, List<String> authorsName, int edition, LocalDate launchDate, List<Review> reviews) {
         this.isbn = isbn;
