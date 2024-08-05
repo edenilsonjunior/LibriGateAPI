@@ -2,8 +2,9 @@ package br.com.librigate.model.entity.people;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "address")
 public class Address {
@@ -13,103 +14,29 @@ public class Address {
     @NotNull
     private Long id;
 
-    @NotNull
+    @Column(name = "zip_code", nullable = false)
     private String zipCode;
 
-    @NotNull
+    @Column(name = "street", nullable = false)
     private String street;
 
-    @NotNull
-    private String distric;
+    @Column(name = "district", nullable = false)
+    private String district;
 
-    @NotNull
+    @Column(name = "city", nullable = false)
     private String city;
 
-    @NotNull
+    @Column(name = "state", nullable = false)
     private String state;
 
-    @NotNull
+    @Column(name = "number", nullable = false)
     private int number;
 
-    @Null
+    @Column(name = "complement", nullable = true)
     private String complement;
 
-    public Address(){}
 
-    public Address(Long id, String zipCode, String street, String distric, String city, String state, int number, String complement) {
-        this.id = id;
-        this.zipCode = zipCode;
-        this.street = street;
-        this.distric = distric;
-        this.city = city;
-        this.state = state;
-        this.number = number;
-        this.complement = complement;
+    public Address() {
     }
 
-
-    public @NotNull Long getId() {
-        return id;
-    }
-
-    public void setId(@NotNull Long id) {
-        this.id = id;
-    }
-
-    public @NotNull String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getDistric() {
-        return distric;
-    }
-
-    public void setDistric(String distric) {
-        this.distric = distric;
-    }
-
-    public  String getCity() {
-        return city;
-    }
-
-    public void setCity( String city) {
-        this.city = city;
-    }
-
-    public  String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
-    public String getComplement() {
-        return complement;
-    }
-
-    public void setComplement(String complement) {
-        this.complement = complement;
-    }
 }

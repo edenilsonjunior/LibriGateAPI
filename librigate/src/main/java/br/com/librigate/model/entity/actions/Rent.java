@@ -1,14 +1,17 @@
 package br.com.librigate.model.entity.actions;
 
 import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.entity.people.Customer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import org.springframework.cglib.core.Local;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+@Data
 @Entity
 @Table(name = "rent")
 public class Rent {
@@ -17,18 +20,10 @@ public class Rent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany
-    @JoinTable(
-            name = "book_List",
-            joinColumns = @JoinColumn(name = "rent_id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
-    private List<FisicalBook> bookList;
-
     @Column(name = "rent_date", nullable = false)
     private LocalDate rentDate;
 
-    @Column( nullable = false)
+    @Column(name = "status" ,nullable = false)
     private String status;
 
     @Column(name = "devolution_date", nullable = false)
@@ -37,71 +32,24 @@ public class Rent {
     @Column(name = "given_back_at", nullable = true)
     private LocalDateTime givenBackAt;
 
+    @ManyToOne
+    @JoinColumn(name = "customer_cpf")
+    @JsonBackReference
+    private Customer customer;
+
+    @NotNull
+    @ManyToMany
+    @JoinTable(name = "rent_fisical_book",
+            joinColumns = @JoinColumn(name = "rent_id"),
+            inverseJoinColumns = {
+                @JoinColumn(name = "isbn", referencedColumnName = "isbn"),
+                @JoinColumn(name = "copyNumber", referencedColumnName = "copyNumber")
+            }
+    )
+    private List<FisicalBook> bookList;
+
+
     public Rent() {
     }
 
-    public Rent(Long id, List<FisicalBook> bookList, LocalDate rentDate, String status, LocalDate devolutionDate, LocalDateTime givenBackAt) {
-        this.id = id;
-        this.bookList = bookList;
-        this.rentDate = rentDate;
-        this.status = status;
-        this.devolutionDate = devolutionDate;
-        this.givenBackAt = givenBackAt;
-    }
-
-    public Rent(Long id, List<FisicalBook> bookList, LocalDate rentDate, String status, LocalDate devolutionDate) {
-        this.id = id;
-        this.bookList = bookList;
-        this.rentDate = rentDate;
-        this.status = status;
-        this.devolutionDate = devolutionDate;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<FisicalBook> getBookList() {
-        return bookList;
-    }
-
-    public void setBookList(List<FisicalBook> bookList) {
-        this.bookList = bookList;
-    }
-
-    public LocalDate getRentDate() {
-        return rentDate;
-    }
-
-    public void setRentDate(LocalDate rentDate) {
-        this.rentDate = rentDate;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public LocalDate getDevolutionDate() {
-        return devolutionDate;
-    }
-
-    public void setDevolutionDate(LocalDate devolutionDate) {
-        this.devolutionDate = devolutionDate;
-    }
-
-    public LocalDateTime getGivenBackAt() {
-        return givenBackAt;
-    }
-
-    public void setGivenBackAt(LocalDateTime givenBackAt) {
-        this.givenBackAt = givenBackAt;
-    }
 }

@@ -33,28 +33,26 @@ public class AddressController {
         try {
             Address address = addressService.create(dto);
             return new ResponseEntity<>(address, HttpStatus.CREATED);
-        }
-        catch (RestClientException e) {
+        } catch (RestClientException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
     @GetMapping
-    public ResponseEntity<List<Address>> getAddresses(){
+    public ResponseEntity<List<Address>> getAddresses() {
 
         try {
             var address = addressService.findAll();
 
-            if(address.isEmpty())
+            if (address.isEmpty())
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
             return new ResponseEntity<>(address, HttpStatus.OK);
 
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -66,12 +64,12 @@ public class AddressController {
         try {
             var address = addressService.findByPK(id);
 
-            if(address.isEmpty()) {
+            if (address.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
 
             return new ResponseEntity<>(address.get(), HttpStatus.OK);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -84,10 +82,9 @@ public class AddressController {
             Address address = addressService.update(id, dto);
             return new ResponseEntity<>(address, HttpStatus.OK);
 
-        }catch (InvalidParameterException ex){
+        } catch (InvalidParameterException ex) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        catch(InternalError ex){
+        } catch (InternalError ex) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

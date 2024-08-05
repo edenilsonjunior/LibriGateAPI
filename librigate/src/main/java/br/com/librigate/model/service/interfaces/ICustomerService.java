@@ -12,16 +12,16 @@ import java.util.List;
 
 public interface ICustomerService extends IService<Customer, CustomerDTO, String> {
 
-    public Buy purchase(BuyDTO dto);
-    public Buy processPayment(String cpf, Long paymentId);
-    public List<Buy> getPurchases(String cpf);
-    public Buy getPurchaseById(String cpf, Long paymentId);
+    Buy purchase(BuyDTO dto);
+    Buy processPayment(String cpf, Long paymentId);
+    List<Buy> getPurchases(String cpf);
+    Buy getPurchaseById(String cpf, Long paymentId);
 
-    public Rent rent(String cpf, RentDTO rendtDTO);
-    public Rent processDevolutionBook(Long rentId);
-    public List<Rent> getRents(String cpf);
-    public Rent getRendById(String cpf, Long rentId);
-    public Rent getRentById(String cpf, Long rentId);
+    Rent rent(String cpf, RentDTO rendtDTO);
+    Rent processDevolutionBook(Long rentId);
+    List<Rent> getRents(String cpf);
+    Rent getRendById(String cpf, Long rentId);
+    Rent getRentById(String cpf, Long rentId);
 
-    public void reviewBook(Review review);
+    void reviewBook(Review review);
 }

@@ -85,7 +85,7 @@ public class AddressService implements IService<Address, AddressDTO, Long> {
 
         address.setZipCode(addressDTO.zipCode());
         address.setStreet(response.getLogradouro());
-        address.setDistric(response.getBairro());
+        address.setDistrict(response.getBairro());
         address.setCity(response.getLocalidade());
         address.setState(response.getUf());
         address.setNumber(addressDTO.number());

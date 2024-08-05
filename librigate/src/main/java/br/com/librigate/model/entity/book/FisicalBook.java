@@ -1,64 +1,36 @@
 package br.com.librigate.model.entity.book;
 
-import br.com.librigate.model.entity.actions.Review;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import br.com.librigate.model.entity.actions.Buy;
+import br.com.librigate.model.entity.actions.Restock;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
+import lombok.Data;
 
-import java.time.LocalDate;
-import java.util.List;
-
+@Data
 @Entity
 @Table(name = "fisical_book")
-public class FisicalBook extends Book {
+public class FisicalBook {
 
-    @Id
-    @Column(name = "Copy")
-    private int copyNumber;
+    @EmbeddedId
+    private FisicalBookId bookDetails;
 
-    @NotNull
-    @Column(name = "Status")
+    @Column(name = "status", nullable = false)
     private String status;
 
-    @NotNull
-    @Column(name = "Price")
+    @Column(name = "price", nullable = false)
     private double price;
 
-    public FisicalBook(){
-        super();
+    @ManyToOne
+    @JoinColumn(name = "restock_id", nullable = false)
+    @JsonBackReference
+    private Restock restock;
+
+    @ManyToOne
+    @JoinColumn(name = "buy_id", nullable = true)
+    @JsonBackReference
+    private Buy buy;
+
+    public FisicalBook() {
     }
 
-    public FisicalBook(String isbn, String title, String description, String publisher, String category, List<String> authorsName, int edition, LocalDate launchDate, List<Review> reviews, int copyNumber, String status, double price) {
-        super(isbn, title, description, publisher, category, authorsName, edition, launchDate, reviews);
-        this.copyNumber = copyNumber;
-        this.status = status;
-        this.price = price;
-    }
-
-    public int getCopyNumber() {
-        return copyNumber;
-    }
-
-    public void setCopyNumber(int copyNumber) {
-        this.copyNumber = copyNumber;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
 }
-
