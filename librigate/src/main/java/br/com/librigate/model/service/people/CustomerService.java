@@ -85,7 +85,7 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public void reviewBook(Review review) {
-
+    public Review reviewBook(Review review) {
+        return null;
     }
 }

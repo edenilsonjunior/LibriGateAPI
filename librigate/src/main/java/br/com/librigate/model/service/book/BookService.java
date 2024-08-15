@@ -3,35 +3,55 @@ package br.com.librigate.model.service.book;
 import br.com.librigate.model.dto.BookDTO;
 import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.entity.book.Book;
+import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class BookService implements IBookService {
+
+    @Autowired
+    BookRepository bookRepository;
+
     @Override
     public List<Book> getBooks() {
-        return null;
+        return bookRepository.findAll();
     }
 
     @Override
     public List<Book> getBooksByCategory(String category) {
-        return null;
+        var entityList = bookRepository.findAll();
+        return entityList.stream()
+                .filter(b -> b.getCategory().equals(category))
+                .toList();
     }
 
     @Override
     public List<Book> getBooksByAuthor(String author) {
-        return null;
+        var entityList = bookRepository.findAll();
+        return entityList.stream()
+                .filter(b -> b.getAuthorsName().equals(author))
+                .toList();
     }
 
     @Override
     public List<Review> getReview(String bookIsbn) {
-        return null;
+        var entityList = bookRepository.findAll();
+        return entityList.stream()
+                .filter(b -> b.getIsbn().equals(bookIsbn))
+                .findFirst().get().getReviews();
     }
 
     @Override
     public Book create(BookDTO dto) {
-        return null;
+
+
+
+        var entity = bookRepository.save();
+
     }
 
     @Override
