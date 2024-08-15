@@ -10,8 +10,8 @@ import java.util.List;
 
 public interface IEmployeeService extends IService<Employee, EmployeeDTO, String> {
 
-    Restock buyNewBook(FisicalBook book);
-    Restock restockBook(RestockDTO dto);
+    Restock buyNewBook(FisicalBook book) throws Exception;
+    Restock restockBook(RestockDTO dto) throws Exception;
     List<Restock> getRestockHistory();
 }
 

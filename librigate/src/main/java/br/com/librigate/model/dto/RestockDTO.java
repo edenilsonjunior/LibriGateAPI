@@ -4,8 +4,7 @@ import java.util.List;
 
 public record RestockDTO(
         Long id,
-        double price,
+        String employeeCpf,
         String restockDate,
         List<RestockBookDTO> books
-
 ) { }
