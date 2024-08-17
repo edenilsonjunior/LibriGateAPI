@@ -9,5 +9,5 @@ import java.util.List;
 public interface IFisicalBookService extends IService<FisicalBook, FisicalBookDTO, String> {
 
     List<StockDTO> getStock();
-    StockDTO getStockByBook();
+    StockDTO getStockByBook(String isbn);
 }
