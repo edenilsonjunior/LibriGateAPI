@@ -42,6 +42,7 @@ public class Buy {
 
     @PrePersist
     private void calculateTotalPrice() {
+
         totalPrice = books.stream()
                           .mapToDouble(FisicalBook::getPrice)
                           .sum();

@@ -51,7 +51,7 @@ public class AddressService implements IService<Address, AddressDTO, Long> {
 
 
     @Override
-    public Address update(Long id, AddressDTO dto){
+    public Address update(AddressDTO dto){
 
         if(addressRepository.existsById(id)) {
 

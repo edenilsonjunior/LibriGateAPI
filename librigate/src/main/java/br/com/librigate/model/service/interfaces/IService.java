@@ -7,14 +7,14 @@ import java.util.Optional;
  * Interface genérica para serviços que lidam com entidades.
  *
  * @param <TEntity> Tipo da entidade
- * @param <TDTO> Tipo do DTO
+ * @param <TRequest> Corpo da requisição
  * @param <TPK> Tipo da chave primária
  */
-public interface IService<TEntity, TDTO, TPK> {
+public interface IService<TEntity, TRequest, TPK> {
 
-    TEntity create(TDTO dto);
+    TEntity create(TRequest request);
 
-    TEntity update(TPK id, TDTO dto);
+    TEntity update(TRequest request);
 
     Optional<TEntity> findByPK(TPK id);
 

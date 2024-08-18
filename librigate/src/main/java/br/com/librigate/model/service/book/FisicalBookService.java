@@ -1,7 +1,6 @@
 package br.com.librigate.model.service.book;
 
 import br.com.librigate.model.dto.FisicalBookDTO;
-import br.com.librigate.model.dto.StockDTO;
 import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.mapper.book.FisicalBookMapper;
 import br.com.librigate.model.repository.FisicalBookRepository;

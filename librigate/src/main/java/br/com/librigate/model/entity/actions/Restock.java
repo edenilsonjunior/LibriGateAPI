@@ -33,7 +33,6 @@ public class Restock {
     @OneToMany(mappedBy = "restock")
     private List<FisicalBook> bookList;
 
-
     public Restock() {
     }
 

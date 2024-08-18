@@ -1,7 +1,6 @@
 package br.com.librigate.model.service.interfaces;
 
 import br.com.librigate.model.dto.FisicalBookDTO;
-import br.com.librigate.model.dto.StockDTO;
 import br.com.librigate.model.entity.book.FisicalBook;
 
 import java.util.List;

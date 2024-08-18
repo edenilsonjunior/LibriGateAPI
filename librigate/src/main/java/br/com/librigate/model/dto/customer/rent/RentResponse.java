@@ -1,13 +1,13 @@
-package br.com.librigate.model.dto;
+package br.com.librigate.model.dto.customer.rent;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
-public record RentDTO(
+public record RentResponse(
         Long id,
+        String customerCpf,
         LocalDate rentDate,
         String status,
         LocalDate devolutionDate,
-        Optional<LocalDateTime> givenBackAt
+        Optional<LocalDate> givenBackAt
 ) { }

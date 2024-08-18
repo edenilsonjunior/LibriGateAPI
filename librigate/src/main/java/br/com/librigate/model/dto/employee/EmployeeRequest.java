@@ -1,16 +1,17 @@
-package br.com.librigate.model.dto;
+package br.com.librigate.model.dto.employee;
+
+import br.com.librigate.model.dto.AddressDTO;
 
 import java.time.LocalDate;
 
-public record CustomerDTO(
-        Long cpf,
+public record EmployeeRequest(
+        String cpf,
         String firstName,
         String lastName,
         LocalDate birthDate,
         String gender,
         String telephone,
+        String role,
         String password,
-        LocalDate registrationDate,
-        boolean active,
         AddressDTO address
 ) { }
