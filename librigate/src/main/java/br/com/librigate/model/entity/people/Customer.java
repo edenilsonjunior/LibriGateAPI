@@ -19,9 +19,6 @@ public class Customer extends Person {
     @Column(name = "registration_date", nullable = false)
     private LocalDate registrationDate;
 
-    @Column(name = "active", nullable = false)
-    private boolean active;
-
     @OneToMany(mappedBy = "customer")
     @JsonManagedReference
     private List<Buy> purchases;

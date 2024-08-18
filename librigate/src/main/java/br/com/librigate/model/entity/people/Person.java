@@ -36,6 +36,9 @@ public abstract class Person {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;

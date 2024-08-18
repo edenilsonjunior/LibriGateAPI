@@ -61,16 +61,22 @@ public class BookService implements IBookService {
     }
 
     @Override
-    public Book update(String id, BookDTO dto) {
-        var entity = bookRepository.findById(id).
+    public Book update(BookDTO bookDTO) {
+        var entity = bookRepository.findById(bookDTO.isbn()).
                 orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
-        var entityUpdated = bookMapper.toEntity(dto);
-        entityUpdated.setIsbn(entity.getIsbn());
+        var entityUpdated = bookMapper.toEntity(bookDTO);
 
-        return bookRepository.save(entityUpdated);
+        entity.setTitle(entityUpdated.getTitle());
+        entity.setDescription(entityUpdated.getDescription());
+        entity.setPublisher(entityUpdated.getPublisher());
+        entity.setCategory(entityUpdated.getCategory());
+        entity.setAuthorsName(entityUpdated.getAuthorsName());
+        entity.setEdition(entityUpdated.getEdition());
+        entity.setLaunchDate(entityUpdated.getLaunchDate());
+
+        return bookRepository.save(entity);
     }
-
 
     @Override
     public Optional<Book> findByPK(String id) {

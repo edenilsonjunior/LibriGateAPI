@@ -60,7 +60,8 @@ public class FisicalBookMapper implements IFisicalBookMapper {
                 book.getLaunchDate(),
                 entity.getBookDetails().getCopyNumber(),
                 entity.getStatus(),
-                entity.getPrice()
+                entity.getPrice(),
+                entity.getRestock().getId()
         );
     }
 

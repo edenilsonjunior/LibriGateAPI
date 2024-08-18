@@ -13,5 +13,6 @@ public record  FisicalBookDTO(
         LocalDate launchDate,
         Long copyNumber,
         String status,
-        double price
+        double price,
+        Long restockId
 ) { }
