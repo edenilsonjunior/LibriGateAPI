@@ -2,7 +2,7 @@ package br.com.librigate.model.dto;
 
 import java.time.LocalDate;
 
-public record FisicalBookDTO(
+public record  FisicalBookDTO(
         String isbn,
         String title,
         String description,
@@ -11,7 +11,7 @@ public record FisicalBookDTO(
         String[] authorsName,
         int edition,
         LocalDate launchDate,
-        int copyNumber,
+        Long copyNumber,
         String status,
         double price
 ) { }

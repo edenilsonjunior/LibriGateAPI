@@ -23,5 +23,5 @@ public interface ICustomerService extends IService<Customer, CustomerDTO, String
     Rent getRendById(String cpf, Long rentId);
     Rent getRentById(String cpf, Long rentId);
 
-    void reviewBook(Review review);
+    Review reviewBook(Review review);
 }
