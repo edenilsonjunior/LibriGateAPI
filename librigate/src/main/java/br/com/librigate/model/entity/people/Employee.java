@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@DiscriminatorValue("customer")
+@DiscriminatorValue("employee")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "cpf")
 public class Employee extends Person {
 
