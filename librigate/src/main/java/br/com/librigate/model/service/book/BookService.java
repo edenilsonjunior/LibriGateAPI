@@ -6,6 +6,7 @@ import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.mapper.interfaces.IBookMapper;
 import br.com.librigate.model.repository.BookRepository;
+import br.com.librigate.model.service.interfaces.IBookService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
