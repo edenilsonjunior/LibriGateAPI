@@ -1,17 +1,17 @@
 package br.com.librigate.model.service.interfaces;
 
-import br.com.librigate.model.dto.employee.EmployeeRequest;
-import br.com.librigate.model.dto.employee.book.NewBookRequest;
-import br.com.librigate.model.dto.employee.book.RestockBookRequest;
-import br.com.librigate.model.dto.employee.book.RestockResponse;
+import br.com.librigate.exception.EntityNotFoundException;
+import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
+import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
 import br.com.librigate.model.entity.people.Employee;
 
 import java.util.List;
 
-public interface IEmployeeService extends IService<Employee, EmployeeRequest, String> {
+public interface IEmployeeService{
 
-    RestockResponse buyNewBook(NewBookRequest request) throws Exception;
-    RestockResponse restockBook(RestockBookRequest request) throws Exception;
-    List<RestockResponse> getRestockHistory();
+    Employee create(CreateEmployeeRequest request);
+    Employee update(UpdateEmployeeRequest request);
+    Employee findByPK(String id) throws EntityNotFoundException;
+    List<Employee> findAll();
+    void delete(String id);
 }
-
