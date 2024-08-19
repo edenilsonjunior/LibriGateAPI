@@ -3,7 +3,6 @@ package br.com.librigate.model.service.book;
 import br.com.librigate.model.dto.FisicalBookDTO;
 import br.com.librigate.model.dto.StockDTO;
 import br.com.librigate.model.entity.book.FisicalBook;
-import br.com.librigate.model.entity.book.FisicalBookId;
 import br.com.librigate.model.mapper.book.FisicalBookMapper;
 import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.repository.RestockRepository;
@@ -34,19 +33,19 @@ public class FisicalBookService implements IFisicalBookService {
 
         var stockMap = entityList.stream()
                 .collect(Collectors.groupingBy(
-                        book -> book.getBookDetails().getBook().getIsbn(),
+                        book -> book.getBook().getIsbn(),
                         Collectors.counting()
                 ));
 
         return stockMap.entrySet().stream()
                 .map(entry -> {
                     var book = entityList.stream()
-                            .filter(b -> b.getBookDetails().getBook().getIsbn().equals(entry.getKey()))
+                            .filter(b -> b.getBook().getIsbn().equals(entry.getKey()))
                             .findFirst()
                             .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
                     return new StockDTO(
                             entry.getKey(),
-                            book.getBookDetails().getBook().getTitle(),
+                            book.getBook().getTitle(),
                             entry.getValue().intValue()
                     );
                 })
@@ -58,13 +57,13 @@ public class FisicalBookService implements IFisicalBookService {
         var entityList = fisicalBookRepository.findAll();
 
         return entityList.stream()
-                .filter(book -> book.getBookDetails().getBook().getIsbn().equals(isbn))
+                .filter(book -> book.getBook().getIsbn().equals(isbn))
                 .findFirst()
                 .map(book -> new StockDTO(
-                        book.getBookDetails().getBook().getIsbn(),
-                        book.getBookDetails().getBook().getTitle(),
+                        book.getBook().getIsbn(),
+                        book.getBook().getTitle(),
                         (int) entityList.stream()
-                                .filter(b -> b.getBookDetails().getBook().getIsbn().equals(isbn))
+                                .filter(b -> b.getBook().getIsbn().equals(isbn))
                                 .count()
                 ))
                 .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
@@ -76,15 +75,13 @@ public class FisicalBookService implements IFisicalBookService {
 
         entity.setRestock(restockRepository.findById(dto.restockId())
                 .orElseThrow(() -> new EntityNotFoundException("Restock not found")));
-
         return fisicalBookRepository.save(entity);
     }
 
     @Override
     public FisicalBook update(FisicalBookDTO dto) {
-        var fisicalBookId = fisicalBookMapper.toFisicalBookId(dto);
 
-        var entity = fisicalBookRepository.findById(fisicalBookId)
+        var entity = fisicalBookRepository.findById(dto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
 
         entity.setPrice(dto.price());
@@ -94,7 +91,7 @@ public class FisicalBookService implements IFisicalBookService {
     }
 
     @Override
-    public Optional<FisicalBook> findByPK(FisicalBookId id) {
+    public Optional<FisicalBook> findByPK(Long id) {
         return fisicalBookRepository.findById(id);
     }
 
@@ -104,7 +101,7 @@ public class FisicalBookService implements IFisicalBookService {
     }
 
     @Override
-    public void delete(FisicalBookId id) {
+    public void delete(Long id) {
         var entity = fisicalBookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
 

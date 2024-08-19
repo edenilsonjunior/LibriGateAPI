@@ -11,8 +11,16 @@ import lombok.Data;
 @Table(name = "fisical_book")
 public class FisicalBook {
 
-    @EmbeddedId
-    private FisicalBookId bookDetails;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "isbn")
+    private Book book;
+
+    @Column(name = "copy_number", nullable = false)
+    private Long copyNumber;
 
     @Column(name = "status", nullable = false)
     private String status;

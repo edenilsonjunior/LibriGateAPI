@@ -42,14 +42,12 @@ public class Rent {
     @JoinTable(name = "rent_fisical_book",
             joinColumns = @JoinColumn(name = "rent_id"),
             inverseJoinColumns = {
-                @JoinColumn(name = "isbn", referencedColumnName = "isbn"),
-                @JoinColumn(name = "copyNumber", referencedColumnName = "copyNumber")
+                @JoinColumn(name = "fisical_book_id", referencedColumnName = "id")
             }
     )
     private List<FisicalBook> bookList;
 
 
-    public Rent() {
-    }
+    public Rent() { }
 
 }

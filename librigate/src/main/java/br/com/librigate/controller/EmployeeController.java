@@ -19,15 +19,13 @@ public class EmployeeController {
     private IEmployeeService employeeService;
 
 
-
-
     @PostMapping("/create")
-    public Employee createEmployee(EmployeeRequest request) {
+    public Employee createEmployee(@RequestBody EmployeeRequest request) {
         return employeeService.create(request);
     }
 
     @PutMapping("/update")
-    public Employee updateEmployee(EmployeeRequest request) {
+    public Employee updateEmployee(@RequestBody EmployeeRequest request) {
         return employeeService.update(request);
     }
 
@@ -47,12 +45,12 @@ public class EmployeeController {
     }
 
     @PostMapping("/restock-new-book")
-    public RestockResponse restockNewBook(NewBookRequest request) throws Exception {
+    public RestockResponse restockNewBook(@RequestBody NewBookRequest request) throws Exception {
         return employeeService.buyNewBook(request);
     }
 
     @PostMapping("/restock-book")
-    public RestockResponse restockBook(RestockBookRequest request) throws Exception {
+    public RestockResponse restockBook(@RequestBody RestockBookRequest request) throws Exception {
         return employeeService.restockBook(request);
     }
 

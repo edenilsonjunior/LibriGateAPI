@@ -3,6 +3,7 @@ package br.com.librigate.model.dto;
 import java.time.LocalDate;
 
 public record  FisicalBookDTO(
+        Long id,
         String isbn,
         String title,
         String description,

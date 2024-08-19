@@ -8,9 +8,9 @@ import br.com.librigate.model.dto.employee.book.RestockResponse;
 import br.com.librigate.model.entity.actions.Restock;
 import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.entity.book.FisicalBook;
-import br.com.librigate.model.entity.book.FisicalBookId;
-import br.com.librigate.model.entity.people.Address;
 import br.com.librigate.model.entity.people.Employee;
+import br.com.librigate.model.mapper.BookMapper;
+import br.com.librigate.model.mapper.EmployeeMapper;
 import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.repository.FisicalBookRepository;
@@ -26,20 +26,22 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class EmployeeService implements IEmployeeService {
 
-    @Autowired
-    private AddressService addressService;
+    private final FisicalBookRepository fisicalBookRepository;
+    private final EmployeeRepository employeeRepository;
+    private final RestockRepository restockRepository;
+    private final BookRepository bookRepository;
+
+    private final AddressService addressService;
+
 
     @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private RestockRepository restockRepository;
-
-    @Autowired
-    private FisicalBookRepository fisicalBookRepository;
+    public EmployeeService(AddressService addressService, EmployeeRepository employeeRepository, BookRepository bookRepository, RestockRepository restockRepository, FisicalBookRepository fisicalBookRepository) {
+        this.addressService = addressService;
+        this.employeeRepository = employeeRepository;
+        this.bookRepository = bookRepository;
+        this.restockRepository = restockRepository;
+        this.fisicalBookRepository = fisicalBookRepository;
+    }
 
     @Override
     public RestockResponse buyNewBook(NewBookRequest request)  {
@@ -66,15 +68,7 @@ public class EmployeeService implements IEmployeeService {
             }
 
 
-            var book = new Book();
-            book.setIsbn(request.isbn());
-            book.setTitle(request.title());
-            book.setDescription(request.description());
-            book.setPublisher(request.publisher());
-            book.setCategory(request.category());
-            book.setAuthorsName(request.authorsName());
-            book.setEdition(request.edition());
-            book.setLaunchDate(request.launchDate());
+            var book = BookMapper.INSTANCE.toEntity(request);
             bookRepository.save(book);
 
             var restock = new Restock();
@@ -85,15 +79,17 @@ public class EmployeeService implements IEmployeeService {
 
 
             List<FisicalBook> books = new ArrayList<>();
-            var fisicalBookId = new FisicalBookId();
-            fisicalBookId.setBook(book);
-
 
             for(int i = 0; i < request.quantity(); i++){
 
                 var fisicalBook = new FisicalBook();
-                fisicalBook.setBookDetails(fisicalBookId);
+                fisicalBook.setBook(book);
                 fisicalBook.setRestock(restock);
+                fisicalBook.setStatus("AVAILABLE");
+
+                Long copyNumber = fisicalBookRepository.findMaxCopyNumberByBookIsbn(request.isbn());
+                fisicalBook.setCopyNumber(copyNumber == null ? 1 : copyNumber + 1);
+
                 books.add(fisicalBookRepository.save(fisicalBook));
             }
 
@@ -111,6 +107,9 @@ public class EmployeeService implements IEmployeeService {
             return new RestockResponse(restock.getId(), restock.getRestockDate(), employee.getCpf(), restockBooks);
 
         }catch (Exception ex){
+
+            System.out.println("\n\n\n\n\n\n " + ex.getMessage() + "\n\n\n\n\n\n");
+
             throw new RuntimeException("Error buying new book");
         }
     }
@@ -130,24 +129,16 @@ public class EmployeeService implements IEmployeeService {
     public Employee create(EmployeeRequest request) {
 
         try{
-            var addressCompletableFuture = CompletableFuture.supplyAsync(() -> addressService.create(request.address()));
+            var asyncAddressCreation = CompletableFuture.supplyAsync(() -> addressService.create(request.address()));
 
-            Employee employee = new Employee();
-            employee.setCpf(request.cpf());
-            employee.setFirstName(request.firstName());
-            employee.setLastName(request.lastName());
-            employee.setBirthDate(request.birthDate());
-            employee.setGender(request.gender());
-            employee.setTelephone(request.telephone());
-            employee.setRole(request.role());
-            employee.setPassword(request.password());
-
-            var address = addressCompletableFuture.get();
-            employee.setAddress(address);
+            Employee employee = EmployeeMapper.INSTANCE.toEntity(request);
+            employee.setAddress(asyncAddressCreation.get());
+            employee.setRestockList(new ArrayList<>());
 
             return employeeRepository.save(employee);
 
         }catch(Exception ex){
+            System.out.println("\n\n\n\n\n\n " + ex.getMessage() + "\n\n\n\n\n\n");
             throw new RuntimeException("Error creating employee");
         }
     }
@@ -169,6 +160,8 @@ public class EmployeeService implements IEmployeeService {
             employee.setTelephone(request.telephone());
             employee.setRole(request.role());
             employee.setPassword(request.password());
+            employee.setRestockList(new ArrayList<>());
+            employee.setActive(true);
 
             var address = addressCompletableFuture.get();
             employee.setAddress(address);
@@ -176,7 +169,7 @@ public class EmployeeService implements IEmployeeService {
             return employeeRepository.save(employee);
 
         }catch(Exception ex){
-            throw new RuntimeException("Error creating employee");
+            throw new RuntimeException("Error updating employee");
         }
     }
 
