@@ -1,18 +1,16 @@
 package br.com.librigate.model.service.people;
 
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.dto.AddressDTO;
 import br.com.librigate.model.dto.ViaCepResponse;
 import br.com.librigate.model.entity.people.Address;
 import br.com.librigate.model.repository.AddressRepository;
-import br.com.librigate.model.service.interfaces.IService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.InvalidParameterException;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AddressService {
@@ -37,22 +35,20 @@ public class AddressService {
     }
 
 
-    public Optional<Address> findByPK(Long id) {
-        return addressRepository.findById(id);
+    public Address findByPK(Long id) throws EntityNotFoundException {
+        return addressRepository
+            .findById(id)
+            .orElseThrow(()->new EntityNotFoundException("Endereço não encontrado"));
     }
 
 
-    public List<Address> findAll() {
-        return addressRepository.findAll();
-    }
+    public Address update(Long id, AddressDTO dto) throws EntityNotFoundException {
 
-
-    public Address update(Long id, AddressDTO dto) {
-
-        Address address = addressRepository.findById(id).orElseThrow(() -> new InvalidParameterException("Endereço não encontrado"));
+        Address address = findByPK(id);
 
         try {
             Address newAddress = populateAddress(dto);
+            address.setId(id);
             address.setZipCode(newAddress.getZipCode());
             address.setStreet(newAddress.getStreet());
             address.setDistrict(newAddress.getDistrict());
@@ -65,11 +61,6 @@ public class AddressService {
         } catch (Exception ex) {
             throw new InternalError(ex.getMessage());
         }
-    }
-
-
-    public void delete(Long id) {
-        addressRepository.deleteById(id);
     }
 
 
