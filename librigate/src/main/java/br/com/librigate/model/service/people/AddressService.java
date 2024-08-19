@@ -5,6 +5,8 @@ import br.com.librigate.model.dto.AddressDTO;
 import br.com.librigate.model.dto.ViaCepResponse;
 import br.com.librigate.model.entity.people.Address;
 import br.com.librigate.model.repository.AddressRepository;
+import br.com.librigate.model.service.interfaces.IAddressService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -13,14 +15,14 @@ import org.springframework.web.client.RestTemplate;
 import java.security.InvalidParameterException;
 
 @Service
-public class AddressService {
+public class AddressService implements IAddressService{
 
     @Autowired
     private AddressRepository addressRepository;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-
+    @Override
     public Address create(AddressDTO dto) {
 
         try {
@@ -35,6 +37,7 @@ public class AddressService {
     }
 
 
+    @Override
     public Address findByPK(Long id) throws EntityNotFoundException {
         return addressRepository
             .findById(id)
@@ -42,6 +45,7 @@ public class AddressService {
     }
 
 
+    @Override
     public Address update(Long id, AddressDTO dto) throws EntityNotFoundException {
 
         Address address = findByPK(id);

@@ -1,4 +1,4 @@
-package br.com.librigate.model.service.book;
+package br.com.librigate.model.service.interfaces;
 
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.dto.book.CreateBookRequest;

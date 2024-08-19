@@ -1,4 +1,4 @@
-package br.com.librigate.model.service.interfaces;
+package br.com.librigate.model.service.book;
 
 import br.com.librigate.model.dto.StockDTO;
 import br.com.librigate.model.dto.fisicalBook.CreateFisicalBookRequest;
@@ -7,6 +7,7 @@ import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.mapper.book.FisicalBookMapper;
 import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.repository.RestockRepository;
+import br.com.librigate.model.service.interfaces.IFisicalBookService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
