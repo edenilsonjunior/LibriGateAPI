@@ -21,20 +21,16 @@ public class FisicalBookService implements IFisicalBookService {
 
     private final FisicalBookRepository fisicalBookRepository;
 
-    private final IRestockService restockService;
     private final BookService bookService;
     private final IBuyService buyService;
-
 
     @Autowired
     public FisicalBookService(
             FisicalBookRepository fisicalBookRepository,
-            IRestockService restockService,
             BookService bookService,
             IBuyService buyService
     ) {
         this.fisicalBookRepository = fisicalBookRepository;
-        this.restockService = restockService;
         this.bookService = bookService;
         this.buyService = buyService;
     }
@@ -44,13 +40,13 @@ public class FisicalBookService implements IFisicalBookService {
     public FisicalBook create(CreateFisicalBookRequest request) {
 
         var book = bookService.findByPK(request.isbn());
-        var restock = restockService.findByPK(request.restockId());
 
         var fisicalBook = new FisicalBook();
         fisicalBook.setBook(book);
         fisicalBook.setPrice(request.price());
-        fisicalBook.setRestock(restock);
+        fisicalBook.setRestock(request.restock());
         fisicalBook.setStatus("AVAILABLE");
+        fisicalBook.setCopyNumber(request.copyNumber());
 
         return fisicalBookRepository.save(fisicalBook);
     }

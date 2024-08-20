@@ -17,15 +17,12 @@ import java.util.Optional;
 @Service
 public class BookService implements IBookService {
 
-    private final BookMapper bookMapper;
+    private final BookMapper bookMapper = BookMapper.INSTANCE;
 
     private final BookRepository bookRepository;
 
     @Autowired
-    public BookService(BookMapper bookMapper,
-                       BookRepository bookRepository
-    ) {
-        this.bookMapper = bookMapper;
+    public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
