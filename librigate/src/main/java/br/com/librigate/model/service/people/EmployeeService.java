@@ -4,7 +4,9 @@ import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
 import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
 
+import br.com.librigate.model.entity.people.Address;
 import br.com.librigate.model.entity.people.Employee;
+import br.com.librigate.model.mapper.people.EmployeeMapper;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,21 +27,14 @@ public class EmployeeService implements IEmployeeService {
     @Override
     public Employee create(CreateEmployeeRequest request) {
 
-        // try{
-        //     var address = addressService.create(request.address());
+         var address = addressService.create(request.address());
 
+         Employee employee = EmployeeMapper.INSTANCE.toEntity(request);
+         employee.setAddress(address);
+         employee.setRestockList(new ArrayList<>());
+         employee.setActive(true);
 
-        //     Employee employee = EmployeeMapper.INSTANCE.toEntity(request);
-        //     employee.setAddress(asyncAddressCreation.get());
-        //     employee.setRestockList(new ArrayList<>());
-
-        //     return employeeRepository.save(employee);
-
-        // }catch(Exception ex){
-        //     System.out.println("\n\n\n\n\n\n " + ex.getMessage() + "\n\n\n\n\n\n");
-        //     throw new RuntimeException("Error creating employee");
-        // }
-        throw new UnsupportedOperationException("Not implemented yet");
+         return employeeRepository.save(employee);
     }
 
     @Override

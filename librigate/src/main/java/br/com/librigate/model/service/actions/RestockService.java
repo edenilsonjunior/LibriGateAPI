@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 
+import br.com.librigate.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.librigate.model.dto.employee.book.NewBookRequest;
@@ -20,7 +21,9 @@ import br.com.librigate.model.repository.RestockRepository;
 import br.com.librigate.model.service.interfaces.IRestockService;
 import br.com.librigate.model.service.people.EmployeeService;
 import br.com.librigate.model.service.book.BookService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RestockService implements IRestockService {
 
     @Autowired
@@ -38,6 +41,11 @@ public class RestockService implements IRestockService {
     @Autowired
     private FisicalBookRepository fisicalBookRepository;
 
+
+    @Override
+    public Restock findByPK(Long id) {
+        return restockRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Restock not found"));
+    }
 
     @Override
     public RestockResponse buyNewBook(NewBookRequest request) {

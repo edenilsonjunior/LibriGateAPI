@@ -6,8 +6,15 @@ import br.com.librigate.model.dto.customer.buy.BuyRequest;
 import br.com.librigate.model.dto.customer.buy.BuyResponse;
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.service.interfaces.IBuyService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class BuyService implements IBuyService{
+
+    @Override
+    public Buy findByPK(Long id) {
+        return null;
+    }
 
     @Override
     public BuyResponse purchase(BuyRequest request) {
