@@ -14,8 +14,6 @@ public interface IBookService {
     Book update(UpdateBookRequest request);
     Book findByPK(String isbn) throws EntityNotFoundException;
     List<Book> findAll();
-
-    List<Book> getBooks();
     List<Book> getBooksByCategory(String category);
     List<Book> getBooksByAuthor(String author);
     List<Review> getReview(String bookIsbn);

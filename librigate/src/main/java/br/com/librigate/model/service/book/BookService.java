@@ -4,7 +4,7 @@ import br.com.librigate.model.dto.book.CreateBookRequest;
 import br.com.librigate.model.dto.book.UpdateBookRequest;
 import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.entity.book.Book;
-import br.com.librigate.model.mapper.interfaces.IBookMapper;
+import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,62 +12,61 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BookService implements IBookService {
 
-    @Autowired
-    private IBookMapper bookMapper;
+    private final BookMapper bookMapper;
+
+    private final BookRepository bookRepository;
 
     @Autowired
-    private BookRepository bookRepository;
+    public BookService(BookMapper bookMapper,
+                       BookRepository bookRepository
+    ) {
+        this.bookMapper = bookMapper;
+        this.bookRepository = bookRepository;
+    }
 
 
     @Override
     public Book create(CreateBookRequest request) {
 
-        // var entity = bookMapper.toEntity(dto);
-        // return bookRepository.save(entity);
-        throw new UnsupportedOperationException("Not implemented yet");
+        var entity = bookMapper.toEntity(request);
+        return bookRepository.save(entity);
     }
 
 
     @Override
     public Book update(UpdateBookRequest request) {
-        // var entity = bookRepository.findById(bookDTO.isbn()).
-        //         orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
-        // var entityUpdated = bookMapper.toEntity(bookDTO);
+        var entity = findByPK(request.isbn());
 
-        // entity.setTitle(entityUpdated.getTitle());
-        // entity.setDescription(entityUpdated.getDescription());
-        // entity.setPublisher(entityUpdated.getPublisher());
-        // entity.setCategory(entityUpdated.getCategory());
-        // entity.setAuthorsName(entityUpdated.getAuthorsName());
-        // entity.setEdition(entityUpdated.getEdition());
-        // entity.setLaunchDate(entityUpdated.getLaunchDate());
+        request.title().ifPresent(entity::setTitle);
+        request.description().ifPresent(entity::setDescription);
+        request.publisher().ifPresent(entity::setPublisher);
+        request.category().ifPresent(entity::setCategory);
+        request.authorsName().ifPresent(entity::setAuthorsName);
+        request.edition().ifPresent(entity::setEdition);
+        request.launchDate().ifPresent(entity::setLaunchDate);
 
-        // return bookRepository.save(entity);
-        throw new UnsupportedOperationException("Not implemented yet");
+        return bookRepository.save(entity);
     }
 
 
     @Override
     public Book findByPK(String isbn) {
         return bookRepository
-        .findById(isbn)
-        .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+            .findById(isbn)
+            .orElseThrow(() -> {
+                return new EntityNotFoundException("Book not found");
+            });
     }
 
 
     @Override
     public List<Book> findAll() {
-        return bookRepository.findAll();
-    }
-
-
-    @Override
-    public List<Book> getBooks() {
         return bookRepository.findAll();
     }
 
