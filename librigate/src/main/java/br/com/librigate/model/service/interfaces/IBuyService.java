@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface IBuyService {
 
+    Buy findByPK(Long id);
+
     BuyResponse purchase(BuyRequest request);
     BuyResponse processPayment(Long buyId);
     List<Buy> getPurchases(String cpf);

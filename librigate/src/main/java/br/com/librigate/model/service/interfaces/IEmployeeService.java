@@ -3,15 +3,14 @@ package br.com.librigate.model.service.interfaces;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
 import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
-import br.com.librigate.model.entity.people.Employee;
 
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public interface IEmployeeService{
 
-    Employee create(CreateEmployeeRequest request);
-    Employee update(UpdateEmployeeRequest request);
-    Employee findByPK(String id) throws EntityNotFoundException;
-    List<Employee> findAll();
-    void delete(String id);
+    ResponseEntity<?> create(CreateEmployeeRequest request);
+    ResponseEntity<?> update(UpdateEmployeeRequest request);
+    ResponseEntity<?> findByPK(String id) throws EntityNotFoundException;
+    ResponseEntity<?> findAll();
+    ResponseEntity<?> delete(String id);
 }

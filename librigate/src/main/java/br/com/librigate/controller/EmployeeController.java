@@ -5,6 +5,7 @@ import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
 import br.com.librigate.model.entity.people.Employee;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,27 +18,27 @@ public class EmployeeController {
     private IEmployeeService employeeService;
 
     @PostMapping("/create")
-    public Employee createEmployee(@RequestBody CreateEmployeeRequest request) {
+    public ResponseEntity<?> createEmployee(@RequestBody CreateEmployeeRequest request) {
         return employeeService.create(request);
     }
 
     @PutMapping("/update")
-    public Employee updateEmployee(@RequestBody UpdateEmployeeRequest request) {
+    public ResponseEntity<?> updateEmployee(@RequestBody UpdateEmployeeRequest request) {
         return employeeService.update(request);
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteEmployee(@PathVariable String id) {
-        employeeService.delete(id);
+    public ResponseEntity<?> deleteEmployee(@PathVariable String id) {
+       return employeeService.delete(id);
     }
 
     @GetMapping("/find/{id}")
-    public Employee findEmployee(@PathVariable String id) {
+    public ResponseEntity<?> findEmployee(@PathVariable String id) {
         return employeeService.findByPK(id);
     }
 
     @GetMapping("/all")
-    public List<Employee> findAllEmployees() {
+    public ResponseEntity<?> findAllEmployees() {
         return employeeService.findAll();
     }
 }

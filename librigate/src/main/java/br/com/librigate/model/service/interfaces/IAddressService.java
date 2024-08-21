@@ -8,7 +8,7 @@ public interface IAddressService {
 
      public Address create(AddressRequest dto);
 
-     public Address findByPK(Long id) throws EntityNotFoundException;
+     Address findByPK(Long id) throws EntityNotFoundException;
 
      public Address update(Long id, AddressRequest dto) throws EntityNotFoundException;
 }

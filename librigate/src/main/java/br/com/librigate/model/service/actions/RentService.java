@@ -6,7 +6,9 @@ import br.com.librigate.model.dto.customer.rent.RentRequest;
 import br.com.librigate.model.dto.customer.rent.RentResponse;
 import br.com.librigate.model.entity.actions.Rent;
 import br.com.librigate.model.service.interfaces.IRentService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class RentService implements IRentService{
 
     @Override

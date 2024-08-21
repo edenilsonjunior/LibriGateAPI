@@ -5,11 +5,15 @@ import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
 import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
 
 import br.com.librigate.model.entity.people.Employee;
+import br.com.librigate.model.mapper.people.EmployeeMapper;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.*;
 
 @Service
@@ -23,83 +27,98 @@ public class EmployeeService implements IEmployeeService {
 
 
     @Override
-    public Employee create(CreateEmployeeRequest request) {
+    public ResponseEntity<?> create(CreateEmployeeRequest request) {
 
-        // try{
-        //     var address = addressService.create(request.address());
+        try {
+            var address = addressService.create(request.address());
 
+            Employee employee = EmployeeMapper.INSTANCE.toEntity(request);
+            employee.setAddress(address);
+            employee.setRestockList(new ArrayList<>());
+            employee.setActive(true);
 
-        //     Employee employee = EmployeeMapper.INSTANCE.toEntity(request);
-        //     employee.setAddress(asyncAddressCreation.get());
-        //     employee.setRestockList(new ArrayList<>());
+            var response = employeeRepository.save(employee);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
 
-        //     return employeeRepository.save(employee);
-
-        // }catch(Exception ex){
-        //     System.out.println("\n\n\n\n\n\n " + ex.getMessage() + "\n\n\n\n\n\n");
-        //     throw new RuntimeException("Error creating employee");
-        // }
-        throw new UnsupportedOperationException("Not implemented yet");
+        } catch (InvalidParameterException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
-    public Employee update(UpdateEmployeeRequest request) {
+    public ResponseEntity<?> update(UpdateEmployeeRequest request) {
 
-        // try{
-        //     var employee = employeeRepository
-        //             .findById(request.cpf())
-        //             .orElseThrow();
+        try {
+            var employee = employeeRepository
+                    .findById(request.cpf())
+                    .orElseThrow(()-> new EntityNotFoundException("Employee not found"));
 
-        //     var addressCompletableFuture = CompletableFuture.supplyAsync(() -> addressService.create(request.address()));
+            request.firstName().ifPresent(employee::setFirstName);
+            request.lastName().ifPresent(employee::setLastName);
+            request.telephone().ifPresent(employee::setTelephone);
+            request.password().ifPresent(employee::setPassword);
+            request.role().ifPresent(employee::setRole);
 
-        //     employee.setFirstName(request.firstName());
-        //     employee.setLastName(request.lastName());
-        //     employee.setBirthDate(request.birthDate());
-        //     employee.setGender(request.gender());
-        //     employee.setTelephone(request.telephone());
-        //     employee.setRole(request.role());
-        //     employee.setPassword(request.password());
-        //     employee.setRestockList(new ArrayList<>());
-        //     employee.setActive(true);
+            request.address().ifPresent((addressDTO)->{
 
-        //     var address = addressCompletableFuture.get();
-        //     employee.setAddress(address);
+                var address = addressService.create(addressDTO);
+                employee.setAddress(address);
+            });
 
-        //     return employeeRepository.save(employee);
+            var response =  employeeRepository.save(employee);
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
-        // }catch(Exception ex){
-        //     throw new RuntimeException("Error updating employee");
-        // }
-    
-        throw new UnsupportedOperationException("Not implemented yet");
+        } catch (InvalidParameterException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (EntityNotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
-    public Employee findByPK(String id) throws EntityNotFoundException {
-        return employeeRepository
-            .findById(id)
-            .orElseThrow(()-> new EntityNotFoundException("Employee not found"));
+    public ResponseEntity<?> findByPK(String id) throws EntityNotFoundException {
+        var response =  employeeRepository.findById(id);
+
+        if(response.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(response.get(), HttpStatus.OK);
     }
 
     @Override
-    public List<Employee> findAll() {
-        return employeeRepository.findAll();
+    public ResponseEntity<?> findAll() {
+        var response = employeeRepository.findAll();
+
+        if(response.isEmpty())
+            return new ResponseEntity<>(new ArrayList<Employee>(), HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
-    public void delete(String id) {
-        try{
+    public ResponseEntity<?> delete(String id) {
+        try {
 
             var employee = employeeRepository
                     .findById(id)
-                    .orElseThrow();
+                    .orElseThrow(()-> new EntityNotFoundException("Employee not found"));
 
             employee.setActive(false);
 
             employeeRepository.save(employee);
 
-        }catch(Exception ex){
-            throw new RuntimeException("Error deleting employee");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+        }
+        catch (EntityNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
