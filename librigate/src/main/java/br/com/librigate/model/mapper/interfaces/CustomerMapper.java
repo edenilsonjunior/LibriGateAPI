@@ -13,7 +13,4 @@ public interface CustomerMapper {
 
     @Mapping(target = "login", source = "cpf")
     Customer toEntity(CreateCustomerRequest createRequest);
-
-    @Mapping(target = "login", source = "cpf")
-    Customer toEntity(UpdateCustomerRequest updateRequest);
 }
