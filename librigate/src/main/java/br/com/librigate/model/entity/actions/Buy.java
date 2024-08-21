@@ -22,7 +22,7 @@ public class Buy {
     private LocalDateTime buyDate;
 
     @Column(name = "status", nullable = false)
-    private boolean status;
+    private String status;
 
     @Column(name = "total_price", nullable = false)
     private double totalPrice;

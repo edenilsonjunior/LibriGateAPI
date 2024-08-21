@@ -1,17 +1,14 @@
 package br.com.librigate.model.service.interfaces;
 
 import br.com.librigate.model.dto.customer.buy.BuyRequest;
-import br.com.librigate.model.dto.customer.buy.BuyResponse;
-import br.com.librigate.model.entity.actions.Buy;
-
-import java.util.List;
+import org.springframework.http.ResponseEntity;
 
 public interface IBuyService {
 
-    Buy findByPK(Long id);
+    ResponseEntity<?> findByPK(Long id);
 
-    BuyResponse purchase(BuyRequest request);
-    BuyResponse processPayment(Long buyId);
-    List<Buy> getPurchases(String cpf);
-    Buy getPurchaseById(String cpf, Long paymentId);
+    ResponseEntity<?> purchase(BuyRequest request);
+    ResponseEntity<?> processPayment(Long buyId);
+    ResponseEntity<?> getPurchases(String cpf);
+    ResponseEntity<?> getPurchaseById(String cpf, Long paymentId);
 }
