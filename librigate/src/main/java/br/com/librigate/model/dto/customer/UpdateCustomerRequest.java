@@ -1,8 +1,7 @@
 package br.com.librigate.model.dto.customer;
 
-import br.com.librigate.model.dto.AddressDTO;
+import br.com.librigate.model.dto.AddressRequest;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 public record UpdateCustomerRequest(
@@ -11,6 +10,6 @@ public record UpdateCustomerRequest(
         Optional<String> lastName,
         Optional<String> telephone,
         Optional<String> password,
-        Optional<AddressDTO> address
+        Optional<AddressRequest> address
 ) {
 }

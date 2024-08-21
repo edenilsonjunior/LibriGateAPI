@@ -1,6 +1,6 @@
 package br.com.librigate.model.dto.customer;
 
-import br.com.librigate.model.dto.AddressDTO;
+import br.com.librigate.model.dto.AddressRequest;
 
 import java.time.LocalDate;
 
@@ -13,5 +13,5 @@ public record CreateCustomerRequest(
         String telephone,
         String role,
         String password,
-        AddressDTO address
+        AddressRequest address
 ) { }
