@@ -1,4 +1,4 @@
-package br.com.librigate.model.mapper.interfaces;
+package br.com.librigate.model.mapper.actions;
 
 import br.com.librigate.model.dto.customer.rent.RentRequest;
 import br.com.librigate.model.entity.actions.Rent;
