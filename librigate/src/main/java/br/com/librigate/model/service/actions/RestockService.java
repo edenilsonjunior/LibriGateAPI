@@ -1,171 +1,155 @@
 package br.com.librigate.model.service.actions;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CompletableFuture;
-
-import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.fisicalBook.CreateFisicalBookRequest;
-import br.com.librigate.model.entity.book.Book;
-import br.com.librigate.model.entity.people.Employee;
-import br.com.librigate.model.mapper.book.BookMapper;
-import br.com.librigate.model.service.book.FisicalBookService;
+import br.com.librigate.exception.ValidationException;
 import br.com.librigate.model.service.interfaces.IBookService;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
+import br.com.librigate.model.service.actions.validator.RestockValidator;
+import br.com.librigate.model.service.interfaces.IRestockService;
+import br.com.librigate.model.service.actions.factory.RestockFactory;
+import br.com.librigate.model.entity.actions.Restock;
+import br.com.librigate.model.repository.RestockRepository;
+import br.com.librigate.model.dto.employee.book.*;
+import br.com.librigate.model.mapper.book.BookMapper;
+import br.com.librigate.exception.EntityNotFoundException;
+
+import jakarta.validation.Validation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.librigate.model.dto.employee.book.NewBookRequest;
-import br.com.librigate.model.dto.employee.book.RestockBook;
-import br.com.librigate.model.dto.employee.book.RestockBookRequest;
-import br.com.librigate.model.dto.employee.book.RestockResponse;
-import br.com.librigate.model.entity.actions.Restock;
-import br.com.librigate.model.entity.book.FisicalBook;
-import br.com.librigate.model.repository.BookRepository;
-import br.com.librigate.model.repository.FisicalBookRepository;
-import br.com.librigate.model.repository.RestockRepository;
-import br.com.librigate.model.service.interfaces.IRestockService;
-import br.com.librigate.model.service.people.EmployeeService;
-import br.com.librigate.model.service.book.BookService;
-import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class RestockService implements IRestockService {
 
     private final IEmployeeService employeeService;
     private final IBookService bookService;
-    private final FisicalBookService fisicalBookService;
 
-    private final BookRepository bookRepository;
+    private final RestockFactory restockFactory;
     private final RestockRepository restockRepository;
-    private final FisicalBookRepository fisicalBookRepository;
+    private final RestockValidator restockValidator;
+    private final BookMapper bookMapper = BookMapper.INSTANCE;
 
     @Autowired
-    public RestockService(IEmployeeService employeeService, IBookService bookService, FisicalBookService fisicalBookService, BookRepository bookRepository, RestockRepository restockRepository, FisicalBookRepository fisicalBookRepository) {
+    public RestockService(
+            IEmployeeService employeeService,
+            IBookService bookService,
+            RestockRepository restockRepository,
+            RestockFactory restockFactory,
+            RestockValidator restockValidator
+    ) {
         this.employeeService = employeeService;
         this.bookService = bookService;
-        this.fisicalBookService = fisicalBookService;
-        this.bookRepository = bookRepository;
         this.restockRepository = restockRepository;
-        this.fisicalBookRepository = fisicalBookRepository;
+        this.restockFactory = restockFactory;
+        this.restockValidator = restockValidator;
     }
 
 
     @Override
-    public Restock findByPK(Long id) {
-        return restockRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Restock not found"));
+    public ResponseEntity<?> findByPK(Long id) {
+
+        var restock = restockRepository.findById(id);
+
+        if (restock.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+        return new ResponseEntity<>(restock.get(), HttpStatus.OK);
     }
 
 
+    @Transactional
     @Override
-    public RestockResponse buyNewBook(NewBookRequest request) {
-
-        String isbn = request.isbn();
-        int quantity = request.quantity();
-        double unitValue = request.price();
+    public ResponseEntity<?> buyNewBook(NewBookRequest request) {
 
         try {
-            validate(quantity <= 0, "Invalid quantity");
-            validate(unitValue <= 0, "Invalid price");
-            validate(bookRepository.existsById(isbn), "This book already exists");
+            restockValidator.validateNewBook(request);
+
+            String isbn = request.isbn();
+            int quantity = request.quantity();
+            double unitValue = request.price();
+            String employeeCpf = request.employeeCpf();
+
+            bookService.create(bookMapper.toCreateBookRequest(request));
+
+            var employee = employeeService.findByPK(employeeCpf);
+            var restock = restockFactory.createRestock(employee, quantity * unitValue);
+
+            var restockBooksResponse = restockFactory.createFisicalBooksByIsbn(isbn, quantity, unitValue, restock);
+            var restockBooks = List.of(restockBooksResponse);
+
+            var response = new RestockResponse(restock.getId(), restock.getRestockDate(), employeeCpf, restockBooks);
+
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        } catch (ValidationException e ) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @Transactional
+    @Override
+    public ResponseEntity<?> restockBook(RestockBookRequest request) {
+        try {
+            restockValidator.validadeRestock(request);
 
             var employee = employeeService.findByPK(request.employeeCpf());
 
-            var createBookRequest = BookMapper.INSTANCE.toCreateBookRequest(request);
-            var book = bookService.create(createBookRequest);
+            double totalPrice = request.books()
+                    .stream()
+                    .mapToDouble(book -> book.unitValue() * book.quantity())
+                    .sum();
 
-            var restock = create(employee, quantity  * unitValue);
+            var restock = restockFactory.createRestock(employee, totalPrice);
 
-            var fisicalBooks = new ArrayList<FisicalBook>(request.quantity());
-            for (int i = 0; i < request.quantity(); i++) {
+            var restockBookList = CreateRestockBooks(request, restock);
 
-                Long copyNumber = fisicalBookRepository.findMaxCopyNumberByBookIsbn(request.isbn());
-                copyNumber = copyNumber == null ? 1 : copyNumber + 1;
+            var response = new RestockResponse(restock.getId(), restock.getRestockDate(), employee.getCpf(), restockBookList);
 
-                var createFKRequest = new CreateFisicalBookRequest(book.getIsbn(), copyNumber, request.price(), restock);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
 
-                var response = fisicalBookService.create(createFKRequest);
-                fisicalBooks.add(response);
-            }
-
-            restock.setBookList(fisicalBooks);
-            restockRepository.save(restock);
-
-            var restockBooks = new ArrayList<RestockBook>();
-            restockBooks.add(new RestockBook(isbn, quantity, unitValue));
-
-            return new RestockResponse(restock.getId(), restock.getRestockDate(), employee.getCpf(), restockBooks);
-
-        } catch (Exception ex) {
-
-            System.out.println("\n\n\n\n\n\n " + ex.getMessage() + "\n\n\n\n\n\n");
-
-            throw new RuntimeException("Error buying new book");
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
     @Override
-    public RestockResponse restockBook(RestockBookRequest request) {
+    public ResponseEntity<?> getRestockHistory() {
+        var response = restockRepository.findAll();
 
-        var employee = employeeService.findByPK(request.employeeCpf());
+        if (response.isEmpty())
+            return new ResponseEntity<>(new ArrayList<Restock>(), HttpStatus.NO_CONTENT);
 
-        double totalPrice = request.books()
-                .stream()
-                .mapToDouble(book -> book.unitValue() * book.quantity())
-                .sum();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-        var restock = create(employee, totalPrice);
+    private List<RestockBook> CreateRestockBooks (RestockBookRequest request, Restock restock){
 
-        var fisicalBooks = new ArrayList<FisicalBook>();
+        var list = new ArrayList<RestockBook>();
 
-        request.books().forEach((requestBook)->{
-            for (int i = 0; i < requestBook.quantity(); i++) {
+        request.books().forEach((requestBook) -> {
+            var restockBook = restockFactory
+                    .createFisicalBooksByIsbn(
+                            requestBook.isbn(),
+                            requestBook.quantity(),
+                            requestBook.unitValue(),
+                            restock);
 
-                Long copyNumber = fisicalBookRepository.findMaxCopyNumberByBookIsbn(requestBook.isbn());
-                copyNumber = copyNumber == null ? 1 : copyNumber + 1;
-
-                var createFKRequest = new CreateFisicalBookRequest(requestBook.isbn(), copyNumber, requestBook.unitValue(), restock);
-
-                var response = fisicalBookService.create(createFKRequest);
-                fisicalBooks.add(response);
-            }
+            list.add(restockBook);
         });
 
-        restock.setBookList(fisicalBooks);
-        restockRepository.save(restock);
-
-        var restockBooks = new ArrayList<RestockBook>();
-
-        request.books().forEach((requestBook)->{
-            restockBooks.add(new RestockBook(requestBook.isbn(), requestBook.quantity(), requestBook.unitValue()));
-        });
-
-        return new RestockResponse(restock.getId(), restock.getRestockDate(), employee.getCpf(), restockBooks);
-    }
-
-
-    @Override
-    public List<RestockResponse> getRestockHistory() {
-        return List.of();
-    }
-
-
-    private Restock create(Employee employee, double price){
-
-        var restock = new Restock();
-        restock.setEmployee(employee);
-        restock.setRestockDate(LocalDate.now());
-        restock.setPrice(price);
-        return restockRepository.save(restock);
-    }
-
-
-    private void validate(boolean condition, String message) {
-        if (condition) {
-            throw new RuntimeException(message);
-        }
+        return list;
     }
 
 }

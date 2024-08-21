@@ -6,9 +6,9 @@ import br.com.librigate.model.entity.people.Address;
 
 public interface IAddressService {
 
-     public Address create(AddressDTO dto);
+     Address create(AddressDTO dto);
 
-     public Address findByPK(Long id) throws EntityNotFoundException;
+     Address findByPK(Long id) throws EntityNotFoundException;
 
-     public Address update(Long id, AddressDTO dto) throws EntityNotFoundException;
+     Address update(Long id, AddressDTO dto) throws EntityNotFoundException;
 }

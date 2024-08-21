@@ -23,27 +23,25 @@ public class RestockController {
 
 
     @GetMapping("/find/{id}")
-    public Restock findByPK(Long id) {
+    public ResponseEntity<?> findByPK(Long id) {
         return restockService.findByPK(id);
     }
 
     @GetMapping("/history")
-    public List<RestockResponse> getRestockHistory() {
+    public ResponseEntity<?> getRestockHistory() {
         return restockService.getRestockHistory();
     }
 
     @PostMapping("/restock-new-book")
-    public ResponseEntity<RestockResponse> buyNewBook(@RequestBody NewBookRequest request) {
+    public ResponseEntity<?> buyNewBook(@RequestBody NewBookRequest request) {
 
-        var response = restockService.buyNewBook(request);
-        return ResponseEntity.ok(response);
+        return restockService.buyNewBook(request);
     }
 
     @PostMapping("/restock")
-    public ResponseEntity<RestockResponse> restockBook(@RequestBody RestockBookRequest request) {
-        var response =  restockService.restockBook(request);
+    public ResponseEntity<?> restockBook(@RequestBody RestockBookRequest request) {
 
-        return ResponseEntity.ok(response);
+        return restockService.restockBook(request);
     }
 
 }

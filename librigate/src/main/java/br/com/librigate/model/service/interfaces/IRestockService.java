@@ -6,12 +6,12 @@ import br.com.librigate.model.dto.employee.book.NewBookRequest;
 import br.com.librigate.model.dto.employee.book.RestockBookRequest;
 import br.com.librigate.model.dto.employee.book.RestockResponse;
 import br.com.librigate.model.entity.actions.Restock;
+import org.springframework.http.ResponseEntity;
 
 public interface IRestockService {
 
-    Restock findByPK(Long id);
-
-    RestockResponse buyNewBook(NewBookRequest request);
-    RestockResponse restockBook(RestockBookRequest request);
-    List<RestockResponse> getRestockHistory();
+    ResponseEntity<?> findByPK(Long id);
+    ResponseEntity<?> buyNewBook(NewBookRequest request);
+    ResponseEntity<?> restockBook(RestockBookRequest request);
+    ResponseEntity<?> getRestockHistory();
 }
