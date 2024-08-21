@@ -91,13 +91,4 @@ public class CustomerService implements ICustomerService {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
-    @Override
-    public ResponseEntity<?> reviewBook(ReviewRequest request) {
-        try{
-            return new ResponseEntity<>(reviewService.reviewBook(request), HttpStatus.CREATED);
-        } catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
 }
