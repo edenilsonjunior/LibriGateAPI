@@ -1,7 +1,7 @@
 package br.com.librigate.model.service.people;
 
 import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.AddressDTO;
+import br.com.librigate.model.dto.AddressRequest;
 import br.com.librigate.model.dto.ViaCepResponse;
 import br.com.librigate.model.entity.people.Address;
 import br.com.librigate.model.repository.AddressRepository;
@@ -23,10 +23,10 @@ public class AddressService implements IAddressService{
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public Address create(AddressDTO dto) {
+    public Address create(AddressRequest request) {
 
         try {
-            Address address = populateAddress(dto);
+            var address = populateAddress(request);
             return addressRepository.save(address);
 
         } catch (RestClientException ex) {
@@ -46,12 +46,12 @@ public class AddressService implements IAddressService{
 
 
     @Override
-    public Address update(Long id, AddressDTO dto) throws EntityNotFoundException {
+    public Address update(Long id, AddressRequest dto) throws EntityNotFoundException {
 
-        Address address = findByPK(id);
+        var address = findByPK(id);
 
         try {
-            Address newAddress = populateAddress(dto);
+            var newAddress = populateAddress(dto);
             address.setId(id);
             address.setZipCode(newAddress.getZipCode());
             address.setStreet(newAddress.getStreet());
@@ -68,20 +68,20 @@ public class AddressService implements IAddressService{
     }
 
 
-    private Address populateAddress(AddressDTO addressDTO) throws RestClientException {
+    private Address populateAddress(AddressRequest addressRequest) throws RestClientException {
 
-        String url = "https://viacep.com.br/ws/" + addressDTO.zipCode() + "/json/";
+        String url = "https://viacep.com.br/ws/" + addressRequest.zipCode() + "/json/";
 
         var response = restTemplate.getForObject(url, ViaCepResponse.class);
-        Address address = new Address();
+        var address = new Address();
 
-        address.setZipCode(addressDTO.zipCode());
+        address.setZipCode(addressRequest.zipCode());
         address.setStreet(response.logradouro());
         address.setDistrict(response.bairro());
         address.setCity(response.localidade());
         address.setState(response.uf());
-        address.setNumber(addressDTO.number());
-        address.setComplement(addressDTO.complement());
+        address.setNumber(addressRequest.number());
+        address.setComplement(addressRequest.complement());
 
         return address;
     }
