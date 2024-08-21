@@ -3,9 +3,8 @@ package br.com.librigate.model.service.people;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.dto.customer.CreateCustomerRequest;
 import br.com.librigate.model.dto.customer.UpdateCustomerRequest;
-import br.com.librigate.model.dto.customer.review.ReviewRequest;
 import br.com.librigate.model.entity.people.Person;
-import br.com.librigate.model.mapper.interfaces.CustomerMapper;
+import br.com.librigate.model.mapper.people.CustomerMapper;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.service.actions.ReviewService;
 import br.com.librigate.model.service.interfaces.ICustomerService;
@@ -20,12 +19,10 @@ public class CustomerService implements ICustomerService {
 
     private final CustomerRepository customerRepository;
     private final AddressService addressService;
-    private final ReviewService reviewService;
 
-    public CustomerService( CustomerRepository customerRepository, AddressService addressService, ReviewService reviewService) {
+    public CustomerService( CustomerRepository customerRepository, AddressService addressService) {
         this.customerRepository = customerRepository;
         this.addressService = addressService;
-        this.reviewService = reviewService;
     }
 
     @Override
