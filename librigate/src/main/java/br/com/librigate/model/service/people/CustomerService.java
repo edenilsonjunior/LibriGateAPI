@@ -20,12 +20,10 @@ public class CustomerService implements ICustomerService {
 
     private final CustomerRepository customerRepository;
     private final AddressService addressService;
-    private final ReviewService reviewService;
 
-    public CustomerService( CustomerRepository customerRepository, AddressService addressService, ReviewService reviewService) {
+    public CustomerService( CustomerRepository customerRepository, AddressService addressService) {
         this.customerRepository = customerRepository;
         this.addressService = addressService;
-        this.reviewService = reviewService;
     }
 
     @Override
