@@ -1,13 +1,10 @@
 package br.com.librigate.model.mapper.people;
 
 import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
-import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
 import br.com.librigate.model.entity.people.Employee;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
-
-import java.util.ArrayList;
 
 @Mapper
 public interface EmployeeMapper {
@@ -16,9 +13,5 @@ public interface EmployeeMapper {
 
     @Mapping(target = "login", source = "cpf")
     Employee toEntity(CreateEmployeeRequest request);
-
-
-/*    @Mapping(target = "login", source = "cpf")
-    Employee toEntity(UpdateEmployeeRequest request);*/
 
 }

@@ -1,8 +1,8 @@
 package br.com.librigate.model.service.actions;
 
 import br.com.librigate.exception.ValidationException;
+import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
-import br.com.librigate.model.service.interfaces.IEmployeeService;
 import br.com.librigate.model.service.actions.validator.RestockValidator;
 import br.com.librigate.model.service.interfaces.IRestockService;
 import br.com.librigate.model.service.actions.factory.RestockFactory;
@@ -12,7 +12,6 @@ import br.com.librigate.model.dto.employee.book.*;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.exception.EntityNotFoundException;
 
-import jakarta.validation.Validation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,28 +24,30 @@ import java.util.List;
 @Service
 public class RestockService implements IRestockService {
 
-    private final IEmployeeService employeeService;
     private final IBookService bookService;
 
     private final RestockFactory restockFactory;
     private final RestockRepository restockRepository;
+    private final EmployeeRepository employeeRepository;
     private final RestockValidator restockValidator;
     private final BookMapper bookMapper = BookMapper.INSTANCE;
 
     @Autowired
     public RestockService(
-            IEmployeeService employeeService,
             IBookService bookService,
-            RestockRepository restockRepository,
             RestockFactory restockFactory,
+            RestockRepository restockRepository,
+            EmployeeRepository employeeRepository,
             RestockValidator restockValidator
     ) {
-        this.employeeService = employeeService;
         this.bookService = bookService;
-        this.restockRepository = restockRepository;
         this.restockFactory = restockFactory;
+        this.restockRepository = restockRepository;
+        this.employeeRepository = employeeRepository;
         this.restockValidator = restockValidator;
     }
+
+
 
 
     @Override
@@ -75,7 +76,9 @@ public class RestockService implements IRestockService {
 
             bookService.create(bookMapper.toCreateBookRequest(request));
 
-            var employee = employeeService.findByPK(employeeCpf);
+            var employee = employeeRepository.findById(employeeCpf)
+                    .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+
             var restock = restockFactory.createRestock(employee, quantity * unitValue);
 
             var restockBooksResponse = restockFactory.createFisicalBooksByIsbn(isbn, quantity, unitValue, restock);
@@ -101,7 +104,8 @@ public class RestockService implements IRestockService {
         try {
             restockValidator.validadeRestock(request);
 
-            var employee = employeeService.findByPK(request.employeeCpf());
+            var employee = employeeRepository.findById(request.employeeCpf())
+                    .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
 
             double totalPrice = request.books()
                     .stream()

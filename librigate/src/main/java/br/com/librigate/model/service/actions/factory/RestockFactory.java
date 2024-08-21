@@ -51,7 +51,7 @@ public class RestockFactory {
     public RestockBook createFisicalBooksByIsbn(String isbn, int quantity, double price, Restock restock) {
 
         for (int i = 0; i < quantity; i++) {
-            var response = createFisicalBook(isbn, price, restock);
+            createFisicalBook(isbn, price, restock);
         }
 
         return new RestockBook(isbn, quantity, price);

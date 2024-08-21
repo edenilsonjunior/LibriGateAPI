@@ -12,6 +12,7 @@ public interface BookMapper {
 
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
 
+    
     Book toEntity(CreateBookRequest dto);
 
     BookDTO toDTO(Book entity);
