@@ -5,6 +5,7 @@ import br.com.librigate.model.dto.book.CreateBookRequest;
 import br.com.librigate.model.dto.book.UpdateBookRequest;
 import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.entity.book.Book;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface IBookService {
     Book update(UpdateBookRequest request);
     Book findByPK(String isbn) throws EntityNotFoundException;
     List<Book> findAll();
-    List<Book> getBooksByCategory(String category);
-    List<Book> getBooksByAuthor(String author);
-    List<Review> getReview(String bookIsbn);
+    ResponseEntity<?> getBooksByCategory(String category);
+    ResponseEntity<?> getBooksByAuthor(String author);
+    ResponseEntity<?> getReview(String bookIsbn);
 }
