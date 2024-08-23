@@ -11,7 +11,6 @@ public record CreateCustomerRequest(
         LocalDate birthDate,
         String gender,
         String telephone,
-        String role,
         String password,
         AddressRequest address
 ) { }

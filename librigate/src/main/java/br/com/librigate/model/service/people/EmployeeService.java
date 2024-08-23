@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.InvalidParameterException;
 import java.util.*;
@@ -26,6 +27,7 @@ public class EmployeeService implements IEmployeeService {
     private EmployeeRepository employeeRepository;
 
 
+    @Transactional
     @Override
     public ResponseEntity<?> create(CreateEmployeeRequest request) {
 
@@ -47,6 +49,7 @@ public class EmployeeService implements IEmployeeService {
         }
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> update(UpdateEmployeeRequest request) {
 
@@ -61,10 +64,10 @@ public class EmployeeService implements IEmployeeService {
             request.password().ifPresent(employee::setPassword);
             request.role().ifPresent(employee::setRole);
 
-            request.address().ifPresent((addressDTO)->{
-
-                var address = addressService.create(addressDTO);
-                employee.setAddress(address);
+            request.address().ifPresent((address) -> {
+                var updatedAddress = addressService
+                        .update(employee.getAddress().getId(), address);
+                employee.setAddress(updatedAddress);
             });
 
             var response =  employeeRepository.save(employee);
@@ -99,6 +102,7 @@ public class EmployeeService implements IEmployeeService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> delete(String id) {
         try {

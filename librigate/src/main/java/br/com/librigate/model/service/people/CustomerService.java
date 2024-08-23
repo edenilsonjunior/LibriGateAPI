@@ -10,8 +10,11 @@ import br.com.librigate.model.service.interfaces.ICustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 @Service
 public class CustomerService implements ICustomerService {
@@ -24,19 +27,29 @@ public class CustomerService implements ICustomerService {
         this.addressService = addressService;
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> create(CreateCustomerRequest request) {
         try{
             var customer = CustomerMapper.instance.toEntity(request);
-            var adress = addressService.create(request.address());
+            var address = addressService.create(request.address());
             customer.setRegistrationDate(LocalDate.now());
-            customer.setAddress(adress);
+            customer.setAddress(address);
+
+            customer.setPurchases(new ArrayList<>());
+            customer.setRentList(new ArrayList<>());
+
             return new ResponseEntity<>(customerRepository.save(customer), HttpStatus.CREATED);
-        } catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+
+        } catch (InvalidParameterException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+
+    @Transactional
     @Override
     public ResponseEntity<?> update(UpdateCustomerRequest request) {
         try{
@@ -75,6 +88,7 @@ public class CustomerService implements ICustomerService {
                 .stream().filter(Person::isActive), HttpStatus.OK);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<?> delete(String id) {
         try{

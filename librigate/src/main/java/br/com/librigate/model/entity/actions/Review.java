@@ -2,6 +2,8 @@ package br.com.librigate.model.entity.actions;
 
 import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.entity.people.Customer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,6 +22,7 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(name = "book_isbn", nullable = false)
+    @JsonBackReference
     private Book book;
 
     @Column(name = "description", nullable = false)

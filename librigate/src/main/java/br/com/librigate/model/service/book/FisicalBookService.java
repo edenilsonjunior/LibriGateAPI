@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class FisicalBookService implements IFisicalBookService {
         this.buyService = buyService;
     }
 
-
+    @Transactional
     @Override
     public FisicalBook create(CreateFisicalBookRequest request) {
         var entityBook = bookService.findByPK(request.isbn());
@@ -53,7 +54,7 @@ public class FisicalBookService implements IFisicalBookService {
         return fisicalBookRepository.save(entityFisicalBook);
     }
 
-
+    @Transactional
     @Override
     public FisicalBook update(UpdateFisicalBookRequest request) {
         var entity = fisicalBookRepository.findById(request.id())

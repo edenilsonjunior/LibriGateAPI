@@ -9,6 +9,7 @@ import br.com.librigate.model.service.interfaces.IAddressService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,6 +23,7 @@ public class AddressService implements IAddressService{
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    @Transactional
     @Override
     public Address create(AddressRequest request) {
 
@@ -44,7 +46,7 @@ public class AddressService implements IAddressService{
             .orElseThrow(()->new EntityNotFoundException("Endereço não encontrado"));
     }
 
-
+    @Transactional
     @Override
     public Address update(Long id, AddressRequest dto) throws EntityNotFoundException {
 

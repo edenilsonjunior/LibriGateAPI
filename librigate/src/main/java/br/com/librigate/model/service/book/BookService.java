@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,13 +28,14 @@ public class BookService implements IBookService {
     }
 
 
+    @Transactional
     @Override
     public Book create(CreateBookRequest request) {
         var entity = bookMapper.toEntity(request);
         return bookRepository.save(entity);
     }
 
-
+    @Transactional
     @Override
     public Book update(UpdateBookRequest request) {
         var entity = bookRepository.findById(request.isbn())
@@ -86,7 +88,7 @@ public class BookService implements IBookService {
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
-                    .filter(b -> b.getAuthorsName().equals(author))
+                    .filter(b -> b.getAuthorsName().contains(author))
                     .toList();
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
