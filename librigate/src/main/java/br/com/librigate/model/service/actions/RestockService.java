@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RestockService implements IRestockService {
@@ -48,8 +49,6 @@ public class RestockService implements IRestockService {
     }
 
 
-
-
     @Override
     public ResponseEntity<?> findByPK(Long id) {
 
@@ -58,7 +57,14 @@ public class RestockService implements IRestockService {
         if (restock.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        return new ResponseEntity<>(restock.get(), HttpStatus.OK);
+        var response = new RestockFoundResponse(
+                restock.get().getPrice(),
+                restock.get().getRestockDate(),
+                restock.get().getEmployee().getCpf(),
+                getRestockBooks(restock.get())
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
@@ -114,7 +120,7 @@ public class RestockService implements IRestockService {
 
             var restock = restockFactory.createRestock(employee, totalPrice);
 
-            var restockBookList = CreateRestockBooks(request, restock);
+            var restockBookList = createRestockBooks(request, restock);
 
             var response = new RestockResponse(restock.getId(), restock.getRestockDate(), employee.getCpf(), restockBookList);
 
@@ -130,15 +136,27 @@ public class RestockService implements IRestockService {
 
     @Override
     public ResponseEntity<?> getRestockHistory() {
-        var response = restockRepository.findAll();
+        var restocks = restockRepository.findAll();
 
-        if (response.isEmpty())
-            return new ResponseEntity<>(new ArrayList<Restock>(), HttpStatus.NO_CONTENT);
+        if (restocks.isEmpty())
+            return new ResponseEntity<>(new ArrayList<RestockFoundResponse>(), HttpStatus.NO_CONTENT);
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        var responses = restocks.stream()
+                .map(restock -> {
+                    return new RestockFoundResponse(
+                            restock.getPrice(),
+                            restock.getRestockDate(),
+                            restock.getEmployee().getCpf(),
+                            getRestockBooks(restock)
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
-    private List<RestockBook> CreateRestockBooks (RestockBookRequest request, Restock restock){
+
+    private List<RestockBook> createRestockBooks(RestockBookRequest request, Restock restock){
 
         var list = new ArrayList<RestockBook>();
 
@@ -156,4 +174,15 @@ public class RestockService implements IRestockService {
         return list;
     }
 
+    private List<RestockBook> getRestockBooks(Restock restock) {
+        return restock.getBookList().stream()
+                .collect(Collectors.groupingBy(book -> book.getBook().getIsbn()))
+                .entrySet().stream()
+                .map(entry -> new RestockBook(
+                        entry.getKey(),
+                        entry.getValue().size(),
+                        entry.getValue().get(0).getPrice()
+                ))
+                .toList();
+    }
 }
