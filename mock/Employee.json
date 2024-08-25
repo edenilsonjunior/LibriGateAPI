@@ -1,0 +1,15 @@
+{
+    "cpf": "12345678901",
+    "firstName": "John",
+    "lastName": "Doe",
+    "birthDate": "1990-05-15",
+    "gender": "Male",
+    "telephone": "11987654321",
+    "role": "Gerente",
+    "password": "securePassword123",
+    "address": {
+        "zipCode": "01001000",
+        "number": 123,
+        "complement": "Apt 45"
+    }
+}

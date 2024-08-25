@@ -3,7 +3,6 @@ package br.com.librigate.model.service.interfaces;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.dto.book.CreateBookRequest;
 import br.com.librigate.dto.book.UpdateBookRequest;
-import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.entity.book.Book;
 import org.springframework.http.ResponseEntity;
 

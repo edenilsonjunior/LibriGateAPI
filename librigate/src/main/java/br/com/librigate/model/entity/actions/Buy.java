@@ -2,6 +2,7 @@ package br.com.librigate.model.entity.actions;
 
 import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.entity.people.Customer;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,7 +23,7 @@ public class Buy {
     private LocalDateTime buyDate;
 
     @Column(name = "status", nullable = false)
-    private boolean status;
+    private String status;
 
     @Column(name = "total_price", nullable = false)
     private double totalPrice;
@@ -38,10 +39,12 @@ public class Buy {
     private Customer customer;
 
     @OneToMany(mappedBy = "buy")
+    @JsonManagedReference
     private List<FisicalBook> books;
 
+
     @PrePersist
-    private void calculateTotalPrice() {
+    public void calculateTotalPrice() {
 
         totalPrice = books.stream()
                           .mapToDouble(FisicalBook::getPrice)
@@ -49,6 +52,11 @@ public class Buy {
     }
 
     public Buy() {
+    }
+
+    @Override
+    public String toString() {
+        return "Buy + " + id;
     }
 
 }

@@ -5,9 +5,9 @@ import br.com.librigate.dto.book.StockDTO;
 import br.com.librigate.dto.book.fisicalBook.CreateFisicalBookRequest;
 import br.com.librigate.dto.book.fisicalBook.UpdateFisicalBookRequest;
 import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
-import br.com.librigate.model.service.interfaces.IBuyService;
 import br.com.librigate.model.service.interfaces.IFisicalBookService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +26,17 @@ public class FisicalBookService implements IFisicalBookService {
 
     private final IBookService bookService;
 
-    private final IBuyService buyService;
+    private final BuyRepository buyRepository;
 
     @Autowired
     public FisicalBookService(
             FisicalBookRepository fisicalBookRepository,
             IBookService bookService,
-            IBuyService buyService
+            BuyRepository buyRepository
     ) {
         this.fisicalBookRepository = fisicalBookRepository;
         this.bookService = bookService;
-        this.buyService = buyService;
+        this.buyRepository = buyRepository;
     }
 
 
@@ -60,12 +60,15 @@ public class FisicalBookService implements IFisicalBookService {
     @Override
     public FisicalBook update(UpdateFisicalBookRequest request) {
         var entity = fisicalBookRepository.findById(request.id())
-                    .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
+            .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
 
         request.status().ifPresent(entity::setStatus);
         request.price().ifPresent(entity::setPrice);
         request.buyId().ifPresent((buyId) ->{
-            var buy = buyService.findByPK(request.buyId().get());
+
+            var buy = buyRepository.findById(buyId)
+                .orElseThrow(() -> new EntityNotFoundException("Buy not found"));
+
             entity.setBuy(buy);
         });
 
