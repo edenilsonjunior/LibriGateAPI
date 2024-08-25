@@ -1,5 +1,7 @@
 package br.com.librigate.model.service.book;
 
+import br.com.librigate.dto.actions.review.ReviewResponse;
+import br.com.librigate.dto.book.BookDTO;
 import br.com.librigate.dto.book.CreateBookRequest;
 import br.com.librigate.dto.book.UpdateBookRequest;
 import br.com.librigate.model.entity.book.Book;
@@ -77,6 +79,17 @@ public class BookService implements IBookService {
 
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getCategory().equals(category))
+                    .map(b -> BookDTO.builder()
+                            .isbn(b.getIsbn())
+                            .title(b.getTitle())
+                            .description(b.getDescription())
+                            .publisher(b.getPublisher())
+                            .category(b.getCategory())
+                            .authorsName(b.getAuthorsName())
+                            .edition(b.getEdition())
+                            .launchDate(b.getLaunchDate())
+                            .build()
+                    )
                     .toList();
 
             if (filteredEntityList.isEmpty())
@@ -96,6 +109,17 @@ public class BookService implements IBookService {
 
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getAuthorsName().contains(author))
+                    .map(b -> BookDTO.builder()
+                            .isbn(b.getIsbn())
+                            .title(b.getTitle())
+                            .description(b.getDescription())
+                            .publisher(b.getPublisher())
+                            .category(b.getCategory())
+                            .authorsName(b.getAuthorsName())
+                            .edition(b.getEdition())
+                            .launchDate(b.getLaunchDate())
+                            .build()
+                    )
                     .toList();
 
             if (filteredEntityList.isEmpty())
@@ -115,12 +139,20 @@ public class BookService implements IBookService {
 
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getIsbn().equals(bookIsbn))
-                    .findFirst().get().getReviews();
-
-            if (filteredEntityList.isEmpty())
-                return new ResponseEntity<>(filteredEntityList, HttpStatus.NOT_FOUND);
+                    .findFirst()
+                    .map(b -> b.getReviews().stream()
+                            .map(r -> new ReviewResponse(
+                                    r.getCustomer().getCpf(),
+                                    r.getBook().getIsbn(),
+                                    r.getDescription(),
+                                    r.getRating()
+                            ))
+                    )
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

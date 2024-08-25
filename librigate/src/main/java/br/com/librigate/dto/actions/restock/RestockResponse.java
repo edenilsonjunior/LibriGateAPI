@@ -1,4 +1,4 @@
-package br.com.librigate.dto.book;
+package br.com.librigate.dto.actions.restock;
 
 import java.time.LocalDate;
 import java.util.List;

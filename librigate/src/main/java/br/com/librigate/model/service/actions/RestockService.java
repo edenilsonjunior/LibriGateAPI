@@ -2,9 +2,9 @@ package br.com.librigate.model.service.actions;
 
 import br.com.librigate.exception.ValidationException;
 import br.com.librigate.dto.book.NewBookRequest;
-import br.com.librigate.dto.book.RestockBook;
-import br.com.librigate.dto.book.RestockBookRequest;
-import br.com.librigate.dto.book.RestockResponse;
+import br.com.librigate.dto.actions.restock.RestockBook;
+import br.com.librigate.dto.actions.restock.RestockBookRequest;
+import br.com.librigate.dto.actions.restock.RestockResponse;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
 import br.com.librigate.model.service.actions.validator.RestockValidator;
