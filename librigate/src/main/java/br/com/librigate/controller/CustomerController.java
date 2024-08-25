@@ -1,7 +1,7 @@
 package br.com.librigate.controller;
 
-import br.com.librigate.model.dto.customer.CreateCustomerRequest;
-import br.com.librigate.model.dto.customer.UpdateCustomerRequest;
+import br.com.librigate.dto.people.customer.CreateCustomerRequest;
+import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
 import br.com.librigate.model.service.interfaces.ICustomerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

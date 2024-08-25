@@ -1,12 +1,13 @@
 package br.com.librigate.model.service.people;
 
 import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
-import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
+import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
+import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
 
 import br.com.librigate.model.entity.people.Employee;
 import br.com.librigate.model.mapper.people.EmployeeMapper;
 import br.com.librigate.model.repository.EmployeeRepository;
+import br.com.librigate.model.service.address.AddressService;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

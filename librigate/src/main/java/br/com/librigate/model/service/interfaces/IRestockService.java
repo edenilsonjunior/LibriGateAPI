@@ -1,8 +1,8 @@
 package br.com.librigate.model.service.interfaces;
 
 
-import br.com.librigate.model.dto.employee.book.NewBookRequest;
-import br.com.librigate.model.dto.employee.book.RestockBookRequest;
+import br.com.librigate.dto.book.NewBookRequest;
+import br.com.librigate.dto.book.RestockBookRequest;
 
 import org.springframework.http.ResponseEntity;
 

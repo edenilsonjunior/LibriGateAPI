@@ -1,10 +1,9 @@
 package br.com.librigate.model.service.book;
 
 import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.StockDTO;
-import br.com.librigate.model.dto.fisicalBook.CreateFisicalBookRequest;
-import br.com.librigate.model.dto.fisicalBook.UpdateFisicalBookRequest;
-import br.com.librigate.model.entity.book.Book;
+import br.com.librigate.dto.book.StockDTO;
+import br.com.librigate.dto.book.fisicalBook.CreateFisicalBookRequest;
+import br.com.librigate.dto.book.fisicalBook.UpdateFisicalBookRequest;
 import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
@@ -26,6 +25,7 @@ public class FisicalBookService implements IFisicalBookService {
     private final FisicalBookRepository fisicalBookRepository;
 
     private final IBookService bookService;
+
     private final IBuyService buyService;
 
     @Autowired
@@ -38,6 +38,7 @@ public class FisicalBookService implements IFisicalBookService {
         this.bookService = bookService;
         this.buyService = buyService;
     }
+
 
     @Transactional
     @Override
@@ -53,6 +54,7 @@ public class FisicalBookService implements IFisicalBookService {
 
         return fisicalBookRepository.save(entityFisicalBook);
     }
+
 
     @Transactional
     @Override
@@ -109,6 +111,9 @@ public class FisicalBookService implements IFisicalBookService {
                     })
                     .collect(Collectors.toList());
 
+            if (stockList.isEmpty())
+                return new ResponseEntity<>(stockList, HttpStatus.NOT_FOUND);
+
             return new ResponseEntity<>(stockList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -121,7 +126,7 @@ public class FisicalBookService implements IFisicalBookService {
         try {
             var entityList = fisicalBookRepository.findAll();
 
-            var stockList = entityList.stream()
+            var stock = entityList.stream()
                     .filter(book -> book.getBook().getIsbn().equals(isbn))
                     .findFirst()
                     .map(book -> new StockDTO(
@@ -133,7 +138,9 @@ public class FisicalBookService implements IFisicalBookService {
                     ))
                     .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
 
-            return new ResponseEntity<>(stockList, HttpStatus.OK);
+            return new ResponseEntity<>(stock, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

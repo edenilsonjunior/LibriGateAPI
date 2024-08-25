@@ -1,8 +1,8 @@
 package br.com.librigate.model.mapper.book;
 
-import br.com.librigate.model.dto.BookDTO;
-import br.com.librigate.model.dto.book.CreateBookRequest;
-import br.com.librigate.model.dto.employee.book.NewBookRequest;
+import br.com.librigate.dto.book.CreateBookRequest;
+import br.com.librigate.dto.book.UpdateBookRequest;
+import br.com.librigate.dto.book.NewBookRequest;
 import br.com.librigate.model.entity.book.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
@@ -14,8 +14,6 @@ public interface BookMapper {
 
     
     Book toEntity(CreateBookRequest dto);
-
-    BookDTO toDTO(Book entity);
 
     CreateBookRequest toCreateBookRequest(NewBookRequest request);
 }

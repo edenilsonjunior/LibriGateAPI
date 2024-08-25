@@ -1,6 +1,6 @@
 package br.com.librigate.model.mapper.people;
 
-import br.com.librigate.model.dto.customer.CreateCustomerRequest;
+import br.com.librigate.dto.people.customer.CreateCustomerRequest;
 import br.com.librigate.model.entity.people.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

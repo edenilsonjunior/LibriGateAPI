@@ -2,8 +2,8 @@ package br.com.librigate.model.service.actions;
 
 import java.util.List;
 
-import br.com.librigate.model.dto.customer.buy.BuyRequest;
-import br.com.librigate.model.dto.customer.buy.BuyResponse;
+import br.com.librigate.dto.actions.buy.BuyRequest;
+import br.com.librigate.dto.actions.buy.BuyResponse;
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.service.interfaces.IBuyService;
 import org.springframework.stereotype.Service;

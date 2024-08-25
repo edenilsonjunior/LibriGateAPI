@@ -1,14 +1,11 @@
 package br.com.librigate.controller;
 
-import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
-import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
-import br.com.librigate.model.entity.people.Employee;
+import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
+import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/employee")

@@ -1,8 +1,8 @@
 package br.com.librigate.model.service.actions;
 
 import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.customer.review.ReviewRequest;
-import br.com.librigate.model.dto.customer.review.ReviewResponse;
+import br.com.librigate.dto.actions.review.ReviewRequest;
+import br.com.librigate.dto.actions.review.ReviewResponse;
 import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.ReviewRepository;

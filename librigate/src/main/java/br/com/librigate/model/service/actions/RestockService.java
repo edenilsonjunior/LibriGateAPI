@@ -1,6 +1,10 @@
 package br.com.librigate.model.service.actions;
 
 import br.com.librigate.exception.ValidationException;
+import br.com.librigate.dto.book.NewBookRequest;
+import br.com.librigate.dto.book.RestockBook;
+import br.com.librigate.dto.book.RestockBookRequest;
+import br.com.librigate.dto.book.RestockResponse;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
 import br.com.librigate.model.service.actions.validator.RestockValidator;
@@ -8,7 +12,6 @@ import br.com.librigate.model.service.interfaces.IRestockService;
 import br.com.librigate.model.service.actions.factory.RestockFactory;
 import br.com.librigate.model.entity.actions.Restock;
 import br.com.librigate.model.repository.RestockRepository;
-import br.com.librigate.model.dto.employee.book.*;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.exception.EntityNotFoundException;
 
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,10 +32,14 @@ public class RestockService implements IRestockService {
     private final IBookService bookService;
 
     private final RestockFactory restockFactory;
+
     private final RestockRepository restockRepository;
+
     private final EmployeeRepository employeeRepository;
+
     private final RestockValidator restockValidator;
-    private final BookMapper bookMapper = BookMapper.INSTANCE;
+
+    private final BookMapper bookMapper;
 
     @Autowired
     public RestockService(
@@ -46,6 +54,7 @@ public class RestockService implements IRestockService {
         this.restockRepository = restockRepository;
         this.employeeRepository = employeeRepository;
         this.restockValidator = restockValidator;
+        this.bookMapper = BookMapper.INSTANCE;
     }
 
 
@@ -57,8 +66,9 @@ public class RestockService implements IRestockService {
         if (restock.isEmpty())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        var response = new RestockFoundResponse(
-                restock.get().getPrice(),
+        var response = new RestockResponse(
+                restock.get().getId(),
+                Optional.of(restock.get().getPrice()),
                 restock.get().getRestockDate(),
                 restock.get().getEmployee().getCpf(),
                 getRestockBooks(restock.get())
@@ -90,7 +100,7 @@ public class RestockService implements IRestockService {
             var restockBooksResponse = restockFactory.createFisicalBooksByIsbn(isbn, quantity, unitValue, restock);
             var restockBooks = List.of(restockBooksResponse);
 
-            var response = new RestockResponse(restock.getId(), restock.getRestockDate(), employeeCpf, restockBooks);
+            var response = new RestockResponse(restock.getId(), Optional.of(restock.getPrice()), restock.getRestockDate(), employeeCpf, restockBooks);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
@@ -122,7 +132,7 @@ public class RestockService implements IRestockService {
 
             var restockBookList = createRestockBooks(request, restock);
 
-            var response = new RestockResponse(restock.getId(), restock.getRestockDate(), employee.getCpf(), restockBookList);
+            var response = new RestockResponse(restock.getId(), Optional.of(restock.getPrice()), restock.getRestockDate(), employee.getCpf(), restockBookList);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
@@ -139,12 +149,13 @@ public class RestockService implements IRestockService {
         var restocks = restockRepository.findAll();
 
         if (restocks.isEmpty())
-            return new ResponseEntity<>(new ArrayList<RestockFoundResponse>(), HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(new ArrayList<RestockResponse>(), HttpStatus.NO_CONTENT);
 
         var responses = restocks.stream()
                 .map(restock -> {
-                    return new RestockFoundResponse(
-                            restock.getPrice(),
+                    return new RestockResponse(
+                            restock.getId(),
+                            Optional.of(restock.getPrice()),
                             restock.getRestockDate(),
                             restock.getEmployee().getCpf(),
                             getRestockBooks(restock)
@@ -173,6 +184,7 @@ public class RestockService implements IRestockService {
 
         return list;
     }
+
 
     private List<RestockBook> getRestockBooks(Restock restock) {
         return restock.getBookList().stream()

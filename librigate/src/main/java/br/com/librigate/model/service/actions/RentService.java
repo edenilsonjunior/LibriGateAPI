@@ -2,8 +2,8 @@ package br.com.librigate.model.service.actions;
 
 import java.util.List;
 
-import br.com.librigate.model.dto.customer.rent.RentRequest;
-import br.com.librigate.model.dto.customer.rent.RentResponse;
+import br.com.librigate.dto.actions.rent.RentRequest;
+import br.com.librigate.dto.actions.rent.RentResponse;
 import br.com.librigate.model.entity.actions.Rent;
 import br.com.librigate.model.service.interfaces.IRentService;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package br.com.librigate.model.service.book;
 
-import br.com.librigate.model.dto.book.CreateBookRequest;
-import br.com.librigate.model.dto.book.UpdateBookRequest;
+import br.com.librigate.dto.book.CreateBookRequest;
+import br.com.librigate.dto.book.UpdateBookRequest;
 import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.model.repository.BookRepository;
@@ -18,13 +18,16 @@ import java.util.List;
 @Service
 public class BookService implements IBookService {
 
-    private final BookMapper bookMapper = BookMapper.INSTANCE;
-
     private final BookRepository bookRepository;
 
+    private final BookMapper bookMapper;
+
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(
+            BookRepository bookRepository
+    ) {
         this.bookRepository = bookRepository;
+        this.bookMapper = BookMapper.INSTANCE;
     }
 
 
@@ -34,6 +37,7 @@ public class BookService implements IBookService {
         var entity = bookMapper.toEntity(request);
         return bookRepository.save(entity);
     }
+
 
     @Transactional
     @Override
@@ -75,6 +79,9 @@ public class BookService implements IBookService {
                     .filter(b -> b.getCategory().equals(category))
                     .toList();
 
+            if (filteredEntityList.isEmpty())
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NOT_FOUND);
+
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -91,6 +98,9 @@ public class BookService implements IBookService {
                     .filter(b -> b.getAuthorsName().contains(author))
                     .toList();
 
+            if (filteredEntityList.isEmpty())
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NOT_FOUND);
+
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -106,6 +116,9 @@ public class BookService implements IBookService {
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getIsbn().equals(bookIsbn))
                     .findFirst().get().getReviews();
+
+            if (filteredEntityList.isEmpty())
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NOT_FOUND);
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
         } catch (Exception e) {

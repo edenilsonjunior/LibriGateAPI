@@ -1,6 +1,6 @@
 package br.com.librigate.controller;
 
-import br.com.librigate.model.dto.customer.review.ReviewRequest;
+import br.com.librigate.dto.actions.review.ReviewRequest;
 import br.com.librigate.model.service.actions.ReviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
