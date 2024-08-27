@@ -78,7 +78,8 @@ public class BookService implements IBookService {
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
-                    .filter(b -> b.getCategory().equals(category))
+                    .filter(b -> b.getCategory().toLowerCase()
+                            .contains(category.toLowerCase()))
                     .map(b -> new BookGettersResponse(
                             b.getIsbn(),
                             b.getTitle(),
@@ -107,7 +108,8 @@ public class BookService implements IBookService {
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
-                    .filter(b -> b.getAuthorsName().contains(author))
+                    .filter(b -> b.getAuthorsName().stream()
+                            .anyMatch(fb -> fb.toLowerCase().contains(author.toLowerCase())))
                     .map(b -> new BookGettersResponse(
                             b.getIsbn(),
                             b.getTitle(),
@@ -124,6 +126,35 @@ public class BookService implements IBookService {
                 return new ResponseEntity<>(filteredEntityList, HttpStatus.NOT_FOUND);
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @Override
+    public ResponseEntity<?> getBookByIsbn(String bookIsbn) {
+        try {
+            var entityList = bookRepository.findAll();
+
+            var filteredEntityList = entityList.stream()
+                    .filter(b -> b.getIsbn().equals(bookIsbn))
+                    .findFirst()
+                    .map(b -> new BookGettersResponse(
+                            b.getIsbn(),
+                            b.getTitle(),
+                            b.getDescription(),
+                            b.getPublisher(),
+                            b.getCategory(),
+                            b.getAuthorsName(),
+                            b.getEdition(),
+                            b.getLaunchDate()
+                    ))
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+            return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
