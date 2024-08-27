@@ -1,12 +1,11 @@
 package br.com.librigate.model.service.address;
 
-import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.dto.address.AddressRequest;
 import br.com.librigate.dto.address.ViaCepResponse;
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.address.Address;
 import br.com.librigate.model.repository.AddressRepository;
 import br.com.librigate.model.service.interfaces.IAddressService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +44,7 @@ public class AddressService implements IAddressService{
             .findById(id)
             .orElseThrow(()->new EntityNotFoundException("Endereço não encontrado"));
     }
+
 
     @Transactional
     @Override

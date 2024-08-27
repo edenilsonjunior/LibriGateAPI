@@ -1,27 +1,24 @@
 package br.com.librigate.model.service.actions;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-
 import br.com.librigate.dto.actions.buy.BuyRequest;
 import br.com.librigate.dto.actions.buy.BuyResponse;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.exception.ValidationException;
 import br.com.librigate.model.entity.actions.Buy;
-import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.entity.book.FisicalBook;
-import br.com.librigate.model.mapper.actions.BuyMapper;
 import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.service.interfaces.IBuyService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class BuyService implements IBuyService {

@@ -1,14 +1,14 @@
 package br.com.librigate.model.service.book;
 
 import br.com.librigate.dto.actions.review.ReviewResponse;
-import br.com.librigate.dto.book.BookDTO;
+import br.com.librigate.dto.book.BookGettersResponse;
 import br.com.librigate.dto.book.CreateBookRequest;
 import br.com.librigate.dto.book.UpdateBookRequest;
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
-import br.com.librigate.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,17 +79,16 @@ public class BookService implements IBookService {
 
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getCategory().equals(category))
-                    .map(b -> BookDTO.builder()
-                            .isbn(b.getIsbn())
-                            .title(b.getTitle())
-                            .description(b.getDescription())
-                            .publisher(b.getPublisher())
-                            .category(b.getCategory())
-                            .authorsName(b.getAuthorsName())
-                            .edition(b.getEdition())
-                            .launchDate(b.getLaunchDate())
-                            .build()
-                    )
+                    .map(b -> new BookGettersResponse(
+                            b.getIsbn(),
+                            b.getTitle(),
+                            b.getDescription(),
+                            b.getPublisher(),
+                            b.getCategory(),
+                            b.getAuthorsName(),
+                            b.getEdition(),
+                            b.getLaunchDate()
+                    ))
                     .toList();
 
             if (filteredEntityList.isEmpty())
@@ -109,17 +108,16 @@ public class BookService implements IBookService {
 
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getAuthorsName().contains(author))
-                    .map(b -> BookDTO.builder()
-                            .isbn(b.getIsbn())
-                            .title(b.getTitle())
-                            .description(b.getDescription())
-                            .publisher(b.getPublisher())
-                            .category(b.getCategory())
-                            .authorsName(b.getAuthorsName())
-                            .edition(b.getEdition())
-                            .launchDate(b.getLaunchDate())
-                            .build()
-                    )
+                    .map(b -> new BookGettersResponse(
+                            b.getIsbn(),
+                            b.getTitle(),
+                            b.getDescription(),
+                            b.getPublisher(),
+                            b.getCategory(),
+                            b.getAuthorsName(),
+                            b.getEdition(),
+                            b.getLaunchDate()
+                    ))
                     .toList();
 
             if (filteredEntityList.isEmpty())
