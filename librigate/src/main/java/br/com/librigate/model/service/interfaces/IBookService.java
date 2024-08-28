@@ -16,5 +16,6 @@ public interface IBookService {
     List<Book> findAll();
     ResponseEntity<?> getBooksByCategory(String category);
     ResponseEntity<?> getBooksByAuthor(String author);
+    ResponseEntity<?> getBookByIsbn(String bookIsbn);
     ResponseEntity<?> getReview(String bookIsbn);
 }

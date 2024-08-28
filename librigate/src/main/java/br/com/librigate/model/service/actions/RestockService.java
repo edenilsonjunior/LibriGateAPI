@@ -2,9 +2,9 @@ package br.com.librigate.model.service.actions;
 
 import br.com.librigate.exception.ValidationException;
 import br.com.librigate.dto.book.NewBookRequest;
-import br.com.librigate.dto.book.RestockBook;
-import br.com.librigate.dto.book.RestockBookRequest;
-import br.com.librigate.dto.book.RestockResponse;
+import br.com.librigate.dto.actions.restock.RestockBook;
+import br.com.librigate.dto.actions.restock.RestockBookRequest;
+import br.com.librigate.dto.actions.restock.RestockResponse;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
 import br.com.librigate.model.service.actions.validator.RestockValidator;
@@ -68,7 +68,7 @@ public class RestockService implements IRestockService {
 
         var response = new RestockResponse(
                 restock.get().getId(),
-                Optional.of(restock.get().getPrice()),
+                restock.get().getPrice(),
                 restock.get().getRestockDate(),
                 restock.get().getEmployee().getCpf(),
                 getRestockBooks(restock.get())
@@ -100,7 +100,7 @@ public class RestockService implements IRestockService {
             var restockBooksResponse = restockFactory.createFisicalBooksByIsbn(isbn, quantity, unitValue, restock);
             var restockBooks = List.of(restockBooksResponse);
 
-            var response = new RestockResponse(restock.getId(), Optional.of(restock.getPrice()), restock.getRestockDate(), employeeCpf, restockBooks);
+            var response = new RestockResponse(restock.getId(), restock.getPrice(), restock.getRestockDate(), employeeCpf, restockBooks);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
@@ -132,7 +132,7 @@ public class RestockService implements IRestockService {
 
             var restockBookList = createRestockBooks(request, restock);
 
-            var response = new RestockResponse(restock.getId(), Optional.of(restock.getPrice()), restock.getRestockDate(), employee.getCpf(), restockBookList);
+            var response = new RestockResponse(restock.getId(), restock.getPrice(), restock.getRestockDate(), employee.getCpf(), restockBookList);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
 
@@ -155,7 +155,7 @@ public class RestockService implements IRestockService {
                 .map(restock -> {
                     return new RestockResponse(
                             restock.getId(),
-                            Optional.of(restock.getPrice()),
+                            restock.getPrice(),
                             restock.getRestockDate(),
                             restock.getEmployee().getCpf(),
                             getRestockBooks(restock)

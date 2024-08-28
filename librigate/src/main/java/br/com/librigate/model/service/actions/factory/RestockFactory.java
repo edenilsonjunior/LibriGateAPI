@@ -1,6 +1,6 @@
 package br.com.librigate.model.service.actions.factory;
 
-import br.com.librigate.dto.book.RestockBook;
+import br.com.librigate.dto.actions.restock.RestockBook;
 import br.com.librigate.dto.book.fisicalBook.CreateFisicalBookRequest;
 import br.com.librigate.model.entity.actions.Restock;
 import br.com.librigate.model.entity.book.FisicalBook;

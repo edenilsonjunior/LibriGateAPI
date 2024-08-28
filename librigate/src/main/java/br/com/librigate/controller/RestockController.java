@@ -2,7 +2,7 @@ package br.com.librigate.controller;
 
 
 import br.com.librigate.dto.book.NewBookRequest;
-import br.com.librigate.dto.book.RestockBookRequest;
+import br.com.librigate.dto.actions.restock.RestockBookRequest;
 import br.com.librigate.model.service.interfaces.IRestockService;
 
 

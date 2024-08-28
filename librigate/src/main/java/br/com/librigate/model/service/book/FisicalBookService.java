@@ -1,15 +1,14 @@
 package br.com.librigate.model.service.book;
 
-import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.dto.book.StockDTO;
 import br.com.librigate.dto.book.fisicalBook.CreateFisicalBookRequest;
+import br.com.librigate.dto.book.fisicalBook.StockResponse;
 import br.com.librigate.dto.book.fisicalBook.UpdateFisicalBookRequest;
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.service.interfaces.IBookService;
 import br.com.librigate.model.service.interfaces.IFisicalBookService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FisicalBookService implements IFisicalBookService {
@@ -94,25 +92,16 @@ public class FisicalBookService implements IFisicalBookService {
         try {
             var entityList = fisicalBookRepository.findAll();
 
-            var stockMap = entityList.stream()
-                    .collect(Collectors.groupingBy(
-                            book -> book.getBook().getIsbn(),
-                            Collectors.counting()
-                    ));
-
-            var stockList = stockMap.entrySet().stream()
-                    .map(entry -> {
-                        var book = entityList.stream()
-                                .filter(b -> b.getBook().getIsbn().equals(entry.getKey()))
-                                .findFirst()
-                                .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
-                        return new StockDTO(
-                                entry.getKey(),
-                                book.getBook().getTitle(),
-                                entry.getValue().intValue()
-                        );
-                    })
-                    .collect(Collectors.toList());
+            var stockList = entityList.stream()
+                    .map(fisicalBook -> new StockResponse(
+                            fisicalBook.getBook().getIsbn(),
+                            fisicalBook.getBook().getTitle(),
+                            fisicalBookRepository.countByIsbn(fisicalBook
+                                    .getBook()
+                                    .getIsbn())
+                    ))
+                    .distinct()
+                    .toList();
 
             if (stockList.isEmpty())
                 return new ResponseEntity<>(stockList, HttpStatus.NOT_FOUND);
@@ -132,12 +121,12 @@ public class FisicalBookService implements IFisicalBookService {
             var stock = entityList.stream()
                     .filter(book -> book.getBook().getIsbn().equals(isbn))
                     .findFirst()
-                    .map(book -> new StockDTO(
-                            book.getBook().getIsbn(),
-                            book.getBook().getTitle(),
-                            (int) entityList.stream()
-                                    .filter(b -> b.getBook().getIsbn().equals(isbn))
-                                    .count()
+                    .map(fisicalBook -> new StockResponse(
+                            fisicalBook.getBook().getIsbn(),
+                            fisicalBook.getBook().getTitle(),
+                            fisicalBookRepository.countByIsbn(fisicalBook
+                                    .getBook()
+                                    .getIsbn())
                     ))
                     .orElseThrow(() -> new EntityNotFoundException("Fisical Book not found"));
 

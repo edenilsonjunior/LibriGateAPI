@@ -1,4 +1,4 @@
-package br.com.librigate.dto.book;
+package br.com.librigate.dto.actions.restock;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public record RestockResponse(
         Long id,
-        Optional<Double> price,
+        Double price,
         LocalDate date,
         String employeeCpf,
         List<RestockBook> restockBooks

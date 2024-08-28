@@ -28,7 +28,7 @@ public class BuyController {
         return buyService.purchase(request);
     }
 
-    @PostMapping("/processPayment/{buyId}")
+    @PostMapping("/process-payment/{buyId}")
     public ResponseEntity<?> processPayment(@PathVariable Long buyId){
         return buyService.processPayment(buyId);
     }
