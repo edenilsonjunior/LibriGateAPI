@@ -9,6 +9,8 @@ import br.com.librigate.model.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class RestockValidator {
 
@@ -21,6 +23,8 @@ public class RestockValidator {
 
     public void validateNewBook(NewBookRequest request) {
 
+        validate(request.launchDate().isAfter(LocalDate.now()), "Invalid date", false);
+        validate(request.edition() <= 1, "Invalid edition", false);
         validate(request.quantity() <= 0, "Invalid quantity", false);
         validate(request.price() <= 0, "Invalid price", false);
         validate(!employeeRepository.existsById(request.employeeCpf()), "This employee does not exist", true);
@@ -36,7 +40,6 @@ public class RestockValidator {
         request.books().forEach((book)-> {
             validate(book.quantity() <= 0, "Invalid quantity", false);
             validate(book.unitValue() <= 0, "Invalid price", false);
-
             validate(!bookRepository.existsById(book.isbn()), "This book does not exist", true);
         });
     }

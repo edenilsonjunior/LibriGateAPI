@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public record RestockResponse(
         Long id,
-        Optional<Double> price,
+        Double price,
         LocalDate date,
         String employeeCpf,
         List<RestockBook> restockBooks
