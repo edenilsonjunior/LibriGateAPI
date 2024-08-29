@@ -31,11 +31,11 @@ public class RestockFactory {
         this.fisicalBookRepository = fisicalBookRepository;
     }
 
-    public Restock createRestock(Employee employee, double price) {
+    public Restock createRestock(Employee employee, double totalPrice) {
         var restock = new Restock();
         restock.setEmployee(employee);
         restock.setRestockDate(LocalDate.now());
-        restock.setPrice(price);
+        restock.setPrice(totalPrice);
         return restockRepository.save(restock);
     }
 

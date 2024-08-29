@@ -13,6 +13,6 @@ public record NewBookRequest(
         List<String> authorsName,
         int edition,
         LocalDate launchDate,
-        double price,
+        double unityValue,
         int quantity
 ) { }
