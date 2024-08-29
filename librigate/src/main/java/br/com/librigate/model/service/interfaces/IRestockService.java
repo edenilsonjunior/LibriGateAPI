@@ -8,8 +8,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface IRestockService {
 
-    ResponseEntity<?> findByPK(Long id);
+
     ResponseEntity<?> buyNewBook(NewBookRequest request);
     ResponseEntity<?> restockBook(RestockBookRequest request);
     ResponseEntity<?> getRestockHistory();
+    ResponseEntity<?> findByPK(Long id);
 }
