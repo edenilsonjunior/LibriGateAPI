@@ -9,6 +9,7 @@ import br.com.librigate.model.mapper.people.EmployeeMapper;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.address.AddressService;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
+import br.com.librigate.model.service.people.validator.EmployeeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +28,16 @@ public class EmployeeService implements IEmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private EmployeeValidator employeeValidator;
 
     @Transactional
     @Override
     public ResponseEntity<?> create(CreateEmployeeRequest request) {
 
         try {
+            employeeValidator.validateNewEmployee(request);
+
             var address = addressService.create(request.address());
 
             Employee employee = EmployeeMapper.INSTANCE.toEntity(request);
