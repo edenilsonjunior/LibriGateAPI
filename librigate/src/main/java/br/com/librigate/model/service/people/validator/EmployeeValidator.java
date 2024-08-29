@@ -2,7 +2,6 @@ package br.com.librigate.model.service.people.validator;
 
 
 import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
-import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.exception.ValidationException;
 import br.com.librigate.model.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +30,14 @@ public class EmployeeValidator {
         validateNotNull(request.address(), "Address");
     }
 
+
     private void validateCPF(String cpf) {
         if (cpf == null || cpf.length() < 11) {
             throw new ValidationException("CPF size must be at least 11 and cannot be null.");
         }
 
         if(employeeRepository.existsById(cpf)) {
-            throw new ValidationException("There is alread an register with this cpf.");
+            throw new ValidationException("There is already an register with this cpf.");
         }
     }
 
