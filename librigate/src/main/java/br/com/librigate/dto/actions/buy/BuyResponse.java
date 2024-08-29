@@ -2,6 +2,7 @@ package br.com.librigate.dto.actions.buy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public record BuyResponse(
@@ -11,5 +12,6 @@ public record BuyResponse(
         LocalDateTime buyDate,
         LocalDate dueDate,
         Optional<LocalDateTime> paidAt,
-        String status
+        String status,
+        List<BuyBook> books
 ) { }

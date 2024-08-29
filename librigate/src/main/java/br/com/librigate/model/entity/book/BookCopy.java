@@ -8,8 +8,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "fisical_book")
-public class FisicalBook {
+@Table(name = "book_copy")
+public class BookCopy {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,7 +38,7 @@ public class FisicalBook {
     @JsonBackReference
     private Buy buy;
 
-    public FisicalBook() {
+    public BookCopy() {
     }
 
 }

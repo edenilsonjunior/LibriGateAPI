@@ -7,9 +7,8 @@ public interface IBuyService {
 
     ResponseEntity<?> purchase(BuyRequest request);
     ResponseEntity<?> processPayment(Long buyId);
-    ResponseEntity<?> getPurchases(String cpf);
-    ResponseEntity<?> getPurchaseById(String cpf, Long paymentId);
     ResponseEntity<?> cancelPurchase(Long buyId);
 
+    ResponseEntity<?> getPurchasesByCustomerCpf(String cpf);
     ResponseEntity<?> findByPK(Long id);
 }

@@ -39,6 +39,7 @@ public class CustomerService implements ICustomerService {
 
             customer.setPurchases(new ArrayList<>());
             customer.setRentList(new ArrayList<>());
+            customer.setActive(true);
 
             return new ResponseEntity<>(customerRepository.save(customer), HttpStatus.CREATED);
 

@@ -1,14 +1,16 @@
 package br.com.librigate.model.service.actions;
 
+import br.com.librigate.dto.actions.buy.BuyBook;
 import br.com.librigate.dto.actions.buy.BuyRequest;
 import br.com.librigate.dto.actions.buy.BuyResponse;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.actions.Buy;
-import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
+import br.com.librigate.model.mapper.actions.BuyMapper;
 import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.CustomerRepository;
-import br.com.librigate.model.repository.FisicalBookRepository;
+import br.com.librigate.model.repository.BookCopyRepository;
 import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.actions.factory.BuyFactory;
 import br.com.librigate.model.service.actions.validator.BuyValidator;
@@ -20,21 +22,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BuyService implements IBuyService {
 
     private final BuyRepository buyRepository;
     private final CustomerRepository customerRepository;
-    private final FisicalBookRepository fisicalBookRepository;
+    private final BookCopyRepository bookCopyRepository;
     private final BuyFactory buyFactory;
     private final BuyValidator buyValidator;
+    private final BuyMapper buyMapper = BuyMapper.INSTANCE;
 
     @Autowired
-    public BuyService(BuyRepository buyRepository, CustomerRepository customerRepository, FisicalBookRepository fisicalBookRepository, BuyFactory buyFactory, BuyValidator buyValidator) {
+    public BuyService(BuyRepository buyRepository, CustomerRepository customerRepository, BookCopyRepository bookCopyRepository, BuyFactory buyFactory, BuyValidator buyValidator) {
         this.buyRepository = buyRepository;
         this.customerRepository = customerRepository;
-        this.fisicalBookRepository = fisicalBookRepository;
+        this.bookCopyRepository = bookCopyRepository;
         this.buyFactory = buyFactory;
         this.buyValidator = buyValidator;
     }
@@ -55,7 +59,7 @@ public class BuyService implements IBuyService {
             entity.setBooks(soldBooks);
             entity.calculateTotalPrice();
 
-            var response = buyFactory.createBuyResponse(entity);
+            var response = toBuyResponse(entity);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         });
@@ -71,7 +75,7 @@ public class BuyService implements IBuyService {
             buyValidator.validatePayment(entity);
             buyFactory.approvePayment(entity);
 
-            var response = buyFactory.createBuyResponse(entity);
+            var response = toBuyResponse(entity);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
@@ -81,96 +85,102 @@ public class BuyService implements IBuyService {
     @Override
     public ResponseEntity<?> cancelPurchase(Long buyId) {
         return HandleRequest.handle(() -> {
-            var entity = findBuyById(buyId);
 
+            var entity = findBuyById(buyId);
             buyValidator.validatePaymentCancel(entity);
 
             entity.setStatus("CANCELED");
             buyRepository.save(entity);
-
             restoreBooks(entity.getBooks());
 
-            var response = new BuyResponse(
-                    entity.getId(),
-                    entity.getCustomer().getCpf(),
-                    entity.getTotalPrice(),
-                    entity.getBuyDate(),
-                    entity.getDueDate(),
-                    Optional.ofNullable(entity.getPaidAt()),
-                    entity.getStatus()
-            );
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        });
+    }
+
+
+    @Override
+    public ResponseEntity<?> getPurchasesByCustomerCpf(String cpf) {
+
+        return HandleRequest.handle(() -> {
+
+            var entities = buyRepository.findByCustomerCpf(cpf);
+            var response = entities.stream()
+                    .map(this::toBuyResponse).toList();
+
+            if (response.isEmpty())
+                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
 
-    @Override
-    public ResponseEntity<?> getPurchases(String cpf) {
-
-        return HandleRequest.handle(() -> {
-
-            var entities = buyRepository.findByCustomerCpf(cpf);
-            if (entities.isEmpty())
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-            return new ResponseEntity<>(entities, HttpStatus.OK);
-
-        });
-    }
-
-    @Override
-    public ResponseEntity<?> getPurchaseById(String cpf, Long paymentId) {
-
-        return HandleRequest.handle(() -> {
-
-            var entity = buyRepository.findByCustomerCpfAndId(cpf, paymentId);
-            if (entity.isEmpty())
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-            return new ResponseEntity<>(entity.get(), HttpStatus.OK);
-        });
-    }
 
     @Override
     public ResponseEntity<?> findByPK(Long id) {
+
         return HandleRequest.handle(() -> {
             var entity = buyRepository.findById(id);
             if (entity.isEmpty())
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-            return new ResponseEntity<>(entity.get(), HttpStatus.OK);
+            var response = toBuyResponse(entity.get());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
 
 
-    private Map<String, List<FisicalBook>> getAvailableBooks(BuyRequest request) {
+    private BuyResponse toBuyResponse(Buy buy){
 
-        var map = new HashMap<String, List<FisicalBook>>();
+        var copiesGroupedByIsbn = buy.getBooks().stream()
+                .collect(Collectors.groupingBy(copy -> copy.getBook().getIsbn()));
+
+        var buyBooks = copiesGroupedByIsbn
+                .entrySet()
+                .stream()
+                .map(group -> new BuyBook(group.getKey(), group.getValue().size()))
+                .toList();
+
+        return new BuyResponse(
+                buy.getId(),
+                buy.getCustomer().getCpf(),
+                buy.getTotalPrice(),
+                buy.getBuyDate(),
+                buy.getDueDate(),
+                Optional.ofNullable(buy.getPaidAt()),
+                buy.getStatus(),
+                buyBooks
+        );
+    }
+
+
+    private Map<String, List<BookCopy>> getAvailableBooks(BuyRequest request) {
+
+        var map = new HashMap<String, List<BookCopy>>();
 
         request.books().forEach(buyBook -> {
 
-            var fisicalBooks = fisicalBookRepository
+            var bookCopies = bookCopyRepository
                     .findAllByIsbn(buyBook.isbn())
                     .stream()
-                    .filter(fisicalBook -> fisicalBook.getStatus().equals("AVAILABLE"))
+                    .filter(copy -> copy.getStatus().equals("AVAILABLE"))
                     .toList();
 
-            if (fisicalBooks.size() < buyBook.quantity())
-                throw new EntityNotFoundException("Not enough books in stock");
+            if (bookCopies.size() < buyBook.quantity())
+                throw new EntityNotFoundException("Not enough books in stock for ISBN: " + buyBook.isbn());
 
-            map.put(buyBook.isbn(), fisicalBooks);
+            map.put(buyBook.isbn(), bookCopies);
         });
 
         return map;
     }
 
 
-    private void restoreBooks(List<FisicalBook> books) {
+    private void restoreBooks(List<BookCopy> books) {
 
         for (var book : books) {
             book.setStatus("AVAILABLE");
             book.setBuy(null);
-            fisicalBookRepository.save(book);
+            bookCopyRepository.save(book);
         }
     }
 
@@ -187,5 +197,8 @@ public class BuyService implements IBuyService {
         return buyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Buy not found"));
     }
+
+
+
 
 }

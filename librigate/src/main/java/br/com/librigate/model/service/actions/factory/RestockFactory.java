@@ -1,13 +1,14 @@
 package br.com.librigate.model.service.actions.factory;
 
 import br.com.librigate.dto.actions.restock.RestockBook;
-import br.com.librigate.dto.book.fisicalBook.CreateFisicalBookRequest;
+import br.com.librigate.dto.book.bookCopy.CreateBookCopyRequest;
 import br.com.librigate.model.entity.actions.Restock;
-import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Employee;
-import br.com.librigate.model.repository.FisicalBookRepository;
-import br.com.librigate.model.service.book.FisicalBookService;
+import br.com.librigate.model.repository.BookCopyRepository;
+import br.com.librigate.model.service.book.BookCopyService;
 import br.com.librigate.model.repository.RestockRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -16,19 +17,15 @@ import java.time.LocalDate;
 public class RestockFactory {
 
     private final RestockRepository restockRepository;
+    private final BookCopyService bookCopyService;
+    private final BookCopyRepository bookCopyRepository;
 
-    private final FisicalBookService fisicalBookService;
-    private final FisicalBookRepository fisicalBookRepository;
 
-
-    public RestockFactory(
-        RestockRepository restockRepository,
-        FisicalBookService fisicalBookService,
-        FisicalBookRepository fisicalBookRepository
-    ) {
+    @Autowired
+    public RestockFactory(RestockRepository restockRepository,BookCopyService bookCopyService,BookCopyRepository bookCopyRepository) {
         this.restockRepository = restockRepository;
-        this.fisicalBookService = fisicalBookService;
-        this.fisicalBookRepository = fisicalBookRepository;
+        this.bookCopyService = bookCopyService;
+        this.bookCopyRepository = bookCopyRepository;
     }
 
     public Restock createRestock(Employee employee, double totalPrice) {
@@ -39,19 +36,19 @@ public class RestockFactory {
         return restockRepository.save(restock);
     }
 
-    public FisicalBook createFisicalBook(String isbn, double price, Restock restock) {
+    public void createBookCopy(String isbn, double price, Restock restock) {
 
-        Long copyNumber = fisicalBookRepository.findMaxCopyNumberByBookIsbn(isbn);
+        Long copyNumber = bookCopyRepository.findMaxCopyNumberByBookIsbn(isbn);
         copyNumber = copyNumber == null ? 1 : copyNumber + 1;
 
-        var createFKRequest = new CreateFisicalBookRequest(isbn, copyNumber,price, restock);
-        return fisicalBookService.create(createFKRequest);
+        var createFKRequest = new CreateBookCopyRequest(isbn, copyNumber,price, restock);
+        bookCopyService.create(createFKRequest);
     }
 
-    public RestockBook createFisicalBooksByIsbn(String isbn, int quantity, double price, Restock restock) {
+    public RestockBook createBookCopiesByIsbn(String isbn, int quantity, double price, Restock restock) {
 
         for (int i = 0; i < quantity; i++) {
-            createFisicalBook(isbn, price, restock);
+            createBookCopy(isbn, price, restock);
         }
 
         return new RestockBook(isbn, quantity, price);

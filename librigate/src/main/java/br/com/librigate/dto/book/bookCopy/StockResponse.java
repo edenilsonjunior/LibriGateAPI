@@ -1,4 +1,4 @@
-package br.com.librigate.dto.book.fisicalBook;
+package br.com.librigate.dto.book.bookCopy;
 
 public record StockResponse(
      String isbn,
