@@ -1,6 +1,6 @@
 package br.com.librigate.model.entity.actions;
 
-import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -39,13 +39,13 @@ public class Rent {
 
     @NotNull
     @ManyToMany
-    @JoinTable(name = "rent_fisical_book",
+    @JoinTable(name = "rent_book",
             joinColumns = @JoinColumn(name = "rent_id"),
             inverseJoinColumns = {
-                @JoinColumn(name = "fisical_book_id", referencedColumnName = "id")
+                @JoinColumn(name = "book_copy_id", referencedColumnName = "id")
             }
     )
-    private List<FisicalBook> bookList;
+    private List<BookCopy> bookList;
 
 
     public Rent() { }

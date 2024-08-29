@@ -1,7 +1,8 @@
 package br.com.librigate.model.entity.actions;
 
-import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -36,18 +37,19 @@ public class Buy {
 
     @ManyToOne
     @JoinColumn(name = "customer_cpf")
+    @JsonBackReference
     private Customer customer;
 
     @OneToMany(mappedBy = "buy")
     @JsonManagedReference
-    private List<FisicalBook> books;
+    private List<BookCopy> books;
 
 
     @PrePersist
     public void calculateTotalPrice() {
 
         totalPrice = books.stream()
-                          .mapToDouble(FisicalBook::getPrice)
+                          .mapToDouble(BookCopy::getPrice)
                           .sum();
     }
 

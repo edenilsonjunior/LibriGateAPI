@@ -63,7 +63,7 @@ public class RestockService implements IRestockService {
 
             var restock = restockFactory.createRestock(employee, (request.quantity() * request.unityValue()));
 
-            var restockBooksResponse = restockFactory.createFisicalBooksByIsbn(request.isbn(), request.quantity(), request.unityValue(), restock);
+            var restockBooksResponse = restockFactory.createBookCopiesByIsbn(request.isbn(), request.quantity(), request.unityValue(), restock);
 
             var response = new RestockResponse(
                     restock.getId(),
@@ -164,7 +164,7 @@ public class RestockService implements IRestockService {
 
     private List<RestockBook> createRestockBooks(RestockBookRequest request, Restock restock) {
         return request.books().stream()
-                .map(requestBook -> restockFactory.createFisicalBooksByIsbn(
+                .map(requestBook -> restockFactory.createBookCopiesByIsbn(
                         requestBook.isbn(),
                         requestBook.quantity(),
                         requestBook.unitValue(),

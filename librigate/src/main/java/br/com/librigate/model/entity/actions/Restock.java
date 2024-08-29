@@ -1,6 +1,6 @@
 package br.com.librigate.model.entity.actions;
 
-import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Employee;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -31,7 +31,7 @@ public class Restock {
     private Employee employee;
 
     @OneToMany(mappedBy = "restock")
-    private List<FisicalBook> bookList;
+    private List<BookCopy> bookList;
 
     public Restock() {
     }

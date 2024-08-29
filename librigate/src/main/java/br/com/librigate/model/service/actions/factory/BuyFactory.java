@@ -2,10 +2,10 @@ package br.com.librigate.model.service.actions.factory;
 
 import br.com.librigate.dto.actions.buy.BuyRequest;
 import br.com.librigate.model.entity.actions.Buy;
-import br.com.librigate.model.entity.book.FisicalBook;
+import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
 import br.com.librigate.model.repository.BuyRepository;
-import br.com.librigate.model.repository.FisicalBookRepository;
+import br.com.librigate.model.repository.BookCopyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 public class BuyFactory {
 
     private final BuyRepository buyRepository;
-    private final FisicalBookRepository fisicalBookRepository;
+    private final BookCopyRepository bookCopyRepository;
 
     @Autowired
-    public BuyFactory(BuyRepository buyRepository, FisicalBookRepository fisicalBookRepository) {
+    public BuyFactory(BuyRepository buyRepository, BookCopyRepository bookCopyRepository) {
         this.buyRepository = buyRepository;
-        this.fisicalBookRepository = fisicalBookRepository;
+        this.bookCopyRepository = bookCopyRepository;
     }
 
 
@@ -34,12 +34,13 @@ public class BuyFactory {
         entity.setBuyDate(LocalDateTime.now());
         entity.setDueDate(LocalDate.now().plusDays(2));
         entity.setStatus("PENDING");
+        entity.setBooks(new ArrayList<>());
 
         return buyRepository.save(entity);
     }
 
 
-    public List<FisicalBook> soldBooks(BuyRequest request, Buy buy, Map<String, List<FisicalBook>> availableBooks) {
+    public List<BookCopy> soldBooks(BuyRequest request, Buy buy, Map<String, List<BookCopy>> availableBooks) {
 
         return request.books()
                 .stream()
@@ -61,7 +62,12 @@ public class BuyFactory {
     }
 
 
-    private List<FisicalBook> createBooksByQuantity(List<FisicalBook> books, int quantity, Buy buy) {
+    private List<BookCopy> createBooksByQuantity(List<BookCopy> books, int quantity, Buy buy) {
+
+        /*
+            Usa-se o peek ao inves do map pois a intencao nao é transformar o objeto,
+            mas sim trabalhar com ele sem mudar o tipo do objeto.
+        */
 
         return books.stream()
                 .limit(quantity)
@@ -69,9 +75,8 @@ public class BuyFactory {
 
                     book.setStatus("SOLD");
                     book.setBuy(buy);
-                    fisicalBookRepository.save(book);
+                    bookCopyRepository.save(book);
                 })
                 .collect(Collectors.toList());
     }
-
 }

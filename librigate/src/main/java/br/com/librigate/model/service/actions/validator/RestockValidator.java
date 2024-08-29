@@ -24,7 +24,7 @@ public class RestockValidator {
     public void validateNewBook(NewBookRequest request) {
 
         validate(request.launchDate().isAfter(LocalDate.now()), "Invalid date", false);
-        validate(request.edition() <= 1, "Invalid edition", false);
+        validate(request.edition() <= 0, "Invalid edition", false);
         validate(request.quantity() <= 0, "Invalid quantity", false);
         validate(request.unityValue() <= 0, "Invalid price", false);
         validate(!employeeRepository.existsById(request.employeeCpf()), "This employee does not exist", true);

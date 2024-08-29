@@ -8,6 +8,7 @@ import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.model.repository.BookRepository;
+import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.interfaces.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,7 +75,8 @@ public class BookService implements IBookService {
 
     @Override
     public ResponseEntity<?> getBooksByCategory(String category) {
-        try {
+
+        return HandleRequest.handle(()->{
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
@@ -93,18 +95,16 @@ public class BookService implements IBookService {
                     .toList();
 
             if (filteredEntityList.isEmpty())
-                return new ResponseEntity<>(filteredEntityList, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
 
 
     @Override
     public ResponseEntity<?> getBooksByAuthor(String author) {
-        try {
+        return HandleRequest.handle(()->{
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
@@ -123,18 +123,17 @@ public class BookService implements IBookService {
                     .toList();
 
             if (filteredEntityList.isEmpty())
-                return new ResponseEntity<>(filteredEntityList, HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
 
 
     @Override
     public ResponseEntity<?> getBookByIsbn(String bookIsbn) {
-        try {
+
+        return HandleRequest.handle(() -> {
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
@@ -153,17 +152,15 @@ public class BookService implements IBookService {
                     .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
 
 
     @Override
     public ResponseEntity<?> getReview(String bookIsbn) {
-        try {
+
+        return HandleRequest.handle(() -> {
+
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
@@ -177,13 +174,13 @@ public class BookService implements IBookService {
                                     r.getRating()
                             ))
                     )
-                    .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"))
+                    .toList();
+
+            if (filteredEntityList.isEmpty())
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
 }

@@ -18,10 +18,6 @@ public class BuyController {
         this.buyService = buyService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> findByPK(@PathVariable Long id){
-        return buyService.findByPK(id);
-    }
 
     @PostMapping
     public ResponseEntity<?> purchase(@RequestBody BuyRequest request){
@@ -33,19 +29,20 @@ public class BuyController {
         return buyService.processPayment(buyId);
     }
 
-    @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<?> getPurchases(@PathVariable String cpf){
-        return buyService.getPurchases(cpf);
-    }
-
-    @GetMapping("/cpf/{cpf}/{paymentId}")
-    public ResponseEntity<?> getPurchaseById(@PathVariable String cpf, @PathVariable Long paymentId){
-        return buyService.getPurchaseById(cpf, paymentId);
-    }
-
     @DeleteMapping("/{buyId}")
     public ResponseEntity<?> cancelPurchase(@PathVariable Long buyId){
         return buyService.cancelPurchase(buyId);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findByPK(@PathVariable Long id){
+        return buyService.findByPK(id);
+    }
+
+    @GetMapping("/cpf/{cpf}")
+    public ResponseEntity<?> getPurchasesByCustomerCpf(@PathVariable String cpf){
+        return buyService.getPurchasesByCustomerCpf(cpf);
     }
 
 }
