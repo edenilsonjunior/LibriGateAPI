@@ -6,6 +6,7 @@ import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.entity.people.Customer;
+import br.com.librigate.model.mapper.actions.BuyMapper;
 import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.FisicalBookRepository;
@@ -29,6 +30,7 @@ public class BuyService implements IBuyService {
     private final FisicalBookRepository fisicalBookRepository;
     private final BuyFactory buyFactory;
     private final BuyValidator buyValidator;
+    private final BuyMapper buyMapper = BuyMapper.INSTANCE;
 
     @Autowired
     public BuyService(BuyRepository buyRepository, CustomerRepository customerRepository, FisicalBookRepository fisicalBookRepository, BuyFactory buyFactory, BuyValidator buyValidator) {
@@ -55,7 +57,7 @@ public class BuyService implements IBuyService {
             entity.setBooks(soldBooks);
             entity.calculateTotalPrice();
 
-            var response = buyFactory.createBuyResponse(entity);
+            var response = buyMapper.toBuyResponse(entity);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         });
@@ -71,7 +73,7 @@ public class BuyService implements IBuyService {
             buyValidator.validatePayment(entity);
             buyFactory.approvePayment(entity);
 
-            var response = buyFactory.createBuyResponse(entity);
+            var response = buyMapper.toBuyResponse(entity);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
@@ -187,5 +189,4 @@ public class BuyService implements IBuyService {
         return buyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Buy not found"));
     }
-
 }

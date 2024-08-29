@@ -1,7 +1,6 @@
 package br.com.librigate.model.service.actions.factory;
 
 import br.com.librigate.dto.actions.buy.BuyRequest;
-import br.com.librigate.dto.actions.buy.BuyResponse;
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.entity.people.Customer;
@@ -37,19 +36,6 @@ public class BuyFactory {
         entity.setStatus("PENDING");
 
         return buyRepository.save(entity);
-    }
-
-
-    public BuyResponse createBuyResponse(Buy entity) {
-        return new BuyResponse(
-                entity.getId(),
-                entity.getCustomer().getCpf(),
-                entity.getTotalPrice(),
-                entity.getBuyDate(),
-                entity.getDueDate(),
-                Optional.ofNullable(entity.getPaidAt()),
-                entity.getStatus()
-        );
     }
 
 
