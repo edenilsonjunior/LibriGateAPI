@@ -7,7 +7,7 @@ import java.util.Optional;
 public record BuyResponse(
         Long id,
         String customerCpf,
-        String totalPrice,
+        Double totalPrice,
         LocalDateTime buyDate,
         LocalDate dueDate,
         Optional<LocalDateTime> paidAt,

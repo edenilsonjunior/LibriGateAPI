@@ -1,6 +1,5 @@
 package br.com.librigate.model.service.people.factory;
 
-
 import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
 import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
 import br.com.librigate.model.entity.people.Employee;
@@ -14,9 +13,12 @@ import java.util.ArrayList;
 @Component
 public class EmployeeFactory {
 
-    @Autowired
-    private AddressService addressService;
+    private final AddressService addressService;
 
+    @Autowired
+    public EmployeeFactory(AddressService addressService) {
+        this.addressService = addressService;
+    }
 
     public Employee createEmployee(CreateEmployeeRequest request) {
 
@@ -45,7 +47,4 @@ public class EmployeeFactory {
 
         return employee;
     }
-
-
-
 }
