@@ -44,8 +44,24 @@ public class RentService implements IRentService {
     @Transactional
     @Override
     public RentResponse rent(RentRequest request) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'rent'");
+        return HandleRequest.handle(() -> {
+            var customer = findCustomerByCPF(request.customerCpf());
+
+            var availableBooks = getAvailableBooks(request);
+
+            var entity = rentFactory.createRent(request, customer);
+
+            entity.setRentDate(LocalDate.now());
+            entity.setDevolutionDate(LocalDate.now().plusWeeks(1));
+            entity.setStatus("RENTED");
+
+            var rentedBooks = rentFactory.rentedBooks(entity, availableBooks);
+
+            entity.setBookList(rentedBooks);
+            rentRepository.save(entity);
+
+            return toRentResponse(entity);
+        });
     }
 
     @Transactional
