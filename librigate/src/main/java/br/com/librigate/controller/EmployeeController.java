@@ -14,28 +14,29 @@ public class EmployeeController {
     @Autowired
     private IEmployeeService employeeService;
 
-    @PostMapping("/create")
+    @GetMapping
+    public ResponseEntity<?> findAllEmployees() {
+        return employeeService.findAll();
+    }
+
+    @GetMapping("/{cpf}")
+    public ResponseEntity<?> findEmployee(@PathVariable String cpf) {
+        return employeeService.findByPK(cpf);
+    }
+
+    @PostMapping
     public ResponseEntity<?> createEmployee(@RequestBody CreateEmployeeRequest request) {
         return employeeService.create(request);
     }
 
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<?> updateEmployee(@RequestBody UpdateEmployeeRequest request) {
         return employeeService.update(request);
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteEmployee(@PathVariable String id) {
-       return employeeService.delete(id);
+    @DeleteMapping("/{cpf}")
+    public ResponseEntity<?> deleteEmployee(@PathVariable String cpf) {
+       return employeeService.delete(cpf);
     }
 
-    @GetMapping("/find/{id}")
-    public ResponseEntity<?> findEmployee(@PathVariable String id) {
-        return employeeService.findByPK(id);
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<?> findAllEmployees() {
-        return employeeService.findAll();
-    }
 }

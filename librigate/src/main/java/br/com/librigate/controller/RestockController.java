@@ -17,26 +17,23 @@ public class RestockController {
     @Autowired
     private IRestockService restockService;
 
-
-    @GetMapping("/find/{id}")
-    public ResponseEntity<?> findByPK(Long id) {
-        return restockService.findByPK(id);
-    }
-
-    @GetMapping("/history")
+    @GetMapping
     public ResponseEntity<?> getRestockHistory() {
         return restockService.getRestockHistory();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> findByPK(Long id) {
+        return restockService.findByPK(id);
+    }
+
     @PostMapping("/restock-new-book")
     public ResponseEntity<?> buyNewBook(@RequestBody NewBookRequest request) {
-
         return restockService.buyNewBook(request);
     }
 
-    @PostMapping("/restock")
+    @PostMapping("/restock-existing-books")
     public ResponseEntity<?> restockBook(@RequestBody RestockBookRequest request) {
-
         return restockService.restockBook(request);
     }
 

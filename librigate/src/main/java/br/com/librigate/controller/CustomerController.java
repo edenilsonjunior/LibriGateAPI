@@ -16,29 +16,29 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createCustomer(@RequestBody CreateCustomerRequest request){
-        return customerService.create(request);
+    @GetMapping
+    public ResponseEntity<?> findAllCustomers(){
+        return customerService.findAll();
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateCustomer(@RequestBody UpdateCustomerRequest request){
-        return customerService.update(request);
-    }
-
-    @DeleteMapping("/delete/{cpf}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable String cpf){
-        return customerService.delete(cpf);
-    }
-
-    @GetMapping("/find/{cpf}")
+    @GetMapping("/{cpf}")
     public ResponseEntity<?> findCustomer(@PathVariable String cpf){
         return customerService.findByPK(cpf);
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<?> findAllCustomers(){
-        return customerService.findAll();
+    @PostMapping
+    public ResponseEntity<?> createCustomer(@RequestBody CreateCustomerRequest request){
+        return customerService.create(request);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateCustomer(@RequestBody UpdateCustomerRequest request){
+        return customerService.update(request);
+    }
+
+    @DeleteMapping("/{cpf}")
+    public ResponseEntity<?> deleteCustomer(@PathVariable String cpf){
+        return customerService.delete(cpf);
     }
 
 }

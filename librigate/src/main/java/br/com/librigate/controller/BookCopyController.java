@@ -20,7 +20,7 @@ public class BookCopyController {
         return bookCopyService.getStock();
     }
 
-    @GetMapping("/stock/book/{isbn}")
+    @GetMapping("/stock/{isbn}")
     public ResponseEntity<?> getStockByBook(@PathVariable String isbn) {
         return bookCopyService.getStockByBook(isbn);
     }
