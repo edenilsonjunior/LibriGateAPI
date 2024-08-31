@@ -67,8 +67,38 @@ public class RentService implements IRentService {
     @Transactional
     @Override
     public RentResponse processDevolutionBook(Long rentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'processDevolutionBook'");
+        return HandleRequest.handle(() -> {
+            var entity = findRentById(rentId);
+
+            // Validar se o aluguel pode ser devolvido
+            rentValidator.validateDevolution(entity);
+
+            // Registrar data de devolução
+            entity.setGivenBackAt(LocalDateTime.now());
+            entity.setStatus("RETURNED");
+            rentRepository.save(entity);
+
+            // Restaurar os livros como disponíveis
+            restoreBooks(entity.getBookList());
+
+            return toRentResponse(entity);
+        });
+    }
+
+    @Transactional
+    public RentResponse renewRent(Long rentId) {
+        return HandleRequest.handle(() -> {
+            var entity = findRentById(rentId);
+
+            // Validar se o aluguel pode ser renovado
+            rentValidator.validateRenewal(entity);
+
+            // Estender o prazo de devolução por mais uma semana
+            entity.setDevolutionDate(entity.getDevolutionDate().plusWeeks(1));
+            rentRepository.save(entity);
+
+            return toRentResponse(entity);
+        });
     }
 
     @Override
