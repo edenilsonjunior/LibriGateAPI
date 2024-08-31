@@ -4,9 +4,9 @@ import br.com.librigate.dto.actions.rent.RentRequest;
 import br.com.librigate.dto.actions.rent.RentResponse;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.actions.Rent;
-import br.com.librigate.model.entity.book.BookCopy;
+import br.com.librigate.model.entity.book.FisicalBook;
 import br.com.librigate.model.entity.people.Customer;
-import br.com.librigate.model.repository.BookCopyRepository;
+import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.RentRepository;
 import br.com.librigate.model.service.HandleRequest;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,16 +28,16 @@ public class RentService implements IRentService {
 
     private final RentRepository rentRepository;
     private final CustomerRepository customerRepository;
-    private final BookCopyRepository bookCopyRepository;
+    private final FisicalBookRepository fisicalBookRepository; // Usando FisicalBookRepository
     private final RentFactory rentFactory;
     private final RentValidator rentValidator;
 
     @Autowired
     public RentService(RentRepository rentRepository, CustomerRepository customerRepository,
-                       BookCopyRepository bookCopyRepository, RentFactory rentFactory, RentValidator rentValidator) {
+                       FisicalBookRepository fisicalBookRepository, RentFactory rentFactory, RentValidator rentValidator) {
         this.rentRepository = rentRepository;
         this.customerRepository = customerRepository;
-        this.bookCopyRepository = bookCopyRepository;
+        this.fisicalBookRepository = fisicalBookRepository;
         this.rentFactory = rentFactory;
         this.rentValidator = rentValidator;
     }
@@ -47,7 +48,7 @@ public class RentService implements IRentService {
         return HandleRequest.handle(() -> {
             var customer = findCustomerByCPF(request.customerCpf());
 
-            var availableBooks = getAvailableBooks(request);
+            var availableBooks = getAvailableBooks(request);  // Buscar livros físicos disponíveis
 
             var entity = rentFactory.createRent(request, customer);
 
@@ -70,15 +71,12 @@ public class RentService implements IRentService {
         return HandleRequest.handle(() -> {
             var entity = findRentById(rentId);
 
-            // Validar se o aluguel pode ser devolvido
             rentValidator.validateDevolution(entity);
 
-            // Registrar data de devolução
             entity.setGivenBackAt(LocalDateTime.now());
             entity.setStatus("RETURNED");
             rentRepository.save(entity);
 
-            // Restaurar os livros como disponíveis
             restoreBooks(entity.getBookList());
 
             return toRentResponse(entity);
@@ -90,10 +88,8 @@ public class RentService implements IRentService {
         return HandleRequest.handle(() -> {
             var entity = findRentById(rentId);
 
-            // Validar se o aluguel pode ser renovado
             rentValidator.validateRenewal(entity);
 
-            // Estender o prazo de devolução por mais uma semana
             entity.setDevolutionDate(entity.getDevolutionDate().plusWeeks(1));
             rentRepository.save(entity);
 
@@ -103,8 +99,7 @@ public class RentService implements IRentService {
 
     @Override
     public List<Rent> getRents(String cpf) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRents'");
+        return rentRepository.findByCustomerCpf(cpf);
     }
 
     @Override
