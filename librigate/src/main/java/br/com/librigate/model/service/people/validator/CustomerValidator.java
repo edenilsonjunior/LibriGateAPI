@@ -37,7 +37,7 @@ public class CustomerValidator {
     }
 
     private void validateName(String name, String fieldName) {
-        validate(name == null || name.isEmpty() || name.length() > 50, " fieldName  must be between 1 and 50 characters and cannot be null.");
+        validate(name == null || name.isEmpty() || name.length() > 50, fieldName + " must be between 1 and 50 characters and cannot be null.");
     }
 
     private void validateGender(String gender){
