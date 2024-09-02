@@ -5,17 +5,21 @@ import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
 import br.com.librigate.model.entity.people.Customer;
 import br.com.librigate.model.mapper.people.CustomerMapper;
 import br.com.librigate.model.service.address.AddressService;
+import br.com.librigate.model.service.interfaces.IAddressService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Component
 public class CustomerFactory {
 
-    private final AddressService addressService;
+    private final IAddressService addressService;
 
-    public CustomerFactory() {
-        addressService = new AddressService();
+    @Autowired
+    public CustomerFactory(IAddressService addressService) {
+        this.addressService = addressService;
     }
 
     public Customer createCustomer(CreateCustomerRequest request) {
@@ -25,6 +29,7 @@ public class CustomerFactory {
         customer.setActive(true);
         customer.setPurchases(new ArrayList<>());
         customer.setRentList(new ArrayList<>());
+        customer.setRegistrationDate(LocalDate.now());
 
         return customer;
     }

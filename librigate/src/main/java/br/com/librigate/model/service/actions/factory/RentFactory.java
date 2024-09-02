@@ -1,5 +1,6 @@
 package br.com.librigate.model.service.actions.factory;
 
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.actions.Rent;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
@@ -48,8 +49,13 @@ public class RentFactory {
         var list = new ArrayList<BookCopy>();
 
         isbns.forEach(isbn -> {
-            var book = bookCopyRepository.findAllAvailableByIsbn(isbn);
-            list.add(book.getFirst());
+            var books = bookCopyRepository.findAllAvailableByIsbn(isbn);
+
+            if(books.isEmpty())
+                throw new EntityNotFoundException("There is not available books for isbn: " + isbn);
+
+            var book = books.get(0);
+            list.add(book);
         });
 
         return list;

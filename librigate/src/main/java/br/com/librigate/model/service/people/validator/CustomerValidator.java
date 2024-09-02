@@ -41,8 +41,8 @@ public class CustomerValidator {
     }
 
     private void validateGender(String gender){
-        validate(!gender.equalsIgnoreCase("M")
-                && !gender.equalsIgnoreCase("F"), "Invalid Gender.");
+
+        validate(gender.isEmpty(), "Gender field can't be null.");
     }
 
     private void validateCustomerExists(String cpf){
