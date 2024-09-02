@@ -4,108 +4,97 @@ import br.com.librigate.dto.actions.rent.RentRequest;
 import br.com.librigate.dto.actions.rent.RentResponse;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.actions.Rent;
-import br.com.librigate.model.entity.book.FisicalBook;
-import br.com.librigate.model.entity.people.Customer;
-import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.repository.CustomerRepository;
+import br.com.librigate.model.repository.FisicalBookRepository;
 import br.com.librigate.model.repository.RentRepository;
-import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.actions.factory.RentFactory;
 import br.com.librigate.model.service.actions.validator.RentValidator;
-import br.com.librigate.model.service.interfaces.IRentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Service
-public class RentService implements IRentService {
-
-    private final RentRepository rentRepository;
-    private final CustomerRepository customerRepository;
-    private final FisicalBookRepository fisicalBookRepository; // Usando FisicalBookRepository
-    private final RentFactory rentFactory;
-    private final RentValidator rentValidator;
+public class RentService {
 
     @Autowired
-    public RentService(RentRepository rentRepository, CustomerRepository customerRepository,
-                       FisicalBookRepository fisicalBookRepository, RentFactory rentFactory, RentValidator rentValidator) {
-        this.rentRepository = rentRepository;
-        this.customerRepository = customerRepository;
-        this.fisicalBookRepository = fisicalBookRepository;
-        this.rentFactory = rentFactory;
-        this.rentValidator = rentValidator;
-    }
+    private RentRepository rentRepository;
 
-    @Transactional
-    @Override
+    @Autowired
+    private CustomerRepository customerRepository;
+
+    @Autowired
+    private FisicalBookRepository fisicalBookRepository;
+
+    @Autowired
+    private RentFactory rentFactory;
+
+    @Autowired
+    private RentValidator rentValidator;
+
     public RentResponse rent(RentRequest request) {
-        return HandleRequest.handle(() -> {
-            var customer = findCustomerByCPF(request.customerCpf());
+        rentValidator.validateRent(request);
 
-            var availableBooks = getAvailableBooks(request);  // Buscar livros físicos disponíveis
+        var customer = customerRepository.findById(request.customerCpf())
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
 
-            var entity = rentFactory.createRent(request, customer);
+        var availableBooks = rentFactory.getAvailableBooksForRent(request.booksIsbn());
+        var rent = rentFactory.createRent(customer);
+        rentFactory.associateBooksToRent(availableBooks, rent);
 
-            entity.setRentDate(LocalDate.now());
-            entity.setDevolutionDate(LocalDate.now().plusWeeks(1));
-            entity.setStatus("RENTED");
-
-            var rentedBooks = rentFactory.rentedBooks(entity, availableBooks);
-
-            entity.setBookList(rentedBooks);
-            rentRepository.save(entity);
-
-            return toRentResponse(entity);
-        });
+        return toRentResponse(rent);
     }
 
-    @Transactional
-    @Override
     public RentResponse processDevolutionBook(Long rentId) {
-        return HandleRequest.handle(() -> {
-            var entity = findRentById(rentId);
+        rentValidator.validateDevolution(rentId);
 
-            rentValidator.validateDevolution(entity);
+        var rent = rentRepository.findById(rentId)
+                .orElseThrow(() -> new EntityNotFoundException("Rent not found"));
 
-            entity.setGivenBackAt(LocalDateTime.now());
-            entity.setStatus("RETURNED");
-            rentRepository.save(entity);
+        rent.setStatus("RETURNED");
+        rent.setGivenBackAt(LocalDate.now());
 
-            restoreBooks(entity.getBookList());
+        restoreBooks(rent);
 
-            return toRentResponse(entity);
-        });
+        return toRentResponse(rent);
     }
 
-    @Transactional
     public RentResponse renewRent(Long rentId) {
-        return HandleRequest.handle(() -> {
-            var entity = findRentById(rentId);
+        rentValidator.validateRenew(rentId);
 
-            rentValidator.validateRenewal(entity);
+        var rent = rentRepository.findById(rentId)
+                .orElseThrow(() -> new EntityNotFoundException("Rent not found"));
 
-            entity.setDevolutionDate(entity.getDevolutionDate().plusWeeks(1));
-            rentRepository.save(entity);
+        rent.setDevolutionDate(rent.getDevolutionDate().plusWeeks(1));
+        return toRentResponse(rent);
+    }
 
-            return toRentResponse(entity);
+    private void restoreBooks(Rent rent) {
+        rent.getBookList().forEach(book -> {
+            book.setStatus("AVAILABLE");
+            book.setRent(null);
+            fisicalBookRepository.save(book);
         });
     }
 
-    @Override
     public List<Rent> getRents(String cpf) {
         return rentRepository.findByCustomerCpf(cpf);
     }
 
-    @Override
-    public Rent getRendById(Long rentId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRendById'");
+    public Rent getRentById(Long rentId) {
+        return rentRepository.findById(rentId)
+                .orElseThrow(() -> new EntityNotFoundException("Rent not found"));
     }
 
+    private RentResponse toRentResponse(Rent rent) {
+        return new RentResponse(
+                rent.getId(),
+                rent.getCustomer().getCpf(),
+                rent.getRentDate(),
+                rent.getStatus(),
+                rent.getDevolutionDate(),
+                rent.getGivenBackAt()
+        );
+    }
 }
