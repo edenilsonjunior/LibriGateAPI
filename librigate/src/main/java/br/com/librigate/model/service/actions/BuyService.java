@@ -159,16 +159,12 @@ public class BuyService implements IBuyService {
 
         request.books().forEach(buyBook -> {
 
-            var bookCopies = bookCopyRepository
-                    .findAllByIsbn(buyBook.isbn())
-                    .stream()
-                    .filter(copy -> copy.getStatus().equals("AVAILABLE"))
-                    .toList();
+            var bookCopies = bookCopyRepository.findAllAvailableByIsbn(buyBook.isbn());
 
             if (bookCopies.size() < buyBook.quantity())
                 throw new EntityNotFoundException("Not enough books in stock for ISBN: " + buyBook.isbn());
 
-            map.put(buyBook.isbn(), bookCopies);
+            map.put(buyBook.isbn(), bookCopies.subList(0, buyBook.quantity()));
         });
 
         return map;

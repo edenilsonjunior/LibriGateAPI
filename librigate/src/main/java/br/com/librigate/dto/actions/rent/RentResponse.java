@@ -1,6 +1,8 @@
 package br.com.librigate.dto.actions.rent;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public record RentResponse(
@@ -9,5 +11,6 @@ public record RentResponse(
         LocalDate rentDate,
         String status,
         LocalDate devolutionDate,
-        Optional<LocalDate> givenBackAt
+        Optional<LocalDateTime> givenBackAt,
+        List<RentBook> books
 ) { }

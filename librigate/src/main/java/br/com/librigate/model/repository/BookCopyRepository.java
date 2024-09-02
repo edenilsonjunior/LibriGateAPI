@@ -14,9 +14,13 @@ public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
     @Query("SELECT MAX(f.copyNumber) FROM BookCopy f WHERE f.book.isbn = :isbn")
     Long findMaxCopyNumberByBookIsbn(@Param("isbn") String isbn);
 
-    @Query("SELECT f FROM BookCopy f WHERE f.book.isbn = :isbn")
-    List<BookCopy> findAllByIsbn(String isbn);
+    @Query("SELECT f FROM BookCopy f WHERE f.book.isbn = :isbn AND f.status = 'AVAILABLE'")
+    List<BookCopy> findAllAvailableByIsbn(String isbn);
 
     @Query("SELECT COUNT(f) FROM BookCopy f WHERE f.book.isbn = :isbn")
     Long countByIsbn(String isbn);
+
+    @Query("SELECT COUNT(f) > 0 FROM BookCopy f WHERE f.book.isbn = :isbn")
+    boolean existsByIsbn(String isbn);
+
 }

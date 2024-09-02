@@ -5,6 +5,7 @@ import br.com.librigate.exception.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 
