@@ -12,6 +12,8 @@ public interface EmployeeMapper {
     EmployeeMapper INSTANCE = Mappers.getMapper(EmployeeMapper.class);
 
     @Mapping(target = "login", source = "cpf")
+    @Mapping(target = "address", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "restockList", ignore = true)
     Employee toEntity(CreateEmployeeRequest request);
-
 }

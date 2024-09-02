@@ -7,7 +7,6 @@ import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
-import br.com.librigate.model.mapper.actions.BuyMapper;
 import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.BookCopyRepository;
@@ -32,7 +31,6 @@ public class BuyService implements IBuyService {
     private final BookCopyRepository bookCopyRepository;
     private final BuyFactory buyFactory;
     private final BuyValidator buyValidator;
-    private final BuyMapper buyMapper = BuyMapper.INSTANCE;
 
     @Autowired
     public BuyService(BuyRepository buyRepository, CustomerRepository customerRepository, BookCopyRepository bookCopyRepository, BuyFactory buyFactory, BuyValidator buyValidator) {
@@ -43,11 +41,9 @@ public class BuyService implements IBuyService {
         this.buyValidator = buyValidator;
     }
 
-
     @Transactional
     @Override
     public ResponseEntity<?> purchase(BuyRequest request) {
-
         return HandleRequest.handle(() -> {
 
             var customer = findCustomerByCPF(request.customerCpf());
@@ -60,27 +56,23 @@ public class BuyService implements IBuyService {
             entity.calculateTotalPrice();
 
             var response = toBuyResponse(entity);
-
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         });
     }
 
-
     @Override
     public ResponseEntity<?> processPayment(Long buyId) {
-
         return HandleRequest.handle(() -> {
+
             var entity = findBuyById(buyId);
 
             buyValidator.validatePayment(entity);
             buyFactory.approvePayment(entity);
 
             var response = toBuyResponse(entity);
-
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
-
 
     @Override
     public ResponseEntity<?> cancelPurchase(Long buyId) {
@@ -97,10 +89,8 @@ public class BuyService implements IBuyService {
         });
     }
 
-
     @Override
     public ResponseEntity<?> getPurchasesByCustomerCpf(String cpf) {
-
         return HandleRequest.handle(() -> {
 
             var entities = buyRepository.findByCustomerCpf(cpf);
@@ -114,11 +104,10 @@ public class BuyService implements IBuyService {
         });
     }
 
-
     @Override
     public ResponseEntity<?> findByPK(Long id) {
-
         return HandleRequest.handle(() -> {
+
             var entity = buyRepository.findById(id);
             if (entity.isEmpty())
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -128,8 +117,7 @@ public class BuyService implements IBuyService {
         });
     }
 
-
-    private BuyResponse toBuyResponse(Buy buy){
+    private BuyResponse toBuyResponse(Buy buy) {
 
         var copiesGroupedByIsbn = buy.getBooks().stream()
                 .collect(Collectors.groupingBy(copy -> copy.getBook().getIsbn()));
@@ -148,10 +136,8 @@ public class BuyService implements IBuyService {
                 buy.getDueDate(),
                 Optional.ofNullable(buy.getPaidAt()),
                 buy.getStatus(),
-                buyBooks
-        );
+                buyBooks);
     }
-
 
     private Map<String, List<BookCopy>> getAvailableBooks(BuyRequest request) {
 
@@ -170,16 +156,14 @@ public class BuyService implements IBuyService {
         return map;
     }
 
-
     private void restoreBooks(List<BookCopy> books) {
 
-        for (var book : books) {
+        books.forEach(book -> {
             book.setStatus("AVAILABLE");
             book.setBuy(null);
             bookCopyRepository.save(book);
-        }
+        });
     }
-
 
     private Customer findCustomerByCPF(String cpf) throws EntityNotFoundException {
         return customerRepository
@@ -187,14 +171,9 @@ public class BuyService implements IBuyService {
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
     }
 
-
     private Buy findBuyById(Long id) {
-
         return buyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Buy not found"));
     }
-
-
-
 
 }

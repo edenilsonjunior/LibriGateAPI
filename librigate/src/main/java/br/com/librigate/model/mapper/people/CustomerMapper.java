@@ -11,5 +11,10 @@ public interface CustomerMapper {
     CustomerMapper instance = Mappers.getMapper(CustomerMapper.class);
 
     @Mapping(target = "login", source = "cpf")
+    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "purchases", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
+    @Mapping(target = "rentList", ignore = true)
+    @Mapping(target = "address", ignore = true)
     Customer toEntity(CreateCustomerRequest createRequest);
 }
