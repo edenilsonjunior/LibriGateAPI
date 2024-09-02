@@ -1,14 +1,16 @@
 package br.com.librigate.model.service.actions;
 
-import br.com.librigate.exception.ValidationException;
+import br.com.librigate.dto.book.NewBookRequest;
+import br.com.librigate.dto.actions.restock.*;
+import br.com.librigate.model.entity.people.Employee;
 import br.com.librigate.model.repository.EmployeeRepository;
+import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.interfaces.IBookService;
 import br.com.librigate.model.service.actions.validator.RestockValidator;
 import br.com.librigate.model.service.interfaces.IRestockService;
 import br.com.librigate.model.service.actions.factory.RestockFactory;
 import br.com.librigate.model.entity.actions.Restock;
 import br.com.librigate.model.repository.RestockRepository;
-import br.com.librigate.model.dto.employee.book.*;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.exception.EntityNotFoundException;
 
@@ -20,17 +22,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RestockService implements IRestockService {
 
     private final IBookService bookService;
-
     private final RestockFactory restockFactory;
     private final RestockRepository restockRepository;
     private final EmployeeRepository employeeRepository;
     private final RestockValidator restockValidator;
-    private final BookMapper bookMapper = BookMapper.INSTANCE;
+    private final BookMapper bookMapper;
 
     @Autowired
     public RestockService(
@@ -45,20 +47,7 @@ public class RestockService implements IRestockService {
         this.restockRepository = restockRepository;
         this.employeeRepository = employeeRepository;
         this.restockValidator = restockValidator;
-    }
-
-
-
-
-    @Override
-    public ResponseEntity<?> findByPK(Long id) {
-
-        var restock = restockRepository.findById(id);
-
-        if (restock.isEmpty())
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        return new ResponseEntity<>(restock.get(), HttpStatus.OK);
+        this.bookMapper = BookMapper.INSTANCE;
     }
 
 
@@ -66,94 +55,141 @@ public class RestockService implements IRestockService {
     @Override
     public ResponseEntity<?> buyNewBook(NewBookRequest request) {
 
-        try {
+        return HandleRequest.handle(() -> {
             restockValidator.validateNewBook(request);
 
-            String isbn = request.isbn();
-            int quantity = request.quantity();
-            double unitValue = request.price();
-            String employeeCpf = request.employeeCpf();
-
+            var employee = findEmployeeByCPF(request.employeeCpf());
             bookService.create(bookMapper.toCreateBookRequest(request));
 
-            var employee = employeeRepository.findById(employeeCpf)
-                    .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+            var restock = restockFactory.createRestock(employee, (request.quantity() * request.unityValue()));
 
-            var restock = restockFactory.createRestock(employee, quantity * unitValue);
+            var restockBooksResponse = restockFactory.createBookCopiesByIsbn(request.isbn(), request.quantity(), request.unityValue(), restock);
 
-            var restockBooksResponse = restockFactory.createFisicalBooksByIsbn(isbn, quantity, unitValue, restock);
-            var restockBooks = List.of(restockBooksResponse);
-
-            var response = new RestockResponse(restock.getId(), restock.getRestockDate(), employeeCpf, restockBooks);
+            var response = new RestockResponse(
+                    restock.getId(),
+                    restock.getPrice(),
+                    restock.getRestockDate(),
+                    request.employeeCpf(),
+                    List.of(restockBooksResponse)
+            );
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-
-        } catch (ValidationException e ) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        });
     }
 
 
     @Transactional
     @Override
     public ResponseEntity<?> restockBook(RestockBookRequest request) {
-        try {
+
+        return HandleRequest.handle(() -> {
             restockValidator.validadeRestock(request);
 
-            var employee = employeeRepository.findById(request.employeeCpf())
-                    .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
-
-            double totalPrice = request.books()
-                    .stream()
-                    .mapToDouble(book -> book.unitValue() * book.quantity())
-                    .sum();
+            var employee = findEmployeeByCPF(request.employeeCpf());
+            double totalPrice = calculateTotalPrice(request.books());
 
             var restock = restockFactory.createRestock(employee, totalPrice);
+            var restockBookList = createRestockBooks(request, restock);
 
-            var restockBookList = CreateRestockBooks(request, restock);
-
-            var response = new RestockResponse(restock.getId(), restock.getRestockDate(), employee.getCpf(), restockBookList);
+            var response = new RestockResponse(
+                    restock.getId(),
+                    restock.getPrice(),
+                    restock.getRestockDate(),
+                    employee.getCpf(),
+                    restockBookList);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-
-        } catch (EntityNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        });
     }
 
 
+    @Transactional
     @Override
     public ResponseEntity<?> getRestockHistory() {
-        var response = restockRepository.findAll();
 
-        if (response.isEmpty())
-            return new ResponseEntity<>(new ArrayList<Restock>(), HttpStatus.NO_CONTENT);
+        return HandleRequest.handle(() -> {
+            var restocks = restockRepository.findAll();
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+            if (restocks.isEmpty())
+                return new ResponseEntity<>(new ArrayList<RestockResponse>(), HttpStatus.NO_CONTENT);
+
+            var response = restocks.stream()
+                    .map(this::mapToRestockResponse)
+                    .collect(Collectors.toList());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        });
     }
 
-    private List<RestockBook> CreateRestockBooks (RestockBookRequest request, Restock restock){
 
-        var list = new ArrayList<RestockBook>();
+    @Transactional
+    @Override
+    public ResponseEntity<?> findByPK(Long id) {
 
-        request.books().forEach((requestBook) -> {
-            var restockBook = restockFactory
-                    .createFisicalBooksByIsbn(
-                            requestBook.isbn(),
-                            requestBook.quantity(),
-                            requestBook.unitValue(),
-                            restock);
+        return HandleRequest.handle(() -> {
+            var restock = restockRepository.findById(id);
 
-            list.add(restockBook);
+            if (restock.isEmpty())
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            var response = new RestockResponse(
+                    restock.get().getId(),
+                    restock.get().getPrice(),
+                    restock.get().getRestockDate(),
+                    restock.get().getEmployee().getCpf(),
+                    getRestockBooks(restock.get()));
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
         });
+    }
 
-        return list;
+
+    private Employee findEmployeeByCPF(String cpf) throws EntityNotFoundException {
+        return employeeRepository
+                .findById(cpf)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+    }
+
+
+    private RestockResponse mapToRestockResponse(Restock restock) {
+        return new RestockResponse(
+                restock.getId(),
+                restock.getPrice(),
+                restock.getRestockDate(),
+                restock.getEmployee().getCpf(),
+                getRestockBooks(restock)
+        );
+    }
+
+
+    private List<RestockBook> createRestockBooks(RestockBookRequest request, Restock restock) {
+        return request.books().stream()
+                .map(requestBook -> restockFactory.createBookCopiesByIsbn(
+                        requestBook.isbn(),
+                        requestBook.quantity(),
+                        requestBook.unitValue(),
+                        restock))
+                .collect(Collectors.toList());
+    }
+
+
+    private List<RestockBook> getRestockBooks(Restock restock) {
+        return restock.getBookList().stream()
+                .collect(Collectors.groupingBy(book -> book.getBook().getIsbn()))
+                .entrySet().stream()
+                .map(entry -> new RestockBook(
+                        entry.getKey(),
+                        entry.getValue().size(),
+                        entry.getValue().get(0).getPrice()
+                ))
+                .toList();
+    }
+
+
+    private double calculateTotalPrice(List<RestockBook> books) {
+        return books.stream()
+                .mapToDouble(book -> book.unitValue() * book.quantity())
+                .sum();
     }
 
 }

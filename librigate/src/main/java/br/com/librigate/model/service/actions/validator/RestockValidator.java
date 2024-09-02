@@ -2,12 +2,14 @@ package br.com.librigate.model.service.actions.validator;
 
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.exception.ValidationException;
-import br.com.librigate.model.dto.employee.book.NewBookRequest;
-import br.com.librigate.model.dto.employee.book.RestockBookRequest;
+import br.com.librigate.dto.book.NewBookRequest;
+import br.com.librigate.dto.actions.restock.RestockBookRequest;
 import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
 
 @Component
 public class RestockValidator {
@@ -21,8 +23,10 @@ public class RestockValidator {
 
     public void validateNewBook(NewBookRequest request) {
 
+        validate(request.launchDate().isAfter(LocalDate.now()), "Invalid date", false);
+        validate(request.edition() <= 0, "Invalid edition", false);
         validate(request.quantity() <= 0, "Invalid quantity", false);
-        validate(request.price() <= 0, "Invalid price", false);
+        validate(request.unityValue() <= 0, "Invalid price", false);
         validate(!employeeRepository.existsById(request.employeeCpf()), "This employee does not exist", true);
 
         validate(bookRepository.existsById(request.isbn()), "This book already exists", false);
@@ -36,7 +40,6 @@ public class RestockValidator {
         request.books().forEach((book)-> {
             validate(book.quantity() <= 0, "Invalid quantity", false);
             validate(book.unitValue() <= 0, "Invalid price", false);
-
             validate(!bookRepository.existsById(book.isbn()), "This book does not exist", true);
         });
     }

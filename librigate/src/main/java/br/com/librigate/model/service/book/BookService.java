@@ -1,12 +1,15 @@
 package br.com.librigate.model.service.book;
 
-import br.com.librigate.model.dto.book.CreateBookRequest;
-import br.com.librigate.model.dto.book.UpdateBookRequest;
+import br.com.librigate.dto.actions.review.ReviewResponse;
+import br.com.librigate.dto.book.BookGettersResponse;
+import br.com.librigate.dto.book.CreateBookRequest;
+import br.com.librigate.dto.book.UpdateBookRequest;
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.model.repository.BookRepository;
+import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.interfaces.IBookService;
-import br.com.librigate.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +21,16 @@ import java.util.List;
 @Service
 public class BookService implements IBookService {
 
-    private final BookMapper bookMapper = BookMapper.INSTANCE;
-
     private final BookRepository bookRepository;
 
+    private final BookMapper bookMapper;
+
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(
+            BookRepository bookRepository
+    ) {
         this.bookRepository = bookRepository;
+        this.bookMapper = BookMapper.INSTANCE;
     }
 
 
@@ -34,6 +40,7 @@ public class BookService implements IBookService {
         var entity = bookMapper.toEntity(request);
         return bookRepository.save(entity);
     }
+
 
     @Transactional
     @Override
@@ -68,48 +75,112 @@ public class BookService implements IBookService {
 
     @Override
     public ResponseEntity<?> getBooksByCategory(String category) {
-        try {
+
+        return HandleRequest.handle(()->{
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
-                    .filter(b -> b.getCategory().equals(category))
+                    .filter(b -> b.getCategory().toLowerCase()
+                            .contains(category.toLowerCase()))
+                    .map(b -> new BookGettersResponse(
+                            b.getIsbn(),
+                            b.getTitle(),
+                            b.getDescription(),
+                            b.getPublisher(),
+                            b.getCategory(),
+                            b.getAuthorsName(),
+                            b.getEdition(),
+                            b.getLaunchDate()
+                    ))
                     .toList();
 
+            if (filteredEntityList.isEmpty())
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
+
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
 
 
     @Override
     public ResponseEntity<?> getBooksByAuthor(String author) {
-        try {
+        return HandleRequest.handle(()->{
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
-                    .filter(b -> b.getAuthorsName().contains(author))
+                    .filter(b -> b.getAuthorsName().stream()
+                            .anyMatch(fb -> fb.toLowerCase().contains(author.toLowerCase())))
+                    .map(b -> new BookGettersResponse(
+                            b.getIsbn(),
+                            b.getTitle(),
+                            b.getDescription(),
+                            b.getPublisher(),
+                            b.getCategory(),
+                            b.getAuthorsName(),
+                            b.getEdition(),
+                            b.getLaunchDate()
+                    ))
                     .toList();
 
+            if (filteredEntityList.isEmpty())
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
+
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
+    }
+
+
+    @Override
+    public ResponseEntity<?> getBookByIsbn(String bookIsbn) {
+
+        return HandleRequest.handle(() -> {
+            var entityList = bookRepository.findAll();
+
+            var filteredEntityList = entityList.stream()
+                    .filter(b -> b.getIsbn().equals(bookIsbn))
+                    .findFirst()
+                    .map(b -> new BookGettersResponse(
+                            b.getIsbn(),
+                            b.getTitle(),
+                            b.getDescription(),
+                            b.getPublisher(),
+                            b.getCategory(),
+                            b.getAuthorsName(),
+                            b.getEdition(),
+                            b.getLaunchDate()
+                    ))
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+            return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
+        });
     }
 
 
     @Override
     public ResponseEntity<?> getReview(String bookIsbn) {
-        try {
+
+        return HandleRequest.handle(() -> {
+
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getIsbn().equals(bookIsbn))
-                    .findFirst().get().getReviews();
+                    .findFirst()
+                    .map(b -> b.getReviews().stream()
+                            .map(r -> new ReviewResponse(
+                                    r.getCustomer().getCpf(),
+                                    r.getBook().getIsbn(),
+                                    r.getDescription(),
+                                    r.getRating()
+                            ))
+                    )
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"))
+                    .toList();
+
+            if (filteredEntityList.isEmpty())
+                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
 }

@@ -1,8 +1,9 @@
 package br.com.librigate.model.service.actions;
 
 import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.customer.review.ReviewRequest;
-import br.com.librigate.model.dto.customer.review.ReviewResponse;
+import br.com.librigate.dto.actions.review.ReviewRequest;
+import br.com.librigate.dto.actions.review.ReviewResponse;
+import br.com.librigate.exception.ValidationException;
 import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.ReviewRepository;
@@ -34,6 +35,13 @@ public class ReviewService implements IReviewService {
                     .orElseThrow(()-> new EntityNotFoundException("Customer not found"));
 
             var book = bookService.findByPK(request.bookId());
+
+            if(request.rating() < 0)
+                throw new ValidationException("Rating is negative");
+
+            if(request.description().isEmpty())
+                throw new ValidationException("Description is empty");
+
             var review = new Review();
             review.setCustomer(customer);
             review.setBook(book);

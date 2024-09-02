@@ -1,0 +1,18 @@
+{
+  "employeeCpf": "12345678901",
+  "isbn": "9780201633610",
+  "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+  "description": "A foundational book on design patterns in software engineering.",
+  "publisher": "Addison-Wesley",
+  "category": "Software Engineering",
+  "authorsName": [
+    "Erich Gamma",
+    "Richard Helm",
+    "Ralph Johnson",
+    "John Vlissides"
+  ],
+  "edition": 1,
+  "launchDate": "1994-10-31",
+  "unityValue": 99.99,
+  "quantity": 5
+}

@@ -1,8 +1,8 @@
 package br.com.librigate.model.service.interfaces;
 
 import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.employee.CreateEmployeeRequest;
-import br.com.librigate.model.dto.employee.UpdateEmployeeRequest;
+import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
+import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
 
 import org.springframework.http.ResponseEntity;
 

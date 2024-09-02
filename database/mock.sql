@@ -40,7 +40,7 @@ VALUES (1, '2024-08-23', 120.00, '12345678909');
 
 
 -- Inserção de livros físicos
-INSERT INTO fisical_book (isbn, copy_number, price, restock_id, buy_id, status)
+INSERT INTO book_copy (isbn, copy_number, price, restock_id, buy_id, status)
 VALUES ('9780134685991', 1, 30.00, 1, NULL, 'available'),
        ('9780134685991', 2, 30.00, 1, NULL, 'available'),
        ('9780134685991', 3, 30.00, 1, NULL, 'available'),
@@ -53,5 +53,6 @@ INSERT INTO restock (id, restock_date, price, employee_cpf)
 VALUES (2, '2024-08-23', 60.00, '12345678909');
 
 -- Inserção de livros físicos adicionais
-INSERT INTO fisical_book (isbn, copy_number, price, restock_id, buy_id, status)
+INSERT INTO book_copy (isbn, copy_number, price, restock_id, buy_id, status)
 VALUES ('9780134685991', 6, 60.00, 2, NULL, 'available');
+

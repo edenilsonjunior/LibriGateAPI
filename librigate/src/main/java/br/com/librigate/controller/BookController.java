@@ -15,6 +15,11 @@ public class BookController {
     @Autowired
     private IBookService bookService;
 
+    @GetMapping("isbn/{bookIsbn}")
+    public ResponseEntity<?> getBookByIsbn(@PathVariable String bookIsbn) {
+        return bookService.getBookByIsbn(bookIsbn);
+    }
+
     @GetMapping("/category/{category}")
     public ResponseEntity<?> getBooksByCategory(@PathVariable String category) {
         return bookService.getBooksByCategory(category);
@@ -29,4 +34,5 @@ public class BookController {
     public ResponseEntity<?> getReview(@PathVariable String bookIsbn) {
         return bookService.getReview(bookIsbn);
     }
+
 }

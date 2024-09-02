@@ -1,22 +1,22 @@
 package br.com.librigate.controller;
 
-import br.com.librigate.model.dto.customer.review.ReviewRequest;
+import br.com.librigate.dto.actions.review.ReviewRequest;
 import br.com.librigate.model.service.actions.ReviewService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api/review")
+@RestController
+@RequestMapping("/api/review")
 public class ReviewController {
 
-    ReviewService reviewService;
+    @Autowired
+    private ReviewService reviewService;
 
-    public ReviewController(ReviewService reviewService){
-        this.reviewService = reviewService;
-    }
-
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<?> reviewBook(@RequestBody ReviewRequest request){
         return reviewService.reviewBook(request);
     }

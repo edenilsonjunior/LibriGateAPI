@@ -1,5 +1,6 @@
 package br.com.librigate.model.entity.people;
 
+import br.com.librigate.model.entity.address.Address;
 import jakarta.persistence.*;
 import lombok.Data;
 

@@ -1,11 +1,12 @@
 package br.com.librigate.model.service.people;
 
 import br.com.librigate.exception.EntityNotFoundException;
-import br.com.librigate.model.dto.customer.CreateCustomerRequest;
-import br.com.librigate.model.dto.customer.UpdateCustomerRequest;
+import br.com.librigate.dto.people.customer.CreateCustomerRequest;
+import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
 import br.com.librigate.model.entity.people.Person;
 import br.com.librigate.model.mapper.people.CustomerMapper;
 import br.com.librigate.model.repository.CustomerRepository;
+import br.com.librigate.model.service.address.AddressService;
 import br.com.librigate.model.service.interfaces.ICustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class CustomerService implements ICustomerService {
     private final CustomerRepository customerRepository;
     private final AddressService addressService;
 
-    public CustomerService( CustomerRepository customerRepository, AddressService addressService) {
+    public CustomerService(CustomerRepository customerRepository, AddressService addressService) {
         this.customerRepository = customerRepository;
         this.addressService = addressService;
     }
@@ -38,6 +39,7 @@ public class CustomerService implements ICustomerService {
 
             customer.setPurchases(new ArrayList<>());
             customer.setRentList(new ArrayList<>());
+            customer.setActive(true);
 
             return new ResponseEntity<>(customerRepository.save(customer), HttpStatus.CREATED);
 
