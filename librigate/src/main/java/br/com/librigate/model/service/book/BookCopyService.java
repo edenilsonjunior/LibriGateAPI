@@ -103,6 +103,7 @@ public class BookCopyService implements IBookCopyService {
 
     @Override
     public ResponseEntity<?> getStockByBook(String isbn) {
+
         return HandleRequest.handle(() -> {
             var entityList = bookCopyRepository.findAll();
 

@@ -7,6 +7,7 @@ import br.com.librigate.exception.ValidationException;
 import br.com.librigate.model.entity.actions.Review;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.ReviewRepository;
+import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.book.BookService;
 import br.com.librigate.model.service.interfaces.IReviewService;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,8 @@ public class ReviewService implements IReviewService {
     @Transactional
     @Override
     public ResponseEntity<?> reviewBook(ReviewRequest request) {
-        try {
+
+        return HandleRequest.handle(() ->{
             var customer = customerRepository.findById(request.cpf())
                     .orElseThrow(()-> new EntityNotFoundException("Customer not found"));
 
@@ -57,10 +59,8 @@ public class ReviewService implements IReviewService {
                     review.getRating()
             );
 
-
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
+        });
     }
+
 }

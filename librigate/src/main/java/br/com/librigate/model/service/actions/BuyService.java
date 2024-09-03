@@ -100,9 +100,6 @@ public class BuyService implements IBuyService {
             var response = entities.stream()
                     .map(this::toBuyResponse).toList();
 
-            if (response.isEmpty())
-                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
