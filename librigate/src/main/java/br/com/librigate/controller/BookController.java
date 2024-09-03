@@ -15,6 +15,13 @@ public class BookController {
     @Autowired
     private IBookService bookService;
 
+
+    @GetMapping
+    public ResponseEntity<?> findAllBooks(){
+        return bookService.findAll();
+    }
+
+
     @GetMapping("isbn/{bookIsbn}")
     public ResponseEntity<?> getBookByIsbn(@PathVariable String bookIsbn) {
         return bookService.getBookByIsbn(bookIsbn);

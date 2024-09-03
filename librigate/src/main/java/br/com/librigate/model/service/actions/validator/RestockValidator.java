@@ -1,9 +1,9 @@
 package br.com.librigate.model.service.actions.validator;
 
+import br.com.librigate.dto.actions.restock.RestockBookRequest;
+import br.com.librigate.dto.book.NewBookRequest;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.exception.ValidationException;
-import br.com.librigate.dto.book.NewBookRequest;
-import br.com.librigate.dto.actions.restock.RestockBookRequest;
 import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;

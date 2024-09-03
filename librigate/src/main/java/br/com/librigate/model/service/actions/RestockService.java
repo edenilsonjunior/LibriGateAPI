@@ -1,24 +1,25 @@
 package br.com.librigate.model.service.actions;
 
+import br.com.librigate.dto.actions.restock.RestockBook;
+import br.com.librigate.dto.actions.restock.RestockBookRequest;
+import br.com.librigate.dto.actions.restock.RestockResponse;
 import br.com.librigate.dto.book.NewBookRequest;
-import br.com.librigate.dto.actions.restock.*;
-import br.com.librigate.model.entity.people.Employee;
-import br.com.librigate.model.repository.EmployeeRepository;
-import br.com.librigate.model.service.HandleRequest;
-import br.com.librigate.model.service.interfaces.IBookService;
-import br.com.librigate.model.service.actions.validator.RestockValidator;
-import br.com.librigate.model.service.interfaces.IRestockService;
-import br.com.librigate.model.service.actions.factory.RestockFactory;
-import br.com.librigate.model.entity.actions.Restock;
-import br.com.librigate.model.repository.RestockRepository;
-import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.exception.EntityNotFoundException;
-
+import br.com.librigate.model.entity.actions.Restock;
+import br.com.librigate.model.entity.people.Employee;
+import br.com.librigate.model.mapper.book.BookMapper;
+import br.com.librigate.model.repository.EmployeeRepository;
+import br.com.librigate.model.repository.RestockRepository;
+import br.com.librigate.model.service.HandleRequest;
+import br.com.librigate.model.service.actions.factory.RestockFactory;
+import br.com.librigate.model.service.actions.validator.RestockValidator;
+import br.com.librigate.model.service.interfaces.IBookService;
+import br.com.librigate.model.service.interfaces.IRestockService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;

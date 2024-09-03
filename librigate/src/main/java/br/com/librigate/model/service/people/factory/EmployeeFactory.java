@@ -2,6 +2,7 @@ package br.com.librigate.model.service.people.factory;
 
 import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
 import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
+import br.com.librigate.model.entity.address.Address;
 import br.com.librigate.model.entity.people.Employee;
 import br.com.librigate.model.mapper.people.EmployeeMapper;
 import br.com.librigate.model.service.address.AddressService;
@@ -22,7 +23,9 @@ public class EmployeeFactory {
 
     public Employee createEmployee(CreateEmployeeRequest request) {
 
-        var address = addressService.create(request.address());
+        Address address = null;
+        address = addressService.create(request.address());
+
         Employee employee = EmployeeMapper.INSTANCE.toEntity(request);
         employee.setAddress(address);
         employee.setRestockList(new ArrayList<>());

@@ -22,9 +22,7 @@ public class CustomerFactory {
     }
 
     public Customer createCustomer(CreateCustomerRequest request) {
-        var address = addressService.create(request.address());
         Customer customer = CustomerMapper.instance.toEntity(request);
-        customer.setAddress(address);
         customer.setActive(true);
         customer.setPurchases(new ArrayList<>());
         customer.setRentList(new ArrayList<>());

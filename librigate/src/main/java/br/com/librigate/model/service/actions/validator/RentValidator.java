@@ -1,11 +1,11 @@
 package br.com.librigate.model.service.actions.validator;
 
+import br.com.librigate.dto.actions.rent.RentRequest;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.exception.ValidationException;
-import br.com.librigate.dto.actions.rent.RentRequest;
-import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.entity.actions.Rent;
 import br.com.librigate.model.repository.BookCopyRepository;
+import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.repository.RentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

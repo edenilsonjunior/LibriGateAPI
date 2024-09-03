@@ -1,8 +1,8 @@
 package br.com.librigate.model.service.interfaces;
 
-import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.dto.people.customer.CreateCustomerRequest;
 import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
+import br.com.librigate.exception.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 
 public interface ICustomerService  {

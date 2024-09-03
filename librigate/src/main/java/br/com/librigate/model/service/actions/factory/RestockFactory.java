@@ -5,8 +5,8 @@ import br.com.librigate.dto.book.bookCopy.CreateBookCopyRequest;
 import br.com.librigate.model.entity.actions.Restock;
 import br.com.librigate.model.entity.people.Employee;
 import br.com.librigate.model.repository.BookCopyRepository;
-import br.com.librigate.model.service.book.BookCopyService;
 import br.com.librigate.model.repository.RestockRepository;
+import br.com.librigate.model.service.book.BookCopyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

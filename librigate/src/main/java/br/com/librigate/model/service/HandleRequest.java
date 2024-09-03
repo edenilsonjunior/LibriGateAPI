@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 
 public class HandleRequest {
 
-    public static ResponseEntity<?> handle(Supplier<ResponseEntity<?>> action){
 
+    public static ResponseEntity<?> handle(Supplier<ResponseEntity<?>> action) {
         try {
             return action.get();
         } catch (ValidationException ex) {

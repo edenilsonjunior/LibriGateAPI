@@ -7,9 +7,9 @@ import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
+import br.com.librigate.model.repository.BookCopyRepository;
 import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.CustomerRepository;
-import br.com.librigate.model.repository.BookCopyRepository;
 import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.actions.factory.BuyFactory;
 import br.com.librigate.model.service.actions.validator.BuyValidator;
@@ -20,7 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

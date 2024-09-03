@@ -1,22 +1,21 @@
 package br.com.librigate.model.service.people;
 
-import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
 import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.people.Employee;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
 import br.com.librigate.model.service.people.factory.EmployeeFactory;
 import br.com.librigate.model.service.people.validator.EmployeeValidator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
 
 @Service
 public class EmployeeService implements IEmployeeService {
@@ -34,13 +33,39 @@ public class EmployeeService implements IEmployeeService {
     }
 
 
+    @Override
+    public ResponseEntity<?> findAll() {
+        return HandleRequest.handle(() -> {
+
+            var response = employeeRepository.findAll();
+
+            if (response.isEmpty())
+                return new ResponseEntity<>(new ArrayList<Employee>(), HttpStatus.NOT_FOUND);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        });
+    }
+
+    @Override
+    public ResponseEntity<?> findByPK(String id) {
+        return HandleRequest.handle(() -> {
+
+            var response = employeeRepository.findById(id);
+
+            if (response.isEmpty())
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+            return new ResponseEntity<>(response.get(), HttpStatus.OK);
+        });
+    }
+
+
     @Transactional
     @Override
     public ResponseEntity<?> create(CreateEmployeeRequest request) {
-
         return HandleRequest.handle(() -> {
-            employeeValidator.validateNewEmployee(request);
 
+            employeeValidator.validateNewEmployee(request);
             var employee = employeeFactory.createEmployee(request);
             var response = employeeRepository.save(employee);
 
@@ -51,38 +76,10 @@ public class EmployeeService implements IEmployeeService {
     @Transactional
     @Override
     public ResponseEntity<?> update(UpdateEmployeeRequest request) {
-
         return HandleRequest.handle(() -> {
+
             var employee = employeeFactory.updateEmployee(request, findEmployeeByCPF(request.cpf()));
-
             var response = employeeRepository.save(employee);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        });
-    }
-
-
-    @Override
-    public ResponseEntity<?> findByPK(String id) {
-
-        return HandleRequest.handle(() -> {
-            var response = employeeRepository.findById(id);
-
-            if (response.isEmpty())
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-            return new ResponseEntity<>(response.get(), HttpStatus.OK);
-        });
-    }
-
-    @Override
-    public ResponseEntity<?> findAll() {
-
-        return HandleRequest.handle(() -> {
-            var response = employeeRepository.findAll();
-
-            if (response.isEmpty())
-                return new ResponseEntity<>(new ArrayList<Employee>(), HttpStatus.NOT_FOUND);
-
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }

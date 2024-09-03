@@ -4,14 +4,16 @@ import br.com.librigate.dto.actions.buy.BuyRequest;
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
-import br.com.librigate.model.repository.BuyRepository;
 import br.com.librigate.model.repository.BookCopyRepository;
+import br.com.librigate.model.repository.BuyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component

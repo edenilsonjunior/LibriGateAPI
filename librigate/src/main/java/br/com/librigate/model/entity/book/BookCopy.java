@@ -20,6 +20,7 @@ public class BookCopy {
 
     @ManyToOne
     @JoinColumn(name = "isbn")
+    @JsonIdentityReference(alwaysAsId = true)
     private Book book;
 
     @Column(name = "copy_number", nullable = false)

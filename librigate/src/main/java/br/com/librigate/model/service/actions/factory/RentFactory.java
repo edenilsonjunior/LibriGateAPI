@@ -5,8 +5,8 @@ import br.com.librigate.model.entity.actions.Rent;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
 import br.com.librigate.model.repository.BookCopyRepository;
-import br.com.librigate.model.service.book.BookCopyService;
 import br.com.librigate.model.repository.RentRepository;
+import br.com.librigate.model.service.book.BookCopyService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;

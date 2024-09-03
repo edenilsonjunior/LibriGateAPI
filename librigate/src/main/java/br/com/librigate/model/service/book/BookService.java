@@ -16,19 +16,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 public class BookService implements IBookService {
 
     private final BookRepository bookRepository;
-
     private final BookMapper bookMapper;
 
     @Autowired
-    public BookService(
-            BookRepository bookRepository
-    ) {
+    public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
         this.bookMapper = BookMapper.INSTANCE;
     }
@@ -68,8 +63,15 @@ public class BookService implements IBookService {
 
 
     @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll();
+    public ResponseEntity<?> findAll() {
+        return HandleRequest.handle(()-> {
+            var entityList = bookRepository.findAll();
+
+            var response = entityList.stream()
+                    .map(this::toBookGettersResponse).toList();
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        });
     }
 
 
@@ -82,16 +84,7 @@ public class BookService implements IBookService {
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getCategory().toLowerCase()
                             .contains(category.toLowerCase()))
-                    .map(b -> new BookGettersResponse(
-                            b.getIsbn(),
-                            b.getTitle(),
-                            b.getDescription(),
-                            b.getPublisher(),
-                            b.getCategory(),
-                            b.getAuthorsName(),
-                            b.getEdition(),
-                            b.getLaunchDate()
-                    ))
+                    .map(this::toBookGettersResponse)
                     .toList();
 
             if (filteredEntityList.isEmpty())
@@ -110,16 +103,7 @@ public class BookService implements IBookService {
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getAuthorsName().stream()
                             .anyMatch(fb -> fb.toLowerCase().contains(author.toLowerCase())))
-                    .map(b -> new BookGettersResponse(
-                            b.getIsbn(),
-                            b.getTitle(),
-                            b.getDescription(),
-                            b.getPublisher(),
-                            b.getCategory(),
-                            b.getAuthorsName(),
-                            b.getEdition(),
-                            b.getLaunchDate()
-                    ))
+                    .map(this::toBookGettersResponse)
                     .toList();
 
             if (filteredEntityList.isEmpty())
@@ -139,16 +123,7 @@ public class BookService implements IBookService {
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getIsbn().equals(bookIsbn))
                     .findFirst()
-                    .map(b -> new BookGettersResponse(
-                            b.getIsbn(),
-                            b.getTitle(),
-                            b.getDescription(),
-                            b.getPublisher(),
-                            b.getCategory(),
-                            b.getAuthorsName(),
-                            b.getEdition(),
-                            b.getLaunchDate()
-                    ))
+                    .map(this::toBookGettersResponse)
                     .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
@@ -182,5 +157,18 @@ public class BookService implements IBookService {
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
         });
+    }
+
+    private BookGettersResponse toBookGettersResponse(Book b) {
+
+        return new BookGettersResponse(
+                b.getIsbn(),
+                b.getTitle(),
+                b.getDescription(),
+                b.getPublisher(),
+                b.getCategory(),
+                b.getAuthorsName(),
+                b.getEdition(),
+                b.getLaunchDate());
     }
 }

@@ -1,11 +1,9 @@
 package br.com.librigate.controller;
 
 
-import br.com.librigate.dto.book.NewBookRequest;
 import br.com.librigate.dto.actions.restock.RestockBookRequest;
+import br.com.librigate.dto.book.NewBookRequest;
 import br.com.librigate.model.service.interfaces.IRestockService;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

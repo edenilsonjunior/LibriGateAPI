@@ -1,11 +1,12 @@
 package br.com.librigate.model.service.people;
 
-import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.dto.people.customer.CreateCustomerRequest;
 import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
+import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.people.Customer;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.service.HandleRequest;
+import br.com.librigate.model.service.address.AddressService;
 import br.com.librigate.model.service.interfaces.ICustomerService;
 import br.com.librigate.model.service.people.factory.CustomerFactory;
 import br.com.librigate.model.service.people.validator.CustomerValidator;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 
 @Service
@@ -22,6 +24,9 @@ public class CustomerService implements ICustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerValidator customerValidator;
     private final CustomerFactory customerFactory;
+
+    @Autowired
+    private AddressService addressService;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository, CustomerValidator customerValidator, CustomerFactory customerFactory) {
@@ -36,7 +41,10 @@ public class CustomerService implements ICustomerService {
         return HandleRequest.handle(() -> {
             customerValidator.validateNewCustomer(request);
 
+            var address = addressService.create(request.address());
             var customer = customerFactory.createCustomer(request);
+            customer.setAddress(address);
+
             var response = customerRepository.save(customer);
 
             return new ResponseEntity<>(response, HttpStatus.CREATED);
