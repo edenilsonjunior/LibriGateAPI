@@ -45,6 +45,7 @@ public class BookService implements IBookService {
     @Transactional
     @Override
     public Book update(UpdateBookRequest request) {
+
         var entity = bookRepository.findById(request.isbn())
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
@@ -94,9 +95,6 @@ public class BookService implements IBookService {
                     ))
                     .toList();
 
-            if (filteredEntityList.isEmpty())
-                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
-
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
         });
     }
@@ -104,6 +102,7 @@ public class BookService implements IBookService {
 
     @Override
     public ResponseEntity<?> getBooksByAuthor(String author) {
+
         return HandleRequest.handle(()->{
             var entityList = bookRepository.findAll();
 
@@ -121,9 +120,6 @@ public class BookService implements IBookService {
                             b.getLaunchDate()
                     ))
                     .toList();
-
-            if (filteredEntityList.isEmpty())
-                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
         });
@@ -177,10 +173,8 @@ public class BookService implements IBookService {
                     .orElseThrow(() -> new EntityNotFoundException("Book not found"))
                     .toList();
 
-            if (filteredEntityList.isEmpty())
-                return new ResponseEntity<>(filteredEntityList, HttpStatus.NO_CONTENT);
-
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
         });
     }
+
 }
