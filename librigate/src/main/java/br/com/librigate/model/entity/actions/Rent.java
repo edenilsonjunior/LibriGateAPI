@@ -2,7 +2,9 @@ package br.com.librigate.model.entity.actions;
 
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -14,6 +16,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "rent")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Rent {
 
     @Id
@@ -34,7 +37,7 @@ public class Rent {
 
     @ManyToOne
     @JoinColumn(name = "customer_cpf")
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private Customer customer;
 
     @NotNull

@@ -2,7 +2,6 @@ package br.com.librigate.model.entity.people;
 
 import br.com.librigate.model.entity.actions.Restock;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,7 +20,6 @@ public class Employee extends Person {
     private String role;
 
     @OneToMany(mappedBy = "employee")
-    @JsonManagedReference
     private List<Restock> restockList;
 
 

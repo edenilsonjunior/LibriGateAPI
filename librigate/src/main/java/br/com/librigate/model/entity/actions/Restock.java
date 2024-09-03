@@ -3,6 +3,7 @@ package br.com.librigate.model.entity.actions;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Employee;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class Restock {
 
     @ManyToOne
     @JoinColumn(name = "employee_cpf")
+    @JsonIdentityReference(alwaysAsId = true)
     private Employee employee;
 
     @OneToMany(mappedBy = "restock")

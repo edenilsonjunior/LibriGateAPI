@@ -1,7 +1,8 @@
 package br.com.librigate.model.entity.book;
 
 import br.com.librigate.model.entity.actions.Review;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @Table(name = "book")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "isbn")
 public class Book {
 
     @Id
@@ -41,7 +43,6 @@ public class Book {
     private LocalDate launchDate;
 
     @OneToMany(mappedBy = "book")
-    @JsonManagedReference
     private List<Review> reviews;
 
 

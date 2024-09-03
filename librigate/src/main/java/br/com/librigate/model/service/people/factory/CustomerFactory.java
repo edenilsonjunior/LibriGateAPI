@@ -4,7 +4,6 @@ import br.com.librigate.dto.people.customer.CreateCustomerRequest;
 import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
 import br.com.librigate.model.entity.people.Customer;
 import br.com.librigate.model.mapper.people.CustomerMapper;
-import br.com.librigate.model.service.address.AddressService;
 import br.com.librigate.model.service.interfaces.IAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -2,13 +2,16 @@ package br.com.librigate.model.entity.book;
 
 import br.com.librigate.model.entity.actions.Buy;
 import br.com.librigate.model.entity.actions.Restock;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "book_copy")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class BookCopy {
 
     @Id
@@ -30,12 +33,12 @@ public class BookCopy {
 
     @ManyToOne
     @JoinColumn(name = "restock_id", nullable = false)
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private Restock restock;
 
     @ManyToOne
     @JoinColumn(name = "buy_id", nullable = true)
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private Buy buy;
 
     public BookCopy() {
