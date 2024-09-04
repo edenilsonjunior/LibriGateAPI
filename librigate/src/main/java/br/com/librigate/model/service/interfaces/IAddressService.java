@@ -6,7 +6,7 @@ import br.com.librigate.model.entity.address.Address;
 
 public interface IAddressService {
 
-     Address findByPK(Long id) throws EntityNotFoundException;
+     Address findById(Long id) throws EntityNotFoundException;
      Address create(AddressRequest request);
      Address update(Long id, AddressRequest request) throws EntityNotFoundException;
 }

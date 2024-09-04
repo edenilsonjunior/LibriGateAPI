@@ -23,7 +23,7 @@ public class CustomerController {
 
     @GetMapping("/{cpf}")
     public ResponseEntity<?> findCustomer(@PathVariable String cpf){
-        return customerService.findByPK(cpf);
+        return customerService.findByCPF(cpf);
     }
 
     @PostMapping

@@ -17,29 +17,27 @@ public class BookController {
 
 
     @GetMapping
-    public ResponseEntity<?> findAllBooks(){
+    public ResponseEntity<?> findAll(){
         return bookService.findAll();
     }
 
-
     @GetMapping("isbn/{bookIsbn}")
-    public ResponseEntity<?> getBookByIsbn(@PathVariable String bookIsbn) {
-        return bookService.getBookByIsbn(bookIsbn);
+    public ResponseEntity<?> findBookByIsbn(@PathVariable String bookIsbn) {
+        return bookService.findBookByIsbn(bookIsbn);
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<?> getBooksByCategory(@PathVariable String category) {
-        return bookService.getBooksByCategory(category);
+    public ResponseEntity<?> findBooksByCategory(@PathVariable String category) {
+        return bookService.findBooksByCategory(category);
     }
 
     @GetMapping("/author/{author}")
-    public ResponseEntity<?> getBooksByAuthor(@PathVariable String author) {
-        return bookService.getBooksByAuthor(author);
+    public ResponseEntity<?> findBooksByAuthor(@PathVariable String author) {
+        return bookService.findBooksByAuthor(author);
     }
 
     @GetMapping("/review/{bookIsbn}")
-    public ResponseEntity<?> getReview(@PathVariable String bookIsbn) {
-        return bookService.getReview(bookIsbn);
+    public ResponseEntity<?> findReview(@PathVariable String bookIsbn) {
+        return bookService.findReview(bookIsbn);
     }
-
 }

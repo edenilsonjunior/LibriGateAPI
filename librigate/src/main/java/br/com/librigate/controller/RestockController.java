@@ -16,13 +16,13 @@ public class RestockController {
     private IRestockService restockService;
 
     @GetMapping
-    public ResponseEntity<?> getRestockHistory() {
-        return restockService.getRestockHistory();
+    public ResponseEntity<?> findRestockHistory() {
+        return restockService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findByPK(Long id) {
-        return restockService.findByPK(id);
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        return restockService.findById(id);
     }
 
     @PostMapping("/restock-new-book")

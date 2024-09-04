@@ -5,10 +5,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface IBuyService {
 
+    ResponseEntity<?> findById(Long id);
+    ResponseEntity<?> findPurchasesByCustomerCpf(String cpf);
     ResponseEntity<?> purchase(BuyRequest request);
     ResponseEntity<?> processPayment(Long buyId);
     ResponseEntity<?> cancelPurchase(Long buyId);
-
-    ResponseEntity<?> getPurchasesByCustomerCpf(String cpf);
-    ResponseEntity<?> findByPK(Long id);
 }

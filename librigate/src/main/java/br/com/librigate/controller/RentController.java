@@ -19,13 +19,13 @@ public class RentController {
 
     
     @GetMapping("/{rentId}")
-    public ResponseEntity<?> getRendById(@PathVariable Long rentId) {
-        return rentService.getRendById(rentId);
+    public ResponseEntity<?> findRendById(@PathVariable Long rentId) {
+        return rentService.findRendById(rentId);
     }
 
     @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<?> getRents(@PathVariable String cpf) {
-        return rentService.getRents(cpf);
+    public ResponseEntity<?> findRentsByCustomerCPF(@PathVariable String cpf) {
+        return rentService.findRentsByCustomerCPF(cpf);
     }
 
     @PostMapping

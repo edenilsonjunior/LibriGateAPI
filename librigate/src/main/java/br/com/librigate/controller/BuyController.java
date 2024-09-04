@@ -18,13 +18,13 @@ public class BuyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findByPK(@PathVariable Long id){
-        return buyService.findByPK(id);
+    public ResponseEntity<?> findById(@PathVariable Long id){
+        return buyService.findById(id);
     }
 
     @GetMapping("/cpf/{cpf}")
-    public ResponseEntity<?> getPurchasesByCustomerCpf(@PathVariable String cpf){
-        return buyService.getPurchasesByCustomerCpf(cpf);
+    public ResponseEntity<?> findPurchasesByCustomerCpf(@PathVariable String cpf){
+        return buyService.findPurchasesByCustomerCpf(cpf);
     }
 
     @PostMapping

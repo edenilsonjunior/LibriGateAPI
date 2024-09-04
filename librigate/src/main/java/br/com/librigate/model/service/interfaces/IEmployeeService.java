@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 public interface IEmployeeService{
 
     ResponseEntity<?> findAll();
-    ResponseEntity<?> findByPK(String id);
+    ResponseEntity<?> findByCPF(String cpf);
     ResponseEntity<?> create(CreateEmployeeRequest request);
     ResponseEntity<?> update(UpdateEmployeeRequest request);
     ResponseEntity<?> delete(String id);

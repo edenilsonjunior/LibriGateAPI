@@ -16,12 +16,12 @@ public class BookCopyController {
     private IBookCopyService bookCopyService;
 
     @GetMapping("/stock")
-    public ResponseEntity<?> getStock() {
-        return bookCopyService.getStock();
+    public ResponseEntity<?> findStock() {
+        return bookCopyService.findStock();
     }
 
     @GetMapping("/stock/{isbn}")
-    public ResponseEntity<?> getStockByBook(@PathVariable String isbn) {
-        return bookCopyService.getStockByBook(isbn);
+    public ResponseEntity<?> findStockByBook(@PathVariable String isbn) {
+        return bookCopyService.findStockByBook(isbn);
     }
 }

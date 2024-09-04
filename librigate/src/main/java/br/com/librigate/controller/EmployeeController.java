@@ -21,7 +21,7 @@ public class EmployeeController {
 
     @GetMapping("/{cpf}")
     public ResponseEntity<?> findEmployee(@PathVariable String cpf) {
-        return employeeService.findByPK(cpf);
+        return employeeService.findByCPF(cpf);
     }
 
     @PostMapping

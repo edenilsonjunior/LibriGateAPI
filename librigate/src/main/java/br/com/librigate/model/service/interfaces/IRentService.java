@@ -5,9 +5,9 @@ import org.springframework.http.ResponseEntity;
 
 public interface IRentService {
 
+    ResponseEntity<?> findRentsByCustomerCPF(String cpf);
+    ResponseEntity<?> findRendById(Long rentId);
     ResponseEntity<?> rent(RentRequest request);
-    ResponseEntity<?> processDevolutionBook(Long rentId);
     ResponseEntity<?> renewRent(Long rentId);
-    ResponseEntity<?> getRents(String cpf);
-    ResponseEntity<?> getRendById(Long rentId);
+    ResponseEntity<?> processDevolutionBook(Long rentId);
 }
