@@ -14,7 +14,6 @@ import br.com.librigate.model.service.interfaces.IReviewService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import br.com.librigate.model.service.actions.factory.ReviewFactory;
 import br.com.librigate.model.service.actions.validator.ReviewValidator;
