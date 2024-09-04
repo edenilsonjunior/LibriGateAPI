@@ -36,7 +36,7 @@ public class BookCopyService implements IBookCopyService {
     @Transactional
     @Override
     public BookCopy create(CreateBookCopyRequest request) {
-        var entityBook = bookService.findByPK(request.isbn());
+        var entityBook = bookService.findById(request.isbn());
 
         var entity = new BookCopy();
         entity.setBook(entityBook);
@@ -70,26 +70,21 @@ public class BookCopyService implements IBookCopyService {
 
 
     @Override
-    public BookCopy findByPK(Long id) {
+    public BookCopy findById(Long id) {
         return bookCopyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book copy not found"));
     }
-
 
     @Override
     public List<BookCopy> findAll() {
         return bookCopyRepository.findAll();
     }
 
-
     @Override
-    public ResponseEntity<?> getStock() {
+    public ResponseEntity<?> findStock() {
 
         return HandleRequest.handle(() -> {
             var entityList = bookCopyRepository.findAll();
-
-            if (entityList.isEmpty())
-                return new ResponseEntity<>(entityList, HttpStatus.NO_CONTENT);
 
             var stockList = entityList.stream()
                     .map(this::createStockResponse)
@@ -100,9 +95,8 @@ public class BookCopyService implements IBookCopyService {
         });
     }
 
-
     @Override
-    public ResponseEntity<?> getStockByBook(String isbn) {
+    public ResponseEntity<?> findStockByBook(String isbn) {
 
         return HandleRequest.handle(() -> {
             var entityList = bookCopyRepository.findAll();
@@ -117,13 +111,15 @@ public class BookCopyService implements IBookCopyService {
         });
     }
 
+
     private StockResponse createStockResponse(BookCopy copy) {
 
         return new StockResponse(
                 copy.getBook().getIsbn(),
                 copy.getBook().getTitle(),
-                bookCopyRepository.countByIsbn(copy.getBook().getIsbn())
+                bookCopyRepository.countAvailables(copy.getBook().getIsbn()),
+                bookCopyRepository.countRented(copy.getBook().getIsbn()),
+                bookCopyRepository.countSold(copy.getBook().getIsbn())
         );
     }
-
 }

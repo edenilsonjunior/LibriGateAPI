@@ -1,6 +1,7 @@
 package br.com.librigate.model.mapper.people;
 
 import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
+import br.com.librigate.dto.people.employee.EmployeeResponse;
 import br.com.librigate.model.entity.people.Employee;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,4 +17,6 @@ public interface EmployeeMapper {
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "restockList", ignore = true)
     Employee toEntity(CreateEmployeeRequest request);
+
+    EmployeeResponse toResponse(Employee employee);
 }

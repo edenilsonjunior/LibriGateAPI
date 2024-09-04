@@ -36,7 +36,7 @@ public class ReviewService implements IReviewService {
             var customer = customerRepository.findById(request.cpf())
                     .orElseThrow(()-> new EntityNotFoundException("Customer not found"));
 
-            var book = bookService.findByPK(request.bookId());
+            var book = bookService.findById(request.bookId());
 
             if(request.rating() < 0)
                 throw new ValidationException("Rating is negative");

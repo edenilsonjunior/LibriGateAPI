@@ -57,7 +57,7 @@ public class BookService implements IBookService {
 
 
     @Override
-    public Book findByPK(String isbn) {
+    public Book findById(String isbn) {
         return bookRepository.findById(isbn)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
     }
@@ -77,7 +77,7 @@ public class BookService implements IBookService {
 
 
     @Override
-    public ResponseEntity<?> getBooksByCategory(String category) {
+    public ResponseEntity<?> findBooksByCategory(String category) {
 
         return HandleRequest.handle(()->{
             var entityList = bookRepository.findAll();
@@ -94,7 +94,7 @@ public class BookService implements IBookService {
 
 
     @Override
-    public ResponseEntity<?> getBooksByAuthor(String author) {
+    public ResponseEntity<?> findBooksByAuthor(String author) {
 
         return HandleRequest.handle(()->{
             var entityList = bookRepository.findAll();
@@ -111,7 +111,7 @@ public class BookService implements IBookService {
 
 
     @Override
-    public ResponseEntity<?> getBookByIsbn(String bookIsbn) {
+    public ResponseEntity<?> findBookByIsbn(String bookIsbn) {
 
         return HandleRequest.handle(() -> {
             var entityList = bookRepository.findAll();
@@ -128,7 +128,7 @@ public class BookService implements IBookService {
 
 
     @Override
-    public ResponseEntity<?> getReview(String bookIsbn) {
+    public ResponseEntity<?> findReview(String bookIsbn) {
 
         return HandleRequest.handle(() -> {
 

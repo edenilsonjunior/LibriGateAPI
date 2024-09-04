@@ -8,7 +8,6 @@ import br.com.librigate.model.entity.address.Address;
 import br.com.librigate.model.repository.AddressRepository;
 import br.com.librigate.model.service.interfaces.IAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -29,7 +28,7 @@ public class AddressService implements IAddressService {
     }
 
     @Override
-    public Address findByPK(Long id) throws EntityNotFoundException {
+    public Address findById(Long id) throws EntityNotFoundException {
         return addressRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Endereço não encontrado"));
@@ -47,7 +46,7 @@ public class AddressService implements IAddressService {
     @Override
     public Address update(Long id, AddressRequest request) throws EntityNotFoundException {
 
-        var address = findByPK(id);
+        var address = findById(id);
 
         var newAddress = populateAddress(request);
         address.setZipCode(newAddress.getZipCode());
@@ -94,6 +93,5 @@ public class AddressService implements IAddressService {
 
         return address;
     }
-
 
 }
