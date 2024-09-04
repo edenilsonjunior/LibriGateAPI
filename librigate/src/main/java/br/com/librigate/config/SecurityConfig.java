@@ -36,6 +36,7 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers(
                                 "/api/book-copy/**",
+                                "/api/restock/**",
                                 "/api/custumer/**",
                                 "/api/employee/**"
                         ).hasRole("ADMIN")
