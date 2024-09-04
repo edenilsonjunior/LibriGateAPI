@@ -5,8 +5,9 @@ import java.util.List;
 
 public record RestockResponse(
         Long id,
-        Double price,
-        LocalDate date,
         String employeeCpf,
+        String employeeName,
+        Double totalPrice,
+        LocalDate date,
         List<RestockBook> restockBooks
 ) { }

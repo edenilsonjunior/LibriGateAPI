@@ -26,11 +26,11 @@ public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
     @Query("SELECT COUNT(f) FROM BookCopy f WHERE f.book.isbn = :isbn AND f.status = 'AVAILABLE'")
     Long countAvailables(String isbn);
 
-    @Query("SELECT COUNT(f) FROM BookCopy f WHERE f.book.isbn = :isbn AND f.status = 'SOLD'")
+    @Query("SELECT COUNT(f) FROM BookCopy f WHERE f.book.isbn = :isbn AND f.status = 'RENTED'")
     Long countRented(String isbn);
 
 
-    @Query("SELECT COUNT(f) FROM BookCopy f WHERE f.book.isbn = :isbn AND f.status = 'AVAILABLE'")
+    @Query("SELECT COUNT(f) FROM BookCopy f WHERE f.book.isbn = :isbn AND f.status = 'SOLD'")
     Long countSold(String isbn);
 
 }

@@ -2,7 +2,9 @@ package br.com.librigate.model.service.actions.validator;
 
 import br.com.librigate.dto.actions.review.ReviewRequest;
 import br.com.librigate.exception.ValidationException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ReviewValidator {
     
     public void validateRentRequest(ReviewRequest request) {

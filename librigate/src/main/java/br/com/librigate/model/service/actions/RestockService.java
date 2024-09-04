@@ -48,8 +48,7 @@ public class RestockService implements IRestockService {
         RestockFactory restockFactory, 
         RestockRepository restockRepository, 
         EmployeeRepository employeeRepository, 
-        RestockValidator restockValidator, 
-        BookMapper bookMapper, 
+        RestockValidator restockValidator,
         BookCopyService bookCopyService, 
         BookCopyRepository bookCopyRepository
     ) {
@@ -58,7 +57,7 @@ public class RestockService implements IRestockService {
         this.restockRepository = restockRepository;
         this.employeeRepository = employeeRepository;
         this.restockValidator = restockValidator;
-        this.bookMapper = bookMapper;
+        this.bookMapper = BookMapper.INSTANCE;
         this.bookCopyService = bookCopyService;
         this.bookCopyRepository = bookCopyRepository;
     }
@@ -126,6 +125,8 @@ public class RestockService implements IRestockService {
             double totalPrice = calculateTotalPrice(request.books());
 
             var restock = restockFactory.createRestock(employee, totalPrice);
+            restockRepository.save(restock);
+
             var restockBooks = createRestockBooks(request, restock);
             restock.setBookList(restockBooks);
             
@@ -180,11 +181,15 @@ public class RestockService implements IRestockService {
 
     
     private RestockResponse toRestockResponse(Restock restock) {
+
+        var fullName = restock.getEmployee().getFirstName() + " " + restock.getEmployee().getLastName();
+
         return new RestockResponse(
                 restock.getId(),
+                restock.getEmployee().getCpf(),
+                fullName,
                 restock.getPrice(),
                 restock.getRestockDate(),
-                restock.getEmployee().getCpf(),
                 getRestockBooks(restock));
     }
 
@@ -195,6 +200,7 @@ public class RestockService implements IRestockService {
                 .entrySet().stream()
                 .map(entry -> new RestockBook(
                         entry.getKey(),
+                        entry.getValue().get(0).getBook().getTitle(),
                         entry.getValue().size(),
                         entry.getValue().get(0).getPrice()))
                 .toList();

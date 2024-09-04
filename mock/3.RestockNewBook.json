@@ -1,0 +1,34 @@
+{
+    "employeeCpf": "94123126014",
+    "isbn": "9780131103627",
+    "title": "The C Programming Language",
+    "description": "Classic book on C programming language.",
+    "publisher": "Prentice Hall",
+    "category": "Programming",
+    "authorsName": [
+        "Brian W. Kernighan",
+        "Dennis M. Ritchie"
+    ],
+    "edition": 2,
+    "launchDate": "1988-03-22",
+    "unityValue": 89.99,
+    "quantity": 5
+}
+// {
+//   "employeeCpf": "94123126014",
+//   "isbn": "9780201633610",
+//   "title": "Design Patterns: Elements of Reusable Object-Oriented Software",
+//   "description": "A foundational book on design patterns in software engineering.",
+//   "publisher": "Addison-Wesley",
+//   "category": "Software Engineering",
+//   "authorsName": [
+//     "Erich Gamma",
+//     "Richard Helm",
+//     "Ralph Johnson",
+//     "John Vlissides"
+//   ],
+//   "edition": 1,
+//   "launchDate": "1994-10-31",
+//   "unityValue": 99.99,
+//   "quantity": 5
+// }

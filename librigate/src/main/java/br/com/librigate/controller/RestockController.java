@@ -16,7 +16,7 @@ public class RestockController {
     private IRestockService restockService;
 
     @GetMapping
-    public ResponseEntity<?> findRestockHistory() {
+    public ResponseEntity<?> findAll() {
         return restockService.findAll();
     }
 

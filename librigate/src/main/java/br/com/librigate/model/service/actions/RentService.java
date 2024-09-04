@@ -80,9 +80,7 @@ public class RentService implements IRentService {
             bookCopyRepository.saveAll(books);
             rent.setBookList(books);
 
-            rentRepository.save(rent);
             var response = toRentResponse(rent);
-
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         });
     }

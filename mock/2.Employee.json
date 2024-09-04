@@ -1,0 +1,30 @@
+{
+    "cpf": "94123126014",
+    "firstName": "Lorenzo",
+    "lastName": "Simões",
+    "birthDate": "1990-05-15",
+    "gender": "Masculino",
+    "telephone": "(96) 2233-7648",
+    "role": "Gerente",
+    "password": "H7@rQ2%vLp",
+    "address": {
+        "zipCode": "59052140",
+        "number": 45,
+        "complement": "Sala 101"
+    }
+}
+// {
+//     "cpf": "39394847091",
+//     "firstName": "Julio", 
+//     "lastName": "Moura",
+//     "birthDate": "1999-04-03",
+//     "gender": "Masculino",
+//     "telephone": "(55) 2338-3901",
+//     "role": "Vendedor",
+//     "password": "wR3!nX8$pK",
+//     "address": {
+//         "zipCode": "78135090",
+//         "number": 81,
+//         "complement": "Edifício Primavera"
+//     }
+// }

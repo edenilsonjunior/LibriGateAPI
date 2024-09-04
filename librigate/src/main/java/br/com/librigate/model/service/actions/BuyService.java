@@ -125,22 +125,29 @@ public class BuyService implements IBuyService {
 
     private BuyResponse toBuyResponse(Buy buy) {
 
+        var customer =  buy.getCustomer();
+        String fullName = customer.getFirstName() + " " + customer.getLastName();
+
         var copiesGroupedByIsbn = buy.getBooks().stream()
                 .collect(Collectors.groupingBy(copy -> copy.getBook().getIsbn()));
 
         var buyBooks = copiesGroupedByIsbn
                 .entrySet()
                 .stream()
-                .map(group -> new BuyBook(group.getKey(), group.getValue().size()))
+                .map(group -> new BuyBook(
+                        group.getKey(),
+                        group.getValue().get(0).getBook().getTitle(),
+                        group.getValue().size()))
                 .toList();
 
         return new BuyResponse(
                 buy.getId(),
                 buy.getCustomer().getCpf(),
-                buy.getTotalPrice(),
+                fullName,
                 buy.getBuyDate(),
                 buy.getDueDate(),
                 Optional.ofNullable(buy.getPaidAt()),
+                buy.getTotalPrice(),
                 buy.getStatus(),
                 buyBooks);
     }

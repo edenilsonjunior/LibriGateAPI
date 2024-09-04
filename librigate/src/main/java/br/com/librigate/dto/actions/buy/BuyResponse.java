@@ -8,10 +8,11 @@ import java.util.Optional;
 public record BuyResponse(
         Long id,
         String customerCpf,
-        Double totalPrice,
+        String customerName,
         LocalDateTime buyDate,
         LocalDate dueDate,
         Optional<LocalDateTime> paidAt,
+        Double totalPrice,
         String status,
         List<BuyBook> books
 ) { }

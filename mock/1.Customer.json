@@ -1,0 +1,28 @@
+{
+    "cpf": "07905458024",
+    "firstName": "Melissa",
+    "lastName": "Nakamura",
+    "birthDate": "1985-10-30",
+    "gender": "Feminino",
+    "telephone": "(61) 2524-2024",
+    "password": "Yt7@xK92!m",
+    "address": {
+        "zipCode": "40226080",
+        "number": 123,
+        "complement": "Bloco B"
+    }
+}
+// {
+//     "cpf": "39579921091",
+//     "firstName": "Benício",
+//     "lastName": "Quadros",
+//     "birthDate": "1970-02-23",
+//     "gender": "Masculino",
+//     "telephone": "(87) 3312-3087",
+//     "password": "jK#8xZ!3wQ",
+//     "address": {
+//         "zipCode": "79320182",
+//         "number": 321,
+//         "complement": "Cobertura"
+//     }
+// }

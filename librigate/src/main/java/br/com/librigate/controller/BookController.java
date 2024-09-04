@@ -2,15 +2,10 @@ package br.com.librigate.controller;
 
 import br.com.librigate.dto.book.UpdateBookRequest;
 import br.com.librigate.model.service.interfaces.IBookService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/book")
