@@ -35,20 +35,24 @@ public class BuyService implements IBuyService {
     private final BookCopyRepository bookCopyRepository;
     private final BuyFactory buyFactory;
     private final BuyValidator buyValidator;
+    private final HandleRequest handleRequest;
 
     @Autowired
-    public BuyService(BuyRepository buyRepository, CustomerRepository customerRepository, BookCopyRepository bookCopyRepository, BuyFactory buyFactory, BuyValidator buyValidator) {
+    public BuyService(BuyRepository buyRepository, CustomerRepository customerRepository, 
+        BookCopyRepository bookCopyRepository, BuyFactory buyFactory, BuyValidator buyValidator, HandleRequest handleRequest
+    ) {
         this.buyRepository = buyRepository;
         this.customerRepository = customerRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.buyFactory = buyFactory;
         this.buyValidator = buyValidator;
+        this.handleRequest = handleRequest;
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> purchase(BuyRequest request) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var customer = findCustomerByCPF(request.customerCpf());
             var availableBooks = getAvailableBooks(request);
@@ -69,7 +73,7 @@ public class BuyService implements IBuyService {
 
     @Override
     public ResponseEntity<?> processPayment(Long buyId) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entity = findBuyById(buyId);
             buyValidator.validatePayment(entity);
@@ -85,7 +89,7 @@ public class BuyService implements IBuyService {
 
     @Override
     public ResponseEntity<?> cancelPurchase(Long buyId) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entity = findBuyById(buyId);
             buyValidator.validatePaymentCancel(entity);
@@ -100,7 +104,7 @@ public class BuyService implements IBuyService {
 
     @Override
     public ResponseEntity<?> findPurchasesByCustomerCpf(String cpf) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entities = buyRepository.findByCustomerCpf(cpf);
             var response = entities.stream()
@@ -112,7 +116,7 @@ public class BuyService implements IBuyService {
 
     @Override
     public ResponseEntity<?> findById(Long id) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entity = buyRepository.findById(id);
             if (entity.isEmpty())

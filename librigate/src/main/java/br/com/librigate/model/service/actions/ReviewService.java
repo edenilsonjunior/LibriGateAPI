@@ -27,21 +27,23 @@ public class ReviewService implements IReviewService {
     private final BookRepository bookRepository;
     private final ReviewValidator reviewValidator;
     private final ReviewFactory reviewFactory;
+    private final HandleRequest handleRequest;
 
     public ReviewService(CustomerRepository customerRepository, BookRepository bookRepository, 
-            ReviewRepository reviewRepository, ReviewValidator reviewValidator, ReviewFactory reviewFactory) {
+            ReviewRepository reviewRepository, ReviewValidator reviewValidator, ReviewFactory reviewFactory, HandleRequest handleRequest) {
         this.customerRepository = customerRepository;
         this.bookRepository = bookRepository;
         this.reviewRepository = reviewRepository;
         this.reviewValidator = reviewValidator;
         this.reviewFactory = reviewFactory;
+        this.handleRequest = handleRequest;
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> reviewBook(ReviewRequest request) {
 
-        return HandleRequest.handle(() ->{
+        return handleRequest.handle(() ->{
             
             reviewValidator.validateRentRequest(request);
             var customer = findCustomer(request.cpf());

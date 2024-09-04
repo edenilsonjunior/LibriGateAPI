@@ -30,20 +30,23 @@ public class RentService implements IRentService {
     private final RentRepository rentRepository;
     private final RentValidator rentValidator;
     private final RentFactory rentFactory;
+    private final HandleRequest handleRequest;
+
 
     @Autowired
     public RentService(CustomerRepository customerRepository, BookCopyRepository bookCopyRepository,
-            RentRepository rentRepository, RentValidator rentValidator, RentFactory rentFactory) {
+            RentRepository rentRepository, RentValidator rentValidator, RentFactory rentFactory, HandleRequest handleRequest) {
         this.customerRepository = customerRepository;
         this.bookCopyRepository = bookCopyRepository;
         this.rentRepository = rentRepository;
         this.rentValidator = rentValidator;
         this.rentFactory = rentFactory;
+        this.handleRequest = handleRequest;
     }
 
     @Override
     public ResponseEntity<?> findRentsByCustomerCPF(String cpf) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var list = rentRepository.findAllByCustomerCpf(cpf);
 
@@ -54,7 +57,7 @@ public class RentService implements IRentService {
 
     @Override
     public ResponseEntity<?> findRendById(Long rentId) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var rent = findById(rentId);
             var response = toRentResponse(rent);
@@ -62,11 +65,11 @@ public class RentService implements IRentService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> rent(RentRequest request) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             rentValidator.validateRent(request);
 
             var customer = findCustomerByCpf(request.customerCpf());
@@ -85,10 +88,10 @@ public class RentService implements IRentService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> processDevolutionBook(Long rentId) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             rentValidator.validateDevolution(rentId);
 
             var rent = findById(rentId);
@@ -106,10 +109,10 @@ public class RentService implements IRentService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> renewRent(Long rentId) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             rentValidator.validateRenew(rentId);
 
             var rent = findById(rentId);

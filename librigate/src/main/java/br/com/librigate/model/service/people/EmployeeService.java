@@ -26,18 +26,20 @@ public class EmployeeService implements IEmployeeService {
     private final EmployeeValidator employeeValidator;
     private final EmployeeFactory employeeFactory;
     private final EmployeeMapper employeeMapper = EmployeeMapper.INSTANCE;
+    private final HandleRequest handleRequest;
 
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository, EmployeeValidator employeeValidator,
-            EmployeeFactory employeeFactory) {
+            EmployeeFactory employeeFactory, HandleRequest handleRequest) {
         this.employeeRepository = employeeRepository;
         this.employeeValidator = employeeValidator;
         this.employeeFactory = employeeFactory;
+        this.handleRequest = handleRequest;
     }
 
     @Override
     public ResponseEntity<?> findAll() {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entityList = employeeRepository.findAll();
 
@@ -54,7 +56,7 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public ResponseEntity<?> findByCPF(String cpf) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entity = employeeRepository.findById(cpf)
                     .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
@@ -65,10 +67,10 @@ public class EmployeeService implements IEmployeeService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> create(CreateEmployeeRequest request) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             employeeValidator.validateNewEmployee(request);
             var employee = employeeFactory.createEmployee(request);
@@ -79,10 +81,10 @@ public class EmployeeService implements IEmployeeService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> update(UpdateEmployeeRequest request) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var employee = employeeFactory.updateEmployee(request, findEmployeeByCPF(request.cpf()));
             employeeRepository.save(employee);
@@ -92,11 +94,11 @@ public class EmployeeService implements IEmployeeService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> delete(String cpf) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var employee = findEmployeeByCPF(cpf);
             employee.setActive(false);
 

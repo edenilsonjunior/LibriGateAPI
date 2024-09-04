@@ -40,6 +40,7 @@ public class RestockService implements IRestockService {
     private final BookMapper bookMapper;
     private final BookCopyService bookCopyService;
     private final BookCopyRepository bookCopyRepository;
+    private final HandleRequest handleRequest;
 
 
     @Autowired
@@ -50,7 +51,8 @@ public class RestockService implements IRestockService {
         EmployeeRepository employeeRepository, 
         RestockValidator restockValidator,
         BookCopyService bookCopyService, 
-        BookCopyRepository bookCopyRepository
+        BookCopyRepository bookCopyRepository,
+        HandleRequest handleRequest
     ) {
         this.bookService = bookService;
         this.restockFactory = restockFactory;
@@ -60,13 +62,14 @@ public class RestockService implements IRestockService {
         this.bookMapper = BookMapper.INSTANCE;
         this.bookCopyService = bookCopyService;
         this.bookCopyRepository = bookCopyRepository;
+        this.handleRequest = handleRequest;
     }
 
 
     @Override
     public ResponseEntity<?> findAll() {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var restocks = restockRepository.findAll();
 
             var response = restocks.stream()
@@ -83,7 +86,7 @@ public class RestockService implements IRestockService {
     @Override
     public ResponseEntity<?> findById(Long id) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var restock = restockRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Restock not found"));
 
@@ -92,11 +95,11 @@ public class RestockService implements IRestockService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> buyNewBook(NewBookRequest request) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             restockValidator.validateNewBook(request);
 
             var employee = findEmployeeByCPF(request.employeeCpf());
@@ -114,11 +117,11 @@ public class RestockService implements IRestockService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> restockBook(RestockBookRequest request) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             restockValidator.validadeRestock(request);
 
             var employee = findEmployeeByCPF(request.employeeCpf());

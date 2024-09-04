@@ -23,16 +23,18 @@ public class BookCopyService implements IBookCopyService {
     private final BookCopyRepository bookCopyRepository;
     private final BookRepository bookRepository;
     private final BookCopyFactory bookCopyFactory;
+    private final HandleRequest handleRequest;
 
     @Autowired
-    public BookCopyService(BookCopyRepository bookCopyRepository, BookRepository bookRepository, BookCopyFactory bookCopyFactory) {
+    public BookCopyService(BookCopyRepository bookCopyRepository, BookRepository bookRepository, BookCopyFactory bookCopyFactory, HandleRequest handleRequest    ) {
         this.bookCopyRepository = bookCopyRepository;
         this.bookCopyFactory = bookCopyFactory;
         this.bookRepository = bookRepository;
+        this.handleRequest = handleRequest;
     }
 
 
-    @Transactional
+     
     @Override
     public BookCopy create(CreateBookCopyRequest request) {
         var book = bookRepository.findById(request.isbn())
@@ -57,7 +59,7 @@ public class BookCopyService implements IBookCopyService {
     @Override
     public ResponseEntity<?> findStock() {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var entityList = bookCopyRepository.findAll();
 
             var stockList = entityList.stream()
@@ -72,7 +74,7 @@ public class BookCopyService implements IBookCopyService {
     @Override
     public ResponseEntity<?> findStockByBook(String isbn) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var entityList = bookCopyRepository.findAll();
 
             var stock = entityList.stream()

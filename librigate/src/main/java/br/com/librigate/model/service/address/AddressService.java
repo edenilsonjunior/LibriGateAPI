@@ -42,7 +42,7 @@ public class AddressService implements IAddressService {
         return addressRepository.save(address);
     }
 
-    @Transactional
+     
     @Override
     public Address update(Long id, AddressRequest request) throws EntityNotFoundException {
 

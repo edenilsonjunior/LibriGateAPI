@@ -22,17 +22,20 @@ public class BookService implements IBookService {
     private final BookRepository bookRepository;
     private final BookFactory bookFactory;
     private final BookMapper bookMapper =BookMapper.INSTANCE;
+    private final HandleRequest handleRequest;
 
     @Autowired
-    public BookService(BookRepository bookRepository, BookFactory bookFactory) {
+    public BookService(BookRepository bookRepository, BookFactory bookFactory, HandleRequest handleRequest
+    ) {
         this.bookRepository = bookRepository;
         this.bookFactory = bookFactory;
+        this.handleRequest = handleRequest;
     }
 
 
     @Override
     public ResponseEntity<?> findAll() {
-        return HandleRequest.handle(()-> {
+        return handleRequest.handle(()-> {
             var entityList = bookRepository.findAll();
 
             var response = entityList.stream()
@@ -45,7 +48,7 @@ public class BookService implements IBookService {
     @Override
     public ResponseEntity<?> findBooksByCategory(String category) {
 
-        return HandleRequest.handle(()->{
+        return handleRequest.handle(()->{
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
@@ -62,7 +65,7 @@ public class BookService implements IBookService {
     @Override
     public ResponseEntity<?> findBooksByAuthor(String author) {
 
-        return HandleRequest.handle(()->{
+        return handleRequest.handle(()->{
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
@@ -79,7 +82,7 @@ public class BookService implements IBookService {
     @Override
     public ResponseEntity<?> findBookByIsbn(String bookIsbn) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var entityList = bookRepository.findAll();
 
             var filteredEntityList = entityList.stream()
@@ -96,7 +99,7 @@ public class BookService implements IBookService {
     @Override
     public ResponseEntity<?> findReview(String bookIsbn) {
 
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entityList = bookRepository.findById(bookIsbn)
                     .orElseThrow(() -> new EntityNotFoundException("Book not found"));
@@ -115,7 +118,7 @@ public class BookService implements IBookService {
         });
     }
 
-    @Transactional
+     
     @Override
     public Book create(CreateBookRequest request) {
         var entity = bookMapper.toEntity(request);
@@ -123,11 +126,11 @@ public class BookService implements IBookService {
     }
 
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> update(UpdateBookRequest request) {
 
-        return HandleRequest.handle(()->{
+        return handleRequest.handle(()->{
             var entity = bookRepository.findById(request.isbn())
                     .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 

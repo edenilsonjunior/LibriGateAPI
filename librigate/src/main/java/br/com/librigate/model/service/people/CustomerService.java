@@ -26,19 +26,22 @@ public class CustomerService implements ICustomerService {
     private final CustomerFactory customerFactory;
     private final AddressService addressService;
     private final CustomerMapper customerMapper = CustomerMapper.INSTANCE;
+    private final HandleRequest handleRequest;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, CustomerValidator customerValidator, CustomerFactory customerFactory, AddressService addressService) {
+    public CustomerService(CustomerRepository customerRepository, CustomerValidator customerValidator, 
+    CustomerFactory customerFactory, AddressService addressService, HandleRequest handleRequest) {
         this.customerRepository = customerRepository;
         this.customerValidator = customerValidator;
         this.customerFactory = customerFactory;
         this.addressService = addressService;
+        this.handleRequest = handleRequest;
     }
 
 
     @Override
     public ResponseEntity<?> findAll() {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entityList = customerRepository.findAll();
             var response = entityList.stream().map(customerMapper::toResponse).toList();
@@ -49,7 +52,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public ResponseEntity<?> findByCPF(String cpf) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             var entity = findByCustomerByCPF(cpf);
             var response = customerMapper.toResponse(entity);
@@ -58,10 +61,10 @@ public class CustomerService implements ICustomerService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> create(CreateCustomerRequest request) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
 
             customerValidator.validateNewCustomer(request);
             var address = addressService.create(request.address());
@@ -75,22 +78,22 @@ public class CustomerService implements ICustomerService {
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> update(UpdateCustomerRequest request) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var customer = customerFactory.updateCustomer(request, findByCustomerByCPF(request.cpf()));
+            customerRepository.save(customer);
 
-            
             var response = customerMapper.toResponse(customer);
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
 
-    @Transactional
+     
     @Override
     public ResponseEntity<?> delete(String cpf) {
-        return HandleRequest.handle(() -> {
+        return handleRequest.handle(() -> {
             var customer = findByCustomerByCPF(cpf);
             customer.setActive(false);
 
