@@ -106,7 +106,7 @@ public class RestockService implements IRestockService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> getRestockHistory() {
+    public ResponseEntity<?> findAll() {
 
         return HandleRequest.handle(() -> {
             var restocks = restockRepository.findAll();
@@ -125,7 +125,7 @@ public class RestockService implements IRestockService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> findByPK(Long id) {
+    public ResponseEntity<?> findById(Long id) {
 
         return HandleRequest.handle(() -> {
             var restock = restockRepository.findById(id);

@@ -22,7 +22,7 @@ public class CustomerFactory {
     }
 
     public Customer createCustomer(CreateCustomerRequest request) {
-        Customer customer = CustomerMapper.instance.toEntity(request);
+        Customer customer = CustomerMapper.INSTANCE.toEntity(request);
         customer.setActive(true);
         customer.setPurchases(new ArrayList<>());
         customer.setRentList(new ArrayList<>());

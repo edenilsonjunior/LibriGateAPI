@@ -93,7 +93,7 @@ public class BuyService implements IBuyService {
     }
 
     @Override
-    public ResponseEntity<?> getPurchasesByCustomerCpf(String cpf) {
+    public ResponseEntity<?> findPurchasesByCustomerCpf(String cpf) {
         return HandleRequest.handle(() -> {
 
             var entities = buyRepository.findByCustomerCpf(cpf);
@@ -105,7 +105,7 @@ public class BuyService implements IBuyService {
     }
 
     @Override
-    public ResponseEntity<?> findByPK(Long id) {
+    public ResponseEntity<?> findById(Long id) {
         return HandleRequest.handle(() -> {
 
             var entity = buyRepository.findById(id);

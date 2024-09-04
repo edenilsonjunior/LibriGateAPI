@@ -105,7 +105,7 @@ public class RentService implements IRentService {
 
 
     @Override
-    public ResponseEntity<?> getRents(String cpf) {
+    public ResponseEntity<?> findRentsByCustomerCPF(String cpf) {
         return HandleRequest.handle(() -> {
 
             var list = rentRepository.findAllByCustomerCpf(cpf);
@@ -119,7 +119,7 @@ public class RentService implements IRentService {
     }
 
     @Override
-    public ResponseEntity<?> getRendById(Long rentId) {
+    public ResponseEntity<?> findRendById(Long rentId) {
         return HandleRequest.handle(() -> {
             var rent = findById(rentId);
             var response = toRentResponse(rent);

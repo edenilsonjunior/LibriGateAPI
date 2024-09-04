@@ -83,7 +83,6 @@ public class CustomerService implements ICustomerService {
 
             
             var response = customerMapper.toResponse(customer);
-
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
