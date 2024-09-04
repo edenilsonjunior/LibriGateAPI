@@ -41,6 +41,27 @@ public class RentService implements IRentService {
         this.rentFactory = rentFactory;
     }
 
+    @Override
+    public ResponseEntity<?> findRentsByCustomerCPF(String cpf) {
+        return HandleRequest.handle(() -> {
+
+            var list = rentRepository.findAllByCustomerCpf(cpf);
+
+            var response = list.stream().map(this::toRentResponse).toList();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        });
+    }
+
+    @Override
+    public ResponseEntity<?> findRendById(Long rentId) {
+        return HandleRequest.handle(() -> {
+
+            var rent = findById(rentId);
+            var response = toRentResponse(rent);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        });
+    }
+
     @Transactional
     @Override
     public ResponseEntity<?> rent(RentRequest request) {
@@ -53,6 +74,7 @@ public class RentService implements IRentService {
 
             var availableBooks = rentFactory.getAvailableBooksForRent(listBookIsbn);
             var rent = rentFactory.createRent(customer);
+            rentRepository.save(rent);
 
             var books = rentFactory.associateBooksToRent(availableBooks, rent);
             bookCopyRepository.saveAll(books);
@@ -64,7 +86,6 @@ public class RentService implements IRentService {
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         });
     }
-
 
     @Transactional
     @Override
@@ -78,7 +99,8 @@ public class RentService implements IRentService {
             rent.setGivenBackAt(LocalDateTime.now());
             rentRepository.save(rent);
 
-            restoreBooks(rent);
+            var restoredBooks = rentFactory.restoreBooks(rent);
+            bookCopyRepository.saveAll(restoredBooks);
 
             var response = toRentResponse(rent);
 
@@ -86,12 +108,10 @@ public class RentService implements IRentService {
         });
     }
 
-
     @Transactional
     @Override
     public ResponseEntity<?> renewRent(Long rentId) {
         return HandleRequest.handle(() -> {
-
             rentValidator.validateRenew(rentId);
 
             var rent = findById(rentId);
@@ -103,42 +123,6 @@ public class RentService implements IRentService {
         });
     }
 
-
-    @Override
-    public ResponseEntity<?> findRentsByCustomerCPF(String cpf) {
-        return HandleRequest.handle(() -> {
-
-            var list = rentRepository.findAllByCustomerCpf(cpf);
-
-            var response = list.stream()
-                    .map(this::toRentResponse)
-                    .toList();
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        });
-    }
-
-    @Override
-    public ResponseEntity<?> findRendById(Long rentId) {
-        return HandleRequest.handle(() -> {
-            var rent = findById(rentId);
-            var response = toRentResponse(rent);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        });
-    }
-
-    private Rent findById(Long rentId) {
-        return rentRepository.findById(rentId)
-                .orElseThrow(() -> new EntityNotFoundException("Rent not found"));
-    }
-
-    private void restoreBooks(Rent rent) {
-        rent.getBookList().forEach(book -> {
-            book.setStatus("AVAILABLE");
-            bookCopyRepository.save(book);
-        });
-    }
 
     private RentResponse toRentResponse(Rent rent) {
 
@@ -163,6 +147,11 @@ public class RentService implements IRentService {
                 rent.getDevolutionDate(),
                 Optional.ofNullable(rent.getGivenBackAt()),
                 books);
+    }
+
+    private Rent findById(Long rentId) {
+        return rentRepository.findById(rentId)
+                .orElseThrow(() -> new EntityNotFoundException("Rent not found"));
     }
 
     private Customer findCustomerByCpf(String cpf){

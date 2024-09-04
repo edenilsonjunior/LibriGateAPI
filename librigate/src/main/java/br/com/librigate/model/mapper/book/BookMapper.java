@@ -1,5 +1,6 @@
 package br.com.librigate.model.mapper.book;
 
+import br.com.librigate.dto.book.BookResponse;
 import br.com.librigate.dto.book.CreateBookRequest;
 import br.com.librigate.dto.book.NewBookRequest;
 import br.com.librigate.model.entity.book.Book;
@@ -16,4 +17,6 @@ public interface BookMapper {
     Book toEntity(CreateBookRequest dto);
 
     CreateBookRequest toCreateBookRequest(NewBookRequest request);
+
+    BookResponse toResponse(Book book);
 }

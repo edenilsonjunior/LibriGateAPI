@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 @Service
 public class BuyService implements IBuyService {
@@ -53,7 +54,10 @@ public class BuyService implements IBuyService {
             var availableBooks = getAvailableBooks(request);
 
             var entity = buyFactory.createBuy(request, customer);
+            buyRepository.save(entity);
+
             var soldBooks = buyFactory.soldBooks(request, entity, availableBooks);
+            bookCopyRepository.saveAll(soldBooks);
 
             entity.setBooks(soldBooks);
             entity.calculateTotalPrice();
@@ -68,9 +72,11 @@ public class BuyService implements IBuyService {
         return HandleRequest.handle(() -> {
 
             var entity = findBuyById(buyId);
-
             buyValidator.validatePayment(entity);
-            buyFactory.approvePayment(entity);
+
+            entity.setStatus("APPROVED");
+            entity.setPaidAt(LocalDateTime.now());
+            buyRepository.save(entity);
 
             var response = toBuyResponse(entity);
             return new ResponseEntity<>(response, HttpStatus.OK);

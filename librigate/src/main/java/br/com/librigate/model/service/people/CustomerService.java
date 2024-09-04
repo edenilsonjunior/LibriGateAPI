@@ -99,7 +99,7 @@ public class CustomerService implements ICustomerService {
         });
     }
 
-    private Customer findByCustomerByCPF(String cpf) throws EntityNotFoundException {
+    private Customer findByCustomerByCPF(String cpf) {
         return customerRepository.findById(cpf)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
     }

@@ -5,7 +5,6 @@ import br.com.librigate.model.entity.actions.Rent;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.entity.people.Customer;
 import br.com.librigate.model.repository.BookCopyRepository;
-import br.com.librigate.model.repository.RentRepository;
 import br.com.librigate.model.service.book.BookCopyService;
 import org.springframework.stereotype.Component;
 
@@ -16,14 +15,11 @@ import java.util.List;
 @Component
 public class RentFactory {
 
-    private final RentRepository rentRepository;
     private final BookCopyRepository bookCopyRepository;
 
     public RentFactory(
-            RentRepository rentRepository,
             BookCopyService bookCopyService,
             BookCopyRepository bookCopyRepository) {
-        this.rentRepository = rentRepository;
         this.bookCopyRepository = bookCopyRepository;
     }
 
@@ -33,16 +29,14 @@ public class RentFactory {
         rent.setRentDate(LocalDate.now());
         rent.setStatus("RENTED");
         rent.setDevolutionDate(LocalDate.now().plusWeeks(1));
-        return rentRepository.save(rent);
+        return rent;
     }
 
     public List<BookCopy> associateBooksToRent(List<BookCopy> books, Rent rent) {
 
-        books.forEach(book ->{
+        return books.stream().peek(book ->{
             book.setStatus("RENTED");
-        });
-
-        return books;
+        }).toList();
     }
 
     public List<BookCopy> getAvailableBooksForRent(List<String> isbns) {
@@ -60,4 +54,13 @@ public class RentFactory {
 
         return list;
     }
+
+    public List<BookCopy> restoreBooks(Rent rent) {
+
+        return rent.getBookList().stream().peek(book -> {
+            book.setStatus("AVAILABLE");
+        }).toList();
+    }
+
+
 }

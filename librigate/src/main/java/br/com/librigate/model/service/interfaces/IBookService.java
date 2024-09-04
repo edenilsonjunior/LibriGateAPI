@@ -13,6 +13,5 @@ public interface IBookService {
     ResponseEntity<?> findBookByIsbn(String bookIsbn);
     ResponseEntity<?> findReview(String bookIsbn);
     Book create(CreateBookRequest request);
-    Book update(UpdateBookRequest request);
-    Book findById(String isbn);
+    ResponseEntity<?> update(UpdateBookRequest request);
 }

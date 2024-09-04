@@ -2,14 +2,13 @@ package br.com.librigate.model.service.book;
 
 import br.com.librigate.dto.book.bookCopy.CreateBookCopyRequest;
 import br.com.librigate.dto.book.bookCopy.StockResponse;
-import br.com.librigate.dto.book.bookCopy.UpdateBookCopyRequest;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.book.BookCopy;
 import br.com.librigate.model.repository.BookCopyRepository;
-import br.com.librigate.model.repository.BuyRepository;
+import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.service.HandleRequest;
+import br.com.librigate.model.service.book.factory.BookCopyFactory;
 import br.com.librigate.model.service.interfaces.IBookCopyService;
-import br.com.librigate.model.service.interfaces.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,49 +21,24 @@ import java.util.List;
 public class BookCopyService implements IBookCopyService {
 
     private final BookCopyRepository bookCopyRepository;
-    private final IBookService bookService;
-    private final BuyRepository buyRepository;
+    private final BookRepository bookRepository;
+    private final BookCopyFactory bookCopyFactory;
 
     @Autowired
-    public BookCopyService(BookCopyRepository bookCopyRepository, IBookService bookService, BuyRepository buyRepository) {
+    public BookCopyService(BookCopyRepository bookCopyRepository, BookRepository bookRepository, BookCopyFactory bookCopyFactory) {
         this.bookCopyRepository = bookCopyRepository;
-        this.bookService = bookService;
-        this.buyRepository = buyRepository;
+        this.bookCopyFactory = bookCopyFactory;
+        this.bookRepository = bookRepository;
     }
 
 
     @Transactional
     @Override
     public BookCopy create(CreateBookCopyRequest request) {
-        var entityBook = bookService.findById(request.isbn());
+        var book = bookRepository.findById(request.isbn())
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
-        var entity = new BookCopy();
-        entity.setBook(entityBook);
-        entity.setPrice(request.price());
-        entity.setRestock(request.restock());
-        entity.setStatus("AVAILABLE");
-        entity.setCopyNumber(request.copyNumber());
-
-        return bookCopyRepository.save(entity);
-    }
-
-
-    @Transactional
-    @Override
-    public BookCopy update(UpdateBookCopyRequest request) {
-        var entity = bookCopyRepository.findById(request.id())
-                .orElseThrow(() -> new EntityNotFoundException("Book copy not found"));
-
-        request.status().ifPresent(entity::setStatus);
-        request.price().ifPresent(entity::setPrice);
-        request.buyId().ifPresent((buyId) -> {
-
-            var buy = buyRepository.findById(buyId)
-                    .orElseThrow(() -> new EntityNotFoundException("Buy not found"));
-
-            entity.setBuy(buy);
-        });
-
+        var entity = bookCopyFactory.create(request, book);
         return bookCopyRepository.save(entity);
     }
 

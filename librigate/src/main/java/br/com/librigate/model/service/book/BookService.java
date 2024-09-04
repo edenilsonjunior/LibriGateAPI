@@ -1,7 +1,6 @@
 package br.com.librigate.model.service.book;
 
 import br.com.librigate.dto.actions.review.ReviewResponse;
-import br.com.librigate.dto.book.BookGettersResponse;
 import br.com.librigate.dto.book.CreateBookRequest;
 import br.com.librigate.dto.book.UpdateBookRequest;
 import br.com.librigate.exception.EntityNotFoundException;
@@ -9,6 +8,7 @@ import br.com.librigate.model.entity.book.Book;
 import br.com.librigate.model.mapper.book.BookMapper;
 import br.com.librigate.model.repository.BookRepository;
 import br.com.librigate.model.service.HandleRequest;
+import br.com.librigate.model.service.book.factory.BookFactory;
 import br.com.librigate.model.service.interfaces.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,46 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookService implements IBookService {
 
     private final BookRepository bookRepository;
-    private final BookMapper bookMapper;
+    private final BookFactory bookFactory;
+    private final BookMapper bookMapper =BookMapper.INSTANCE;
 
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, BookFactory bookFactory) {
         this.bookRepository = bookRepository;
-        this.bookMapper = BookMapper.INSTANCE;
-    }
-
-
-    @Transactional
-    @Override
-    public Book create(CreateBookRequest request) {
-        var entity = bookMapper.toEntity(request);
-        return bookRepository.save(entity);
-    }
-
-
-    @Transactional
-    @Override
-    public Book update(UpdateBookRequest request) {
-
-        var entity = bookRepository.findById(request.isbn())
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
-
-        request.title().ifPresent(entity::setTitle);
-        request.description().ifPresent(entity::setDescription);
-        request.publisher().ifPresent(entity::setPublisher);
-        request.category().ifPresent(entity::setCategory);
-        request.authorsName().ifPresent(entity::setAuthorsName);
-        request.edition().ifPresent(entity::setEdition);
-        request.launchDate().ifPresent(entity::setLaunchDate);
-
-        return bookRepository.save(entity);
-    }
-
-
-    @Override
-    public Book findById(String isbn) {
-        return bookRepository.findById(isbn)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+        this.bookFactory = bookFactory;
     }
 
 
@@ -69,12 +36,11 @@ public class BookService implements IBookService {
             var entityList = bookRepository.findAll();
 
             var response = entityList.stream()
-                    .map(this::toBookGettersResponse).toList();
+                    .map(bookMapper::toResponse).toList();
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
-
 
     @Override
     public ResponseEntity<?> findBooksByCategory(String category) {
@@ -85,7 +51,7 @@ public class BookService implements IBookService {
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getCategory().toLowerCase()
                             .contains(category.toLowerCase()))
-                    .map(this::toBookGettersResponse)
+                    .map(bookMapper::toResponse)
                     .toList();
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
@@ -102,7 +68,7 @@ public class BookService implements IBookService {
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getAuthorsName().stream()
                             .anyMatch(fb -> fb.toLowerCase().contains(author.toLowerCase())))
-                    .map(this::toBookGettersResponse)
+                    .map(bookMapper::toResponse)
                     .toList();
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
@@ -119,7 +85,7 @@ public class BookService implements IBookService {
             var filteredEntityList = entityList.stream()
                     .filter(b -> b.getIsbn().equals(bookIsbn))
                     .findFirst()
-                    .map(this::toBookGettersResponse)
+                    .map(bookMapper::toResponse)
                     .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
             return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
@@ -132,36 +98,45 @@ public class BookService implements IBookService {
 
         return HandleRequest.handle(() -> {
 
-            var entityList = bookRepository.findAll();
+            var entityList = bookRepository.findById(bookIsbn)
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
-            var filteredEntityList = entityList.stream()
-                    .filter(b -> b.getIsbn().equals(bookIsbn))
-                    .findFirst()
-                    .map(b -> b.getReviews().stream()
-                            .map(r -> new ReviewResponse(
-                                    r.getCustomer().getCpf(),
-                                    r.getBook().getIsbn(),
-                                    r.getDescription(),
-                                    r.getRating()
-                            ))
-                    )
-                    .orElseThrow(() -> new EntityNotFoundException("Book not found"))
+
+            var reviews = entityList.getReviews().stream()
+                    .map(r -> new ReviewResponse(
+                            r.getCustomer().getCpf(),
+                            r.getBook().getIsbn(),
+                            r.getDescription(),
+                            r.getRating()
+                    ))
                     .toList();
 
-            return new ResponseEntity<>(filteredEntityList, HttpStatus.OK);
+            return new ResponseEntity<>(reviews, HttpStatus.OK);
         });
     }
 
-    private BookGettersResponse toBookGettersResponse(Book b) {
+    @Transactional
+    @Override
+    public Book create(CreateBookRequest request) {
+        var entity = bookMapper.toEntity(request);
+        return bookRepository.save(entity);
+    }
 
-        return new BookGettersResponse(
-                b.getIsbn(),
-                b.getTitle(),
-                b.getDescription(),
-                b.getPublisher(),
-                b.getCategory(),
-                b.getAuthorsName(),
-                b.getEdition(),
-                b.getLaunchDate());
+
+    @Transactional
+    @Override
+    public ResponseEntity<?> update(UpdateBookRequest request) {
+
+        return HandleRequest.handle(()->{
+            var entity = bookRepository.findById(request.isbn())
+                    .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+            bookFactory.update(request, entity);
+            bookRepository.save(entity);
+
+            var response = bookMapper.toResponse(entity);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        });
     }
 }

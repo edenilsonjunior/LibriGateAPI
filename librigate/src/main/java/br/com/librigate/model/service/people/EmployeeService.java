@@ -105,7 +105,7 @@ public class EmployeeService implements IEmployeeService {
         });
     }
 
-    private Employee findEmployeeByCPF(String cpf) throws EntityNotFoundException {
+    private Employee findEmployeeByCPF(String cpf) {
 
         return employeeRepository
                 .findById(cpf)

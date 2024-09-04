@@ -3,7 +3,7 @@ package br.com.librigate.dto.book;
 import java.time.LocalDate;
 import java.util.List;
 
-public record BookGettersResponse(
+public record BookResponse(
         String isbn,
         String title,
         String description,

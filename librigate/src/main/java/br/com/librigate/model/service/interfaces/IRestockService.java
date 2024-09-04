@@ -10,5 +10,4 @@ public interface IRestockService {
     ResponseEntity<?> findById(Long id);
     ResponseEntity<?> buyNewBook(NewBookRequest request);
     ResponseEntity<?> restockBook(RestockBookRequest request);
-    
 }
