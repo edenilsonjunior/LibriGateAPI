@@ -9,7 +9,6 @@ public record UpdateCustomerRequest(
         Optional<String> firstName,
         Optional<String> lastName,
         Optional<String> telephone,
-        Optional<String> password,
         Optional<AddressRequest> address
 ) {
 }

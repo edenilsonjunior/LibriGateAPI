@@ -39,7 +39,6 @@ public class EmployeeFactory {
         request.firstName().ifPresent(employee::setFirstName);
         request.lastName().ifPresent(employee::setLastName);
         request.telephone().ifPresent(employee::setTelephone);
-        request.password().ifPresent(employee::setPassword);
         request.role().ifPresent(employee::setRole);
 
         request.address().ifPresent((address) -> {
