@@ -33,7 +33,7 @@ public class CustomerValidator {
     }
 
     private void validateCpf(String cpf){
-        validate(cpf == null || cpf.length() != 11, "CPF size must be at least 11 and cannot be null.");
+        validate(cpf == null || cpf.length() < 11, "CPF size must be at least 11 and cannot be null.");
     }
 
     private void validateName(String name, String fieldName) {

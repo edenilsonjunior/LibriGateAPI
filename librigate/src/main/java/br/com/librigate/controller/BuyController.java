@@ -2,10 +2,13 @@ package br.com.librigate.controller;
 
 import br.com.librigate.dto.actions.buy.BuyRequest;
 import br.com.librigate.model.service.interfaces.IBuyService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "buy")
 @RestController
 @RequestMapping("/api/buy")
 public class BuyController {

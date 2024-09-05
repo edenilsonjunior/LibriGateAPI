@@ -2,6 +2,7 @@ package br.com.librigate.controller;
 
 import br.com.librigate.dto.actions.review.ReviewRequest;
 import br.com.librigate.model.service.actions.ReviewService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "review")
 @RestController
 @RequestMapping("/api/review")
 public class ReviewController {

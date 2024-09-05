@@ -1,19 +1,18 @@
 package br.com.librigate.controller;
 
 import br.com.librigate.dto.authorization.AuthenticationRequest;
-import br.com.librigate.dto.authorization.AuthenticationResponse;
 import br.com.librigate.dto.authorization.RegisterRequest;
-import br.com.librigate.model.entity.people.User;
 import br.com.librigate.model.entity.people.UserRole;
 import br.com.librigate.model.service.interfaces.IAuthenticationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "auth")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {

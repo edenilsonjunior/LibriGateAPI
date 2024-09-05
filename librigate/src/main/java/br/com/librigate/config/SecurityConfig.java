@@ -38,18 +38,14 @@ public class SecurityConfig {
                                 "/api/book-copy/**",
                                 "/api/restock/**",
                                 "/api/customer/**",
-                                "/api/employee/**",
-                                "/api/buy/**",
-                                "/api/rent/**",
-                                "/api/review/**",
-                                "/api/book/**"
-                        ).hasRole("ADMIN")
+                                "/api/employee/**"
+                        ).hasAuthority("ROLE_ADMIN")
                         .requestMatchers(
                                 "/api/buy/**",
                                 "/api/rent/**",
                                 "/api/review/**",
                                 "/api/book/**"
-                        ).hasRole("USER")
+                        ).hasAuthority("ROLE_USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

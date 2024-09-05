@@ -3,10 +3,13 @@ package br.com.librigate.controller;
 import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
 import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "employee")
 @RestController
 @RequestMapping("/api/employee")
 public class EmployeeController {

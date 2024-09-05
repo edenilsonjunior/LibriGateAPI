@@ -3,10 +3,13 @@ package br.com.librigate.controller;
 import br.com.librigate.dto.book.UpdateBookRequest;
 import br.com.librigate.model.service.interfaces.IBookService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "book")
 @RestController
 @RequestMapping("/api/book")
 public class BookController {

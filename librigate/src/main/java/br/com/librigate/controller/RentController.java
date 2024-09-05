@@ -2,10 +2,13 @@ package br.com.librigate.controller;
 
 import br.com.librigate.dto.actions.rent.RentRequest;
 import br.com.librigate.model.service.interfaces.IRentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "rent")
 @RestController
 @RequestMapping("/api/rent")
 public class RentController {

@@ -3,9 +3,12 @@ package br.com.librigate.controller;
 import br.com.librigate.dto.people.customer.CreateCustomerRequest;
 import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
 import br.com.librigate.model.service.interfaces.ICustomerService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+@Tag(name = "customer")
 @RestController
 @RequestMapping("/api/customer")
 public class CustomerController {
