@@ -1,6 +1,7 @@
 package br.com.librigate.model.service.actions;
 
-import br.com.librigate.dto.actions.restock.RestockBook;
+import br.com.librigate.dto.actions.restock.BookRequest;
+import br.com.librigate.dto.actions.restock.BookResponse;
 import br.com.librigate.dto.actions.restock.RestockBookRequest;
 import br.com.librigate.dto.actions.restock.RestockResponse;
 import br.com.librigate.dto.book.NewBookRequest;
@@ -118,7 +119,7 @@ public class RestockService implements IRestockService {
     public ResponseEntity<?> restockBook(RestockBookRequest request) {
 
         return handleRequest.handle(() -> {
-            restockValidator.validadeRestock(request);
+            restockValidator.validateRestock(request);
 
             var employee = findEmployeeByCPF(request.employeeCpf());
             double totalPrice = calculateTotalPrice(request.books());
@@ -172,7 +173,7 @@ public class RestockService implements IRestockService {
     }
 
 
-    private double calculateTotalPrice(List<RestockBook> books) {
+    private double calculateTotalPrice(List<BookRequest> books) {
         return books.stream()
                 .mapToDouble(book -> book.unitValue() * book.quantity())
                 .sum();
@@ -193,11 +194,11 @@ public class RestockService implements IRestockService {
     }
 
 
-    private List<RestockBook> getRestockBooks(Restock restock) {
+    private List<BookResponse> getRestockBooks(Restock restock) {
         return restock.getBookList().stream()
                 .collect(Collectors.groupingBy(book -> book.getBook().getIsbn()))
                 .entrySet().stream()
-                .map(entry -> new RestockBook(
+                .map(entry -> new BookResponse(
                         entry.getKey(),
                         entry.getValue().get(0).getBook().getTitle(),
                         entry.getValue().size(),

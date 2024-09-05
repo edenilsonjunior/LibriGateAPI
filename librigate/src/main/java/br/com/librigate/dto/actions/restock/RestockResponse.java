@@ -9,5 +9,5 @@ public record RestockResponse(
         String employeeName,
         Double totalPrice,
         LocalDate date,
-        List<RestockBook> restockBooks
+        List<BookResponse> restockBooks
 ) { }
