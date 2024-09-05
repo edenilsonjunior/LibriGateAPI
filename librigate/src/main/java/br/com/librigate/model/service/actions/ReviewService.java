@@ -45,7 +45,7 @@ public class ReviewService implements IReviewService {
         return handleRequest.handle(() ->{
             
             reviewValidator.validateRentRequest(request);
-            var customer = findCustomer(request.cpf());
+            var customer = findCustomer(request.customerCpf());
             var book = findBook(request.bookIsbn());
 
             var review = reviewFactory.createReview(customer, book, request);
