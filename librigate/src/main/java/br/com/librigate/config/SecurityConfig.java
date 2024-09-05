@@ -23,7 +23,6 @@ public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
 
-
     @Autowired
     public SecurityConfig(SecurityFilter securityFilter) {
         this.securityFilter = securityFilter;
@@ -43,13 +42,19 @@ public class SecurityConfig {
                                 "/api/auth/**"
                         ).permitAll()
                         .requestMatchers(
+                                "/api/book-copy/**",
+                                "/api/restock/**",
+                                "/api/customer/**",
+                                "/api/employee/**"
+                        ).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/book").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(
                                 "/api/buy/**",
                                 "/api/rent/**",
-                                "/api/review/**",
-                                "/api/book/**"
-                        ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/review").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
-                        .anyRequest().hasAuthority("ROLE_ADMIN")
+                                "/api/review/**"
+                        ).hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.GET, "/api/book","/api/book/author/**", "/api/book/category/**", "/api/book/isbn/**", "/api/book/review/**").hasAuthority("ROLE_USER")
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
