@@ -6,6 +6,7 @@ import br.com.librigate.component.security.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -42,23 +43,19 @@ public class SecurityConfig {
                                 "/api/auth/**"
                         ).permitAll()
                         .requestMatchers(
-                                "/api/book-copy/**",
-                                "/api/restock/**",
-                                "/api/customer/**",
-                                "/api/employee/**"
-                        ).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(
                                 "/api/buy/**",
                                 "/api/rent/**",
                                 "/api/review/**",
                                 "/api/book/**"
-                        ).hasAuthority("ROLE_USER")
-                        .anyRequest().authenticated()
+                        ).hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/review").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+                        .anyRequest().hasAuthority("ROLE_ADMIN")
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
                                 .accessDeniedHandler(accessDeniedHandler())
-                                .authenticationEntryPoint(customAuthenticationEntryPoint()))
+                                .authenticationEntryPoint(customAuthenticationEntryPoint())
+                )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -82,6 +79,4 @@ public class SecurityConfig {
     public CustomAuthenticationEntryPoint customAuthenticationEntryPoint(){
         return new CustomAuthenticationEntryPoint();
     }
-
-
 }
