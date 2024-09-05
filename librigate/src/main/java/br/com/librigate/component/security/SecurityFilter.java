@@ -1,4 +1,4 @@
-package br.com.librigate.model.service;
+package br.com.librigate.component.security;
 
 import br.com.librigate.model.repository.UserRepository;
 import br.com.librigate.model.service.authorization.TokenService;
