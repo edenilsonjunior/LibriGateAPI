@@ -75,9 +75,6 @@ public class RestockService implements IRestockService {
                     .map(this::toRestockResponse)
                     .collect(Collectors.toList());
 
-            if (response.isEmpty())
-                return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
-
             return new ResponseEntity<>(response, HttpStatus.OK);
         });
     }
