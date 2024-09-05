@@ -181,9 +181,15 @@ public class BuyService implements IBuyService {
     }
 
     private Customer findCustomerByCPF(String cpf) throws EntityNotFoundException {
-        return customerRepository
-                .findById(cpf)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+        var customer = customerRepository.findById(cpf);
+
+        if(customer.isEmpty())
+            throw new EntityNotFoundException("Customer not found");
+
+        if(!customer.get().isActive())
+            throw new EntityNotFoundException("Customer is not active");
+
+        return customer.get();
     }
 
     private Buy findBuyById(Long id) {

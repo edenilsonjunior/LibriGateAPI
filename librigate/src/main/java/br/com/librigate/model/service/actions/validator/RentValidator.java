@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class RentValidator {
 
-    private RentRepository rentRepository;
-    private CustomerRepository customerRepository;
-    private BookCopyRepository bookCopyRepository;
+    private final RentRepository rentRepository;
+    private final CustomerRepository customerRepository;
+    private final BookCopyRepository bookCopyRepository;
 
     @Autowired
     public RentValidator(RentRepository rentRepository, CustomerRepository customerRepository, BookCopyRepository bookCopyRepository) {
@@ -27,13 +27,14 @@ public class RentValidator {
 
 
     public void validateRent(RentRequest request) {
-        validate(!customerRepository.existsById(request.customerCpf()), "Customer does not exist", true);
+
+        var customer = customerRepository.findById(request.customerCpf());
+        validate(customer.isEmpty(), "This customer does not exist", true);
+        validate(!customer.get().isActive(), "This customer is not active", false);
 
         request.booksIsbn().forEach(isbn -> {
             validate(!bookCopyRepository.existsByIsbn(isbn), "There is no book copy with this ISBN.", true);
-
-
-            validate(bookCopyRepository.findAllAvailableByIsbn(isbn).isEmpty(), "This book is not available for rent", false);
+            validate(bookCopyRepository.findAllAvailableByIsbn(isbn).isEmpty(), "There is no book copies available for ISBN: " + isbn, false);
         });
     }
 
