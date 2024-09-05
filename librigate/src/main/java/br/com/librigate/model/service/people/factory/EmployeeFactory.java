@@ -36,16 +36,16 @@ public class EmployeeFactory {
 
     public Employee updateEmployee(UpdateEmployeeRequest request, Employee employee) {
 
-        request.firstName().ifPresent(employee::setFirstName);
-        request.lastName().ifPresent(employee::setLastName);
-        request.telephone().ifPresent(employee::setTelephone);
-        request.role().ifPresent(employee::setRole);
-
         request.address().ifPresent((address) -> {
             var updatedAddress = addressService
                     .update(employee.getAddress().getId(), address);
             employee.setAddress(updatedAddress);
         });
+
+        request.firstName().ifPresent(employee::setFirstName);
+        request.lastName().ifPresent(employee::setLastName);
+        request.telephone().ifPresent(employee::setTelephone);
+        request.role().ifPresent(employee::setRole);
 
         return employee;
     }

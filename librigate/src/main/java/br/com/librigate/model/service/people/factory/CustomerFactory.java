@@ -32,15 +32,16 @@ public class CustomerFactory {
     }
 
     public Customer updateCustomer(UpdateCustomerRequest request, Customer customer) {
-        request.firstName().ifPresent(customer::setFirstName);
-        request.lastName().ifPresent(customer::setLastName);
-        request.telephone().ifPresent(customer::setTelephone);
 
         request.address().ifPresent((address) -> {
             var updatedAddress = addressService
                     .update(customer.getAddress().getId(), address);
             customer.setAddress(updatedAddress);
         });
+
+        request.firstName().ifPresent(customer::setFirstName);
+        request.lastName().ifPresent(customer::setLastName);
+        request.telephone().ifPresent(customer::setTelephone);
 
         return customer;
     }
