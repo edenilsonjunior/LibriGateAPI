@@ -14,12 +14,14 @@ import java.time.LocalDate;
 @Component
 public class RestockValidator {
 
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    private EmployeeRepository employeeRepository;
-
+    public RestockValidator(BookRepository bookRepository, EmployeeRepository employeeRepository) {
+        this.bookRepository = bookRepository;
+        this.employeeRepository = employeeRepository;
+    }
 
     public void validateNewBook(NewBookRequest request) {
 
@@ -27,15 +29,20 @@ public class RestockValidator {
         validate(request.edition() <= 0, "Invalid edition", false);
         validate(request.quantity() <= 0, "Invalid quantity", false);
         validate(request.unityValue() <= 0, "Invalid price", false);
-        validate(!employeeRepository.existsById(request.employeeCpf()), "This employee does not exist", true);
+
+        var employee = employeeRepository.findById(request.employeeCpf());
+        validate(employee.isEmpty(), "This employee does not exist", true);
+        validate(!employee.get().isActive(), "This employee is not active", false);
 
         validate(bookRepository.existsById(request.isbn()), "This book already exists", false);
     }
 
 
-    public void validadeRestock(RestockBookRequest request) {
+    public void validateRestock(RestockBookRequest request) {
 
-        validate(!employeeRepository.existsById(request.employeeCpf()), "This employee does not exist", true);
+        var employee = employeeRepository.findById(request.employeeCpf());
+        validate(employee.isEmpty(), "This employee does not exist", true);
+        validate(!employee.get().isActive(), "This employee is not active", false);
 
         request.books().forEach((book)-> {
             validate(book.quantity() <= 0, "Invalid quantity", false);

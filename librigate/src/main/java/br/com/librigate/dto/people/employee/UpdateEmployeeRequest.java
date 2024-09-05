@@ -10,7 +10,6 @@ public record UpdateEmployeeRequest(
     Optional<String> firstName,
     Optional<String> lastName,
     Optional<String> telephone,
-    Optional<String> password,
     Optional<AddressRequest> address,
     Optional<String> role
 ) { }

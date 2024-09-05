@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -35,12 +34,7 @@ public class HandleRequest {
     @Transactional
     public ResponseEntity<?> handle(Supplier<ResponseEntity<?>> action) {
         try {
-            ResponseEntity<?> response = action.get();
-
-            if (isEmptyList(response))
-                return new ResponseEntity<>(response.getBody(), HttpStatus.NO_CONTENT);
-
-            return response;
+            return action.get();
 
         } catch (ValidationException ex) {
             validationErrorResponse.put("message", ex.getMessage());
@@ -55,9 +49,4 @@ public class HandleRequest {
             return new ResponseEntity<>(internalServerErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    private boolean isEmptyList(ResponseEntity<?> responseEntity) {
-        return responseEntity.getBody() instanceof List && ((List<?>) responseEntity.getBody()).isEmpty();
-    }
-
 }

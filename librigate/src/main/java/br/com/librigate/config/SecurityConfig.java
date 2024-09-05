@@ -1,9 +1,12 @@
 package br.com.librigate.config;
 
-import br.com.librigate.model.service.SecurityFilter;
+import br.com.librigate.component.security.AccessDeniedHandler;
+import br.com.librigate.component.security.CustomAuthenticationEntryPoint;
+import br.com.librigate.component.security.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,11 +21,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final SecurityFilter securityFilter;
+
     @Autowired
-    SecurityFilter securityFilter;
+    public SecurityConfig(SecurityFilter securityFilter) {
+        this.securityFilter = securityFilter;
+    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, AccessDeniedHandler customAccessDeniedHandler) throws Exception {
 
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
@@ -40,13 +47,19 @@ public class SecurityConfig {
                                 "/api/customer/**",
                                 "/api/employee/**"
                         ).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/book").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(
                                 "/api/buy/**",
                                 "/api/rent/**",
-                                "/api/review/**",
-                                "/api/book/**"
+                                "/api/review/**"
                         ).hasAuthority("ROLE_USER")
+                        .requestMatchers(HttpMethod.GET, "/api/book","/api/book/author/**", "/api/book/category/**", "/api/book/isbn/**", "/api/book/review/**").hasAuthority("ROLE_USER")
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptionHandling ->
+                        exceptionHandling
+                                .accessDeniedHandler(accessDeniedHandler())
+                                .authenticationEntryPoint(customAuthenticationEntryPoint())
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -62,4 +75,13 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler(){
+        return new AccessDeniedHandler();
+    }
+
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint(){
+        return new CustomAuthenticationEntryPoint();
+    }
 }
