@@ -1,13 +1,16 @@
 package br.com.librigate.model.service.people;
 
+import br.com.librigate.dto.authorization.RegisterRequest;
 import br.com.librigate.dto.people.customer.CreateCustomerRequest;
 import br.com.librigate.dto.people.customer.UpdateCustomerRequest;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.people.Customer;
+import br.com.librigate.model.entity.people.UserRole;
 import br.com.librigate.model.mapper.people.CustomerMapper;
 import br.com.librigate.model.repository.CustomerRepository;
 import br.com.librigate.model.service.HandleRequest;
 import br.com.librigate.model.service.address.AddressService;
+import br.com.librigate.model.service.interfaces.IAuthenticationService;
 import br.com.librigate.model.service.interfaces.ICustomerService;
 import br.com.librigate.model.service.people.factory.CustomerFactory;
 import br.com.librigate.model.service.people.validator.CustomerValidator;
@@ -25,15 +28,17 @@ public class CustomerService implements ICustomerService {
     private final AddressService addressService;
     private final CustomerMapper customerMapper = CustomerMapper.INSTANCE;
     private final HandleRequest handleRequest;
+    private final IAuthenticationService authenticationService;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository, CustomerValidator customerValidator, 
-    CustomerFactory customerFactory, AddressService addressService, HandleRequest handleRequest) {
+    CustomerFactory customerFactory, AddressService addressService, HandleRequest handleRequest, IAuthenticationService authenticationService) {
         this.customerRepository = customerRepository;
         this.customerValidator = customerValidator;
         this.customerFactory = customerFactory;
         this.addressService = addressService;
         this.handleRequest = handleRequest;
+        this.authenticationService = authenticationService;
     }
 
 
@@ -70,6 +75,9 @@ public class CustomerService implements ICustomerService {
 
             customer.setAddress(address);
             customerRepository.save(customer);
+
+            var authRequest = new RegisterRequest(customer.getLogin(), customer.getPassword(), UserRole.USER);
+            authenticationService.register(authRequest);
 
             var response = customerMapper.toResponse(customer);
             return new ResponseEntity<>(response, HttpStatus.CREATED);

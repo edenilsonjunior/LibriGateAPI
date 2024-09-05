@@ -6,6 +6,7 @@ import br.com.librigate.dto.authorization.RegisterRequest;
 import br.com.librigate.exception.ValidationException;
 import br.com.librigate.model.entity.people.User;
 import br.com.librigate.model.repository.UserRepository;
+import br.com.librigate.model.service.interfaces.IAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,18 +15,22 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthenticationService {
+public class AuthenticationService implements IAuthenticationService {
+
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final TokenService tokenService;
 
     @Autowired
-    AuthenticationManager authenticationManager;
+    public AuthenticationService(AuthenticationManager authenticationManager, UserRepository userRepository, TokenService tokenService) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.tokenService = tokenService;
+    }
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    TokenService tokenService;
-
+    @Override
     public ResponseEntity<?> login(AuthenticationRequest authenticationRequest) {
+
 
         var usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
                 authenticationRequest.login(),
@@ -38,7 +43,8 @@ public class AuthenticationService {
         return ResponseEntity.ok(new AuthenticationResponse(token));
     }
 
-    public void register(RegisterRequest registerRequest) throws Exception {
+    @Override
+    public void register(RegisterRequest registerRequest){
         if (this.userRepository.findByLogin(registerRequest.login()) != null) {
             throw new ValidationException("User already exists");
         }

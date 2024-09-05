@@ -37,14 +37,23 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/book-copy/**",
                                 "/api/restock/**",
-                                "/api/custumer/**",
-                                "/api/employee/**"
+                                "/api/customer/**",
+                                "/api/employee/**",
+                                "/api/buy/**",
+                                "/api/rent/**",
+                                "/api/review/**",
+                                "/api/book/**"
                         ).hasRole("ADMIN")
+                        .requestMatchers(
+                                "/api/buy/**",
+                                "/api/rent/**",
+                                "/api/review/**",
+                                "/api/book/**"
+                        ).hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 
     @Bean

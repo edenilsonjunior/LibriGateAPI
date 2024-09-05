@@ -1,12 +1,15 @@
 package br.com.librigate.model.service.people;
 
+import br.com.librigate.dto.authorization.RegisterRequest;
 import br.com.librigate.dto.people.employee.CreateEmployeeRequest;
 import br.com.librigate.dto.people.employee.UpdateEmployeeRequest;
 import br.com.librigate.exception.EntityNotFoundException;
 import br.com.librigate.model.entity.people.Employee;
+import br.com.librigate.model.entity.people.UserRole;
 import br.com.librigate.model.mapper.people.EmployeeMapper;
 import br.com.librigate.model.repository.EmployeeRepository;
 import br.com.librigate.model.service.HandleRequest;
+import br.com.librigate.model.service.interfaces.IAuthenticationService;
 import br.com.librigate.model.service.interfaces.IEmployeeService;
 import br.com.librigate.model.service.people.factory.EmployeeFactory;
 import br.com.librigate.model.service.people.validator.EmployeeValidator;
@@ -26,14 +29,16 @@ public class EmployeeService implements IEmployeeService {
     private final EmployeeFactory employeeFactory;
     private final EmployeeMapper employeeMapper = EmployeeMapper.INSTANCE;
     private final HandleRequest handleRequest;
+    private final IAuthenticationService authenticationService;
 
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository, EmployeeValidator employeeValidator,
-            EmployeeFactory employeeFactory, HandleRequest handleRequest) {
+            EmployeeFactory employeeFactory, HandleRequest handleRequest, IAuthenticationService authenticationService) {
         this.employeeRepository = employeeRepository;
         this.employeeValidator = employeeValidator;
         this.employeeFactory = employeeFactory;
         this.handleRequest = handleRequest;
+        this.authenticationService = authenticationService;
     }
 
     @Override
@@ -74,6 +79,9 @@ public class EmployeeService implements IEmployeeService {
             employeeValidator.validateNewEmployee(request);
             var employee = employeeFactory.createEmployee(request);
             employeeRepository.save(employee);
+
+            var authRequest = new RegisterRequest(employee.getLogin(), employee.getPassword(), UserRole.ADMIN);
+            authenticationService.register(authRequest);
 
             var response = employeeMapper.toResponse(employee);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
